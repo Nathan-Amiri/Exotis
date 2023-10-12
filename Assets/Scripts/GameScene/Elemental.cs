@@ -11,10 +11,10 @@ public class Elemental : NetworkBehaviour
     //(this class does not contain networking logic)
 
     //assigned in prefab:
-    [SerializeField] private Image colorBackround;
+    [SerializeField] private List<Image> colorOutlines;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private Image speedColorBackground;
     [SerializeField] private TMP_Text healthText;
     [SerializeField] private Image icon;
-    [SerializeField] private GameObject target;
+    [SerializeField] private GameObject targetButton;
 }

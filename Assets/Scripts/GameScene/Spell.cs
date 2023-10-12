@@ -14,4 +14,9 @@ public class Spell : NetworkBehaviour
     [SerializeField] private Image image;
     [SerializeField] private TMP_Text timeScaleText;
     [SerializeField] private TMP_Text nameText;
+
+    public void OnClick()
+    {
+
+    }
 }
