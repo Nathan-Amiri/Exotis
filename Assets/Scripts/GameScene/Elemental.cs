@@ -15,6 +15,6 @@ public class Elemental : NetworkBehaviour
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private Image speedColorBackground;
     [SerializeField] private TMP_Text healthText;
-    [SerializeField] private Image icon;
+    [SerializeField] private Image icon; //set a to 150 when targeting
     [SerializeField] private GameObject targetButton;
 }

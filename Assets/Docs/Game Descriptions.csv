@@ -1,0 +1,193 @@
+
+	SPELLS:
+
+Flow 3 "I heal myself 1, then deal 2 to an Elemental."
+Cleanse ? "I heal myself or my ally 2. I am Wearied until the end of next round."
+Mirage 7 "I Swap. My replacement gains an action. When it is dealt damage this round, the damage redirects to me if I am alive. It and its ally are Trapped this round."
+Tidal Wave 2 "I deal 3 to an Elemental. Then, I am Weakened until the end of next round."
+
+Erupt 3 "I deal 3 to an Elemental, then 1 to myself."
+Singe 6 "I force a non-Trapped enemy to Swap. If the enemy has an action, it transfers to its replacement. At the end of the round, I can deal 2 to an Elemental."
+Heat Up 5 "I gain a Potion. I am Enraged this round, and Wearied until the end of next round. I can’t cast this Spell again until I Swap."
+Hellfire 3 "I deal 4 to an Elemental. Then, I am Eliminated."
+
+Empower 2 "I deal 2 to an Elemental. If I took damage this round, I deal 3 instead."
+Fortify 7 "This round, I am Concealed and my ally is Armored. I am Wearied until the end of next round."
+Block C "I am Armored this round. At the end of this round, I can deal 1 to any Elementals."
+Landslide 3 "I deal 2 to all other Elementals in play."
+
+Swoop 4 "I deal 2 to an Elemental."
+Take Flight 4 "I heal 1, then deal 1 to an Elemental, then Swap if I’m not Trapped."
+Whirlwind 3 "I deal 2 to an Elemental. I am Enraged and Weakened next round. I am Wearied until the end of next round."
+Ascend 7 "I am Concealed this round, and I am Stunned and Trapped next round. At the beginning of next round, I can deal 2 to an Elemental."
+
+Surge 3 "I deal 2 to an Elemental. The first time I cast this Spell, I gain a Spark."
+Blink C "I target an Elemental. I am Enraged until the Spell I am countering has occurred. Then, I deal 1 to the target. I am Wearied until the end of next round. I can’t cast this Spell again until I Swap."
+Defuse 6 "I Stun an enemy this round. I can’t cast this Spell again until I Swap."
+Recharge 1 "I or my ally heals 1 and gains a Spark. The other either heals 1 or gains a Spark, but not both."
+
+Icy Breath 3 "I deal 2 to an Elemental and Slow it until the end of next round."
+Hail 4 "I deal 1 to any Elementals and Slow them until the end of next round."
+Freeze C "The Spell I am countering is postponed until the end of next round. Until then, the Spell’s caster and I are Concealed."
+Numbing Cold 5 "I target an Elemental that is slower than me. This round, the target’s Trait, Spells, and Items deal 0 damage. I can’t cast this Spell on the same target next round."
+
+Enchain: 3, "I deal 2 to an Elemental. At the beginning of next round, if the Elemental is in play, it is Trapped that round."
+Animate 5 "My ally gains an action. This round, I am Armored and my ally is Trapped. I can’t cast this Spell again until I Swap."
+Nightmare ? "I target an enemy. It is Stunned next round. I can’t cast this Spell on the same target next round."
+Hex 5 "I heal myself 2. Then, I Slow, Poison, or Weaken an Elemental this round. I am Wearied until the end of next round."
+
+Fanged Bite 3 "I deal 2 to an Elemental. It is Poisoned next round."
+Infect ? "I Poison an Elemental for the rest of the game."
+Poison Cloud 5 "This round, when I am targeted by an enemy Spell, I deal 1 to the Spell’s caster after the Spell has occurred. At the end of this round, I can deal 2 to an Elemental."
+Bile C "I deal 1 to any Elementals."
+
+Sparkle 3 "I deal 2 to an Elemental. It is Weakened next round."
+Allure C "If the Spell I am countering is targeting my ally, it redirects to me instead."
+Fairy Dust 1 "I target up to any two allies, even ones not in play. (I can target myself) At the beginning of next round, they each gain a Potion."
+Gift ? "I target myself or any ally, even one not in play. At the beginning of next round, that ally gains a Gem. I am Wearied until the end of next round."
+
+
+	ELEMENTALS/TRAITS:
+
+Will-o'-Wisp 6m Water/Flame
+	Carefree "Whenever my ally deals damage to me, I’m immune to that damage."
+
+Selkie 7s Earth/Water
+	Blubber "When I take damage, I don't lose health until the end of the round. (I lose health then even if I am no longer in play)"
+
+Nymph 6m Water/Wind
+	Dive "Once per game, at counter speed, I can heal 1 and become Enraged until the Spell I am countering has occurred. I am Wearied until the end of next round."
+
+Kraken 5m Water/Lightning
+	Reservoir "Once per game, at any time, I can gain a Gem and become Wearied until the end of next round."
+
+Leviathan 6m Frost/Water
+	Majestic "The first time I’m in play, I can immediately cast a Spell, regardless of its timescale. The Spell deals 0 damage. Then, if I am still in play, I gain an action."
+
+Hydra 7s Water/Shadow
+	Eclipse "Once per game, at the end of a round, I can Enrage all Elementals next round, even ones not in play.
+
+Siren 7s Water/Venom
+	Scourge "At the end of each round, I can deal 1 to an Elemental, then 1 to myself."
+
+Mermaid 7s Water/Jewel
+	Slippery "I can cast non-damaging Spells at counter speed."
+
+Salamander 5f Flame/Earth
+	Burrow "At any time except counter speed, I can Swap. If I have an action, it transfers to my replacement."
+
+Phoenix 5f Wind/Flame
+	Rebirth "The first time I take lethal damage, I retain 1 health and am Weakened for the rest of the game."
+
+Dragon 6m Flame/Lightning
+	Devour "Each round, the first time I damage an enemy with a Spell, I heal 1."
+
+Wizard 5f Frost/Flame
+	Astonish "The first time I’m in play at the beginning of a round, I am Enraged that round and Wearied next round."
+
+Hellhound 6m Shadow/Flame
+	Berserk "At the beginning of each round, I can deal 1 to my ally and gain a Potion."
+
+Chimera 5f Flame/Venom
+	Sizzle "My damaging Spells deal +1 damage to Poisoned targets."
+
+Genie 6m Jewel/Flame
+	Best Wishes "Once per game, immediately after casting a non-damaging Spell, I can cast a different non-damaging Spell, regardless of its timescale."
+
+Roc 6m Wind/Earth
+	Screech "Once per game, at any time, I can deal 1 to all other Elementals, even ones not in play."
+
+Golem 6m Lightning/Earth
+	High Voltage "At the end of each round, I deal 1 to all other Elementals in play."
+
+Yeti 7s Frost/Earth
+	Chill "Once per game, at any time, I can target a Slowed Elemental. It is Concealed next round."
+
+Ogre 6m Shadow/Earth
+	Juggernaut "I am permanently Slowed. My damaging Spells deal +1 damage to all targets."
+
+Scorpio 7s Earth/Venom
+	Paralyze "Once per game, at the beginning of a round, I can Trap an Elemental until I Swap or am Eliminated."
+
+Dwarf 6m Earth/Jewel
+	Inspire "Once per game, at the end of a round, I can target myself or my ally. The target is Enraged next round. I am Wearied next round."
+
+Griffin 5f Wind/Lightning
+	Nimble "The first time I take damage from a non-Spell source each round, I’m immune to that damage."
+
+Ghost 6m Wind/Frost
+	Icy Touch "Slows I inflict last forever."
+
+Wraith 5f Shadow/Wind
+	Silence "Immediately after I’m Eliminated, I can Eliminate the enemy in play with the lowest Health. If they are tied, I can choose one to Eliminate."
+
+Strix 5f Wind/Venom
+	Frenzy "Once per game, if I’m casting a damaging Spell that has one target, I can deal +1 damage with that Spell. Then, I can’t cast a different Spell until I Swap."
+
+Fairy 6m Wind/Jewel
+	Serenade "At the end of each round, if I have not gained Health this round, I heal 1."
+
+Thunderbird 6m Frost/Lightning
+	Sacrifice "I am permanently Weakened. When I’m Eliminated, I can immediately fully heal any ally, even one not in play. I can Eliminate myself at any time."
+
+Gargoyle 6m Shadow/Lightning
+	Scavenger "When I Eliminate an enemy, I gain a Potion."
+
+Abomination 6m Lightning/Venom
+	Freak "When I enter play due to a Swap, my ally can immediately Swap. If it has an action, it transfers to its replacement."
+
+Angel 7s Lightning/Jewel
+	Smite "Each round, the first time I take damage from an enemy Spell, I gain a Spark."
+
+Werewolf 5f Shadow/Frost
+	Shapeshift "Once per game, at the beginning of a round, I can choose an ally. My Spells become its Spells until the end of the round."
+
+Wyrm 6m Venom/Frost
+	Rancid Aura "Once per game, at counter speed, I can Weaken all Elementals, even ones not in play, until the end of next round."
+
+Unicorn 5f Frost/Jewel
+	Adorn "When I cast a non-damaging Spell, I become Armored this round."
+
+Witch 6m Shadow/Venom
+	Torment "At the end of each round, I can deal 1 to any Stunned Elementals."
+
+Shaman 6m Jewel/Shadow
+	Mystic Arts "At any time except counter speed, I can become Concealed until the end of next round. Despite being Concealed, I can end this effect early at any time."
+
+Basilisk 6m Venom/Jewel
+	Stony Gaze "Once per game, at the beginning of a round, I can Stun and Trap an Elemental and myself this round."
+
+
+	ITEMS:
+
+Gem "At any time, I can heal 2."
+
+Potion "If I’m casting a damaging Spell that has one target, that Spell deals +1 damage."
+
+Spark "Can only be used at counter speed. I target an Elemental. After the enemy Spell I am countering has occurred, I deal 1 to the target."
+
+
+	STATUS:
+
+Wearied "I cannot perform any actions that would cause me to become Weary.
+	(Weariness is like a cooldown—it is inflicted by actions that protect or greatly heal the caster, preventing similar spells from being used again the next round and stalling the game)"
+
+Enraged "I am immune to damage."
+
+Armored "If I would take damage from an enemy spell, I take -1 damage and am no longer Armored."
+
+Concealed "I cannot act, and I’m immune to/unaffected by everything.
+	(I am immune to damage, can’t cast Spells or Traits, can’t Swap, and can’t be targeted)"
+
+Stunned "I can’t cast Spells.
+	(I can still use Items, use my Trait, and Retreat)"
+
+Slowed "I’m slower than non-slowed Elementals."
+
+Trapped "I cannot Swap.
+	(this effect overrides any Spell/Trait effects)"
+
+Poisoned "I take 1 damage at the end of each round.
+	(I am not damaged by a certain Elemental, merely by the poison itself)"
+
+Weakened "My damaging Spells deal -1 damage to all targets."

@@ -6,8 +6,7 @@ public static class StaticLibrary
 {
     //standard pixel size = 5 square units, pixeloid pixels match at font size 45
 
-    //POISON STATUS NEEDS TO BE RAISED UP 1 UNIT
-    //RETREAT BUTTON B4B4B4 ENEMY, FF0096 ALLY
+    //CONSOLE BUTTON SCALE 20 for ">>", 30 for "Pass"
 
     public static Dictionary<string, Color> gameColors = new()
     {
@@ -21,15 +20,22 @@ public static class StaticLibrary
         { "venom", new(23, 195, 0, 255) }, //17C300
         { "jewel", new(255, 132, 230, 255) }, //FF84E8
 
-        { "offwhite", new(240, 240, 240, 255) }, //F0F0F0
+        { "fastHealthBack", Color.green }, //00FF00
+        { "mediumHealthBack", Color.yellow }, //FFEB04
+        { "slowHealthBack", new(190, 0, 190, 255) }, //BE00BE
+
+        //game scene colors:
         { "gray", new(185, 185, 185, 255) }, //B9B9B9
+        { "pink", new(255, 0, 150, 255) }, //FF0096
+        { "blue", new(125, 190, 255, 255) }, //7DBEFF
+        { "allyRetreatButton", new(255, 0, 150, 255) }, //FF0096, standard pink
+        { "enemyRetreatButton", new(180, 180, 180, 255) }, //B4B4B4
+
 
         { "allyOutline", new(62, 165, 168, 255) }, //3EA5A8
         { "enemyOutline", new(138, 46, 92, 255) }, //8A2E5C
 
-        { "fastHealthBack", Color.green }, //00FF00
-        { "mediumHealthBack", Color.yellow }, //FFEB04
-        //{ "slowHealthBack", Color.red } //FF0000
-        { "slowHealthBack", new(190, 0, 190, 255) } //BE00BE
+        { "allyText", new(0, 100, 255, 255) }, //0064FF
+        { "enemyText", new(160, 0, 120, 255) }, //A00078
     };
 }
