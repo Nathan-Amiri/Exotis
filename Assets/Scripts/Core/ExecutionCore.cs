@@ -12,6 +12,7 @@ public class ExecutionCore : MonoBehaviour
 
     //assigned in inspector:
     [SerializeField] private DelegationCore delegationCore;
+    [SerializeField] private Clock clock;
 
     public void ReceivePacket(RelayPacket packet) //called by RelayCore
     {

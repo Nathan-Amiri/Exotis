@@ -14,4 +14,14 @@ public class DelegationCore : MonoBehaviour
 
     //assigned in inspector:
     [SerializeField] private RelayCore relayCore;
+
+    public enum DelegationType { RoundStartOrEnd, TimeScale, Counter, Repopulate, Immediate} //combine roundstartorend and timescale? Don't redo what clock already does!
+
+    //dynamic:
+    private DelegationType delegationType;
+
+    public void RequestDelegation(DelegationType newDelegationType, bool passAvailable = true) //offer player an action
+    {
+        
+    }
 }
