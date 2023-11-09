@@ -22,6 +22,6 @@ public class DelegationCore : MonoBehaviour
 
     public void RequestDelegation(DelegationType newDelegationType, bool passAvailable = true) //offer player an action
     {
-        
+
     }
 }
