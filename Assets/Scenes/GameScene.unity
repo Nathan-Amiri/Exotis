@@ -822,7 +822,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1880666954361974415, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: SpellButton31
+      value: SpellButton1
       objectReference: {fileID: 0}
     - target: {fileID: 1974966559459511743, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -902,7 +902,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450667707110579739, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: SpellButton32
+      value: SpellButton2
       objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -934,7 +934,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5890982857604281332, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: SpellButton30
+      value: SpellButton0
       objectReference: {fileID: 0}
     - target: {fileID: 5935597135351890220, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -2136,6 +2136,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 262547481}
   m_CullTransparentMesh: 1
+--- !u!114 &278160541 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5814517674153488385, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+  m_PrefabInstance: {fileID: 1332425094}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &281568924
 GameObject:
   m_ObjectHideFlags: 0
@@ -2741,17 +2752,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
---- !u!114 &294882681 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
-  m_PrefabInstance: {fileID: 85867607}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &313124621 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
@@ -2939,17 +2939,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330751908}
   m_CullTransparentMesh: 1
---- !u!114 &334572906 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 746978815362249106, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
-  m_PrefabInstance: {fileID: 85867607}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &360872360
 GameObject:
   m_ObjectHideFlags: 0
@@ -3339,7 +3328,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1880666954361974415, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: SpellButton21
+      value: SpellButton1
       objectReference: {fileID: 0}
     - target: {fileID: 1974966559459511743, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -3427,7 +3416,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5450667707110579739, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: SpellButton22
+      value: SpellButton2
       objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -3439,7 +3428,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5890982857604281332, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: SpellButton20
+      value: SpellButton0
       objectReference: {fileID: 0}
     - target: {fileID: 5935597135351890220, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -4985,6 +4974,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!114 &671258162 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 746978815362249106, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+  m_PrefabInstance: {fileID: 1332425094}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &676098606
 GameObject:
   m_ObjectHideFlags: 0
@@ -5173,6 +5173,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 685180921}
   m_CullTransparentMesh: 1
+--- !u!114 &691804229 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+  m_PrefabInstance: {fileID: 1332425094}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &698319058 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7699859118090929092, guid: d6ac379a20c57bf42b0fcd1040218c99, type: 3}
@@ -5602,17 +5613,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 721732925}
   m_CullTransparentMesh: 1
---- !u!114 &722500064 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5814517674153488385, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
-  m_PrefabInstance: {fileID: 85867607}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &733982764
 GameObject:
   m_ObjectHideFlags: 0
@@ -5883,6 +5883,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 773757576}
   m_CullTransparentMesh: 1
+--- !u!114 &810139822 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+  m_PrefabInstance: {fileID: 1496840371}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &814072147 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7699859118090929092, guid: d6ac379a20c57bf42b0fcd1040218c99, type: 3}
@@ -7462,8 +7473,8 @@ MonoBehaviour:
   sceneElementals:
   - {fileID: 8165208286014692109}
   - {fileID: 1795908585}
-  - {fileID: 1292339400}
-  - {fileID: 1087326373}
+  - {fileID: 1332425097}
+  - {fileID: 2133302517}
   sceneSpells:
   - {fileID: 313124621}
   - {fileID: 413857227}
@@ -7471,12 +7482,12 @@ MonoBehaviour:
   - {fileID: 554519238}
   - {fileID: 243678890}
   - {fileID: 1496251786}
-  - {fileID: 1232235228}
-  - {fileID: 1907151310}
-  - {fileID: 2146491601}
-  - {fileID: 294882681}
-  - {fileID: 334572906}
-  - {fileID: 722500064}
+  - {fileID: 691804229}
+  - {fileID: 671258162}
+  - {fileID: 278160541}
+  - {fileID: 810139822}
+  - {fileID: 1474407696}
+  - {fileID: 1216477968}
   teambuilderCanvas: {fileID: 2061079422}
   elementalInputFields:
   - {fileID: 2097701441}
@@ -7631,17 +7642,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1078657667}
   m_CullTransparentMesh: 1
---- !u!114 &1087326373 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8031699915942597635, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
-  m_PrefabInstance: {fileID: 85867607}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d23441b6dd44254a844bb9da96c02fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1100317552
 GameObject:
   m_ObjectHideFlags: 0
@@ -8694,10 +8694,10 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1208786643}
   m_CullTransparentMesh: 1
---- !u!114 &1232235228 stripped
+--- !u!114 &1216477968 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
-  m_PrefabInstance: {fileID: 423872286}
+  m_CorrespondingSourceObject: {fileID: 5814517674153488385, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+  m_PrefabInstance: {fileID: 1496840371}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -9262,17 +9262,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1289889802}
   m_CullTransparentMesh: 1
---- !u!114 &1292339400 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8031699915942597635, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
-  m_PrefabInstance: {fileID: 423872286}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d23441b6dd44254a844bb9da96c02fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1303904956
 GameObject:
   m_ObjectHideFlags: 0
@@ -9557,6 +9546,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1880666954361974415, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_Name
+      value: SpellButton21
+      objectReference: {fileID: 0}
     - target: {fileID: 1974966559459511743, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 449645339
@@ -9613,9 +9606,17 @@ PrefabInstance:
       propertyPath: m_text
       value: C
       objectReference: {fileID: 0}
+    - target: {fileID: 5450667707110579739, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_Name
+      value: SpellButton22
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3015047411
+      objectReference: {fileID: 0}
+    - target: {fileID: 5890982857604281332, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_Name
+      value: SpellButton20
       objectReference: {fileID: 0}
     - target: {fileID: 5935597135351890220, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -9675,6 +9676,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 522398925216174664, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
   m_PrefabInstance: {fileID: 1332425094}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1332425097 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8031699915942597635, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+  m_PrefabInstance: {fileID: 1332425094}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d23441b6dd44254a844bb9da96c02fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1353682489
 GameObject:
   m_ObjectHideFlags: 0
@@ -10922,6 +10934,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1464401371}
   m_CullTransparentMesh: 1
+--- !u!114 &1474407696 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 746978815362249106, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+  m_PrefabInstance: {fileID: 1496840371}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1496251786 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5814517674153488385, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
@@ -11061,6 +11084,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1880666954361974415, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_Name
+      value: SpellButton31
+      objectReference: {fileID: 0}
     - target: {fileID: 1974966559459511743, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 395592770
@@ -11117,9 +11144,17 @@ PrefabInstance:
       propertyPath: m_text
       value: C
       objectReference: {fileID: 0}
+    - target: {fileID: 5450667707110579739, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_Name
+      value: SpellButton32
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2613115082
+      objectReference: {fileID: 0}
+    - target: {fileID: 5890982857604281332, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_Name
+      value: SpellButton30
       objectReference: {fileID: 0}
     - target: {fileID: 5935597135351890220, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -13831,17 +13866,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1906505425}
   m_CullTransparentMesh: 1
---- !u!114 &1907151310 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 746978815362249106, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
-  m_PrefabInstance: {fileID: 423872286}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1921864586
 GameObject:
   m_ObjectHideFlags: 0
@@ -15019,15 +15043,15 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2116629680}
   m_CullTransparentMesh: 1
---- !u!114 &2146491601 stripped
+--- !u!114 &2133302517 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5814517674153488385, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
-  m_PrefabInstance: {fileID: 423872286}
+  m_CorrespondingSourceObject: {fileID: 8031699915942597635, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+  m_PrefabInstance: {fileID: 1496840371}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d23441b6dd44254a844bb9da96c02fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1473523889821459550

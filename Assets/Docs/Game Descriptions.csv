@@ -31,7 +31,7 @@
 22 Freeze C "The Spell I am countering is postponed until the end of next round. Until then, the Spell’s caster and I are Concealed."
 23 Numbing Cold 5 "I target an Elemental that is slower than me. This round, the target’s Trait, Spells, and Items deal 0 damage. I can’t cast this Spell on the same target next round."
 
-24 Enchain: 3, "I deal 2 to an Elemental. At the beginning of next round, if the Elemental is in play, it is Trapped that round."
+24 Enchain: 3 "I deal 2 to an Elemental. At the beginning of next round, if the Elemental is in play, it is Trapped that round."
 25 Animate 5 "My ally gains an action. This round, I am Armored and my ally is Trapped. I can’t cast this Spell again until I Swap."
 26 Nightmare ? "I target an enemy. It is Stunned next round. I can’t cast this Spell on the same target next round."
 27 Hex 5 "I heal myself 2. Then, I Slow, Poison, or Weaken an Elemental this round. I am Wearied until the end of next round."
@@ -55,7 +55,7 @@
 	Blubber "When I take damage, I don't lose health until the end of the round. (I lose health then even if I am no longer in play)"
 2 Nymph 6m Water/Wind
 	Dive "Once per game, at counter speed, I can heal 1 and become Enraged until the Spell I am countering has occurred. I am Wearied until the end of next round."
-3 Kraken 5m Water/Lightning
+3 Kraken 5f Water/Lightning
 	Reservoir "Once per game, at any time, I can gain a Gem and become Wearied until the end of next round."
 4 Leviathan 6m Frost/Water
 	Majestic "The first time I’m in play, I can immediately cast a Spell, regardless of its timescale. The Spell deals 0 damage. Then, if I am still in play, I gain an action."

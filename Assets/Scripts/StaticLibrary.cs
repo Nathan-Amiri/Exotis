@@ -8,7 +8,7 @@ public static class StaticLibrary
 
     //CONSOLE BUTTON SCALE 20 for ">>", 30 for "Pass"
 
-    public static Dictionary<string, Color> gameColors = new()
+    public static Dictionary<string, Color32> gameColors = new()
     {
         { "water", new(35, 182, 255, 255) }, //23B6FF
         { "flame", new(255, 122, 0, 255) }, //FF7A00

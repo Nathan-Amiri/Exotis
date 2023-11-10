@@ -25,9 +25,25 @@ public class Elemental : NetworkBehaviour
 
         name = elementalName;
         nameText.text = elementalName;
+        Debug.Log(Resources.Load("ElementalSprites/Dragon"));
+        icon.sprite = Resources.Load<Sprite>("ElementalSprites/" + elementalName);
 
         ElementalInfo info = Resources.Load<ElementalInfo>("ElementalInfos/" + elementalName);
+
         if (info.speed == ElementalInfo.Speed.fast)
+        {
             speedColorBackground.color = StaticLibrary.gameColors["fastHealthBack"];
+            healthText.text = "5";
+        }
+        else if (info.speed == ElementalInfo.Speed.medium)
+        {
+            speedColorBackground.color = StaticLibrary.gameColors["mediumHealthBack"];
+            healthText.text = "6";
+        }
+        else
+        {
+            speedColorBackground.color = StaticLibrary.gameColors["slowHealthBack"];
+            healthText.text = "7";
+        }
     }
 }

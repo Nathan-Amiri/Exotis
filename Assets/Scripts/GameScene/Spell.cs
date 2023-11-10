@@ -23,10 +23,9 @@ public class Spell : NetworkBehaviour
 
         SpellInfo info = Resources.Load<SpellInfo>("SpellInfos/" + spellName);
 
-        Color color = StaticLibrary.gameColors[info.elementColor.ToString()];
-        image.color = new Color(color.r/255, color.g/255, color.b/255, 1);
+        image.color = StaticLibrary.gameColors[info.elementColor.ToString()];
 
-        timeScaleText.text = info.timeScale;
+        timeScaleText.text = info.timeScale.ToString();
     }
 
     public void OnClick()

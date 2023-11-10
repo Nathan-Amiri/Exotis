@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d706bd1cc9f73f9429d80ecdc05c4111, type: 3}
-  m_Name: Erupt
+  m_Name: Fanged Bite
   m_EditorClassIdentifier: 
-  elementColor: 1
+  elementColor: 7
   timeScale: 51
