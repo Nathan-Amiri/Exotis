@@ -5,10 +5,5 @@ using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
-    //private void Awake()
-    //{
-    //    StaticLibrary.InitializeIndex();
-    //}
-
 
 }

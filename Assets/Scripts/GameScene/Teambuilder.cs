@@ -2,24 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System;
 
 public class Teambuilder : MonoBehaviour
 {
     //temporary class for testing
-
-    [SerializeField] private List<Elemental> sceneElementals = new();
-    [SerializeField] private List<Spell> sceneSpells = new();
 
     [SerializeField] private GameObject teambuilderCanvas;
 
     [SerializeField] private List<TMP_InputField> elementalInputFields = new();
     [SerializeField] private List<TMP_InputField> spellInputFields = new();
 
-    private void Start()
-    {
-        List<string> teamElementalNames = new();
-        List<string> teamSpellNames = new();
+    //read by setup:
+    [NonSerialized] public List<string> teamElementalNames = new();
+    [NonSerialized] public List<string> teamSpellNames = new();
 
+    private void Awake()
+    {
         for (int i = 0; i < elementalInputFields.Count; i++)
         {
             if (!PlayerPrefs.HasKey("Elemental" + i))
@@ -37,13 +36,6 @@ public class Teambuilder : MonoBehaviour
             teamSpellNames.Add(PlayerPrefs.GetString("Spell" + i));
             spellInputFields[i].text = teamSpellNames[i];
         }
-
-        //setup:
-        for (int i = 0; i < teamElementalNames.Count; i++)
-            sceneElementals[i].Setup(teamElementalNames[i]);
-
-        for (int i = 0; i < teamSpellNames.Count; i++)
-            sceneSpells[i].Setup(teamSpellNames[i]);
     }
 
     private void Update()
