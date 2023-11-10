@@ -17,4 +17,17 @@ public class Elemental : NetworkBehaviour
     [SerializeField] private TMP_Text healthText;
     [SerializeField] private Image icon; //set a to 150 when targeting
     [SerializeField] private GameObject targetButton;
+
+    //called by Teambuilder (temporarily, will eventually be called by setup)
+    public void Setup(string elementalName)
+    {
+        //handle color outline
+
+        name = elementalName;
+        nameText.text = elementalName;
+
+        ElementalInfo info = Resources.Load<ElementalInfo>("ElementalInfos/" + elementalName);
+        if (info.speed == ElementalInfo.Speed.fast)
+            speedColorBackground.color = StaticLibrary.gameColors["fastHealthBack"];
+    }
 }

@@ -15,6 +15,20 @@ public class Spell : NetworkBehaviour
     [SerializeField] private TMP_Text timeScaleText;
     [SerializeField] private TMP_Text nameText;
 
+    //called by Teambuilder (temporarily, will eventually be called by setup)
+    public void Setup(string spellName)
+    {
+        name = spellName;
+        nameText.text = spellName;
+
+        SpellInfo info = Resources.Load<SpellInfo>("SpellInfos/" + spellName);
+
+        Color color = StaticLibrary.gameColors[info.elementColor.ToString()];
+        image.color = new Color(color.r/255, color.g/255, color.b/255, 1);
+
+        timeScaleText.text = info.timeScale;
+    }
+
     public void OnClick()
     {
 
