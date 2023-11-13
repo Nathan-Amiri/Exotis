@@ -13,6 +13,11 @@ public class Setup : NetworkBehaviour
     [SerializeField] private List<Elemental> guestSceneElementals = new();
     [SerializeField] private List<Spell> guestSceneSpells = new();
 
+    [SerializeField] private List<Elemental> sceneElementals = new();
+    [SerializeField] private List<Spell> sceneSpells = new();
+
+    [SerializeField] private List<NetworkObject> guestElementalNetworkObjects = new();
+
     [SerializeField] private Teambuilder teambuilder;
 
     public delegate void GuestFlipAction();
@@ -21,39 +26,50 @@ public class Setup : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsServer)
-            BothConnectedServerRpc();
+            GuestConnectedServerRpc();
     }
 
     [ServerRpc (RequireOwnership = false)]
-    public void BothConnectedServerRpc()
+    public void GuestConnectedServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        BothConnectedClientRpc();
+        //make guest the owner of their Elementals
+        foreach (NetworkObject networkObject in guestElementalNetworkObjects)
+            networkObject.ChangeOwnership(serverRpcParams.Receive.SenderClientId);        
+
+        SetUpTeamsClientRpc();
     }
 
     [ClientRpc]
-    public void BothConnectedClientRpc()
+    public void SetUpTeamsClientRpc()
     {
+        //flip before setting up so Elemental can set status correctly
         if (!IsServer)
             GuestFlip?.Invoke();
 
-        List<Elemental> sceneElementals;
-        List<Spell> sceneSpells;
+        //List<Elemental> sceneElementals;
+        //List<Spell> sceneSpells;
 
-        if (IsServer)
-        {
-            sceneElementals = hostSceneElementals;
-            sceneSpells = hostSceneSpells;
-        }
-        else
-        {
-            sceneElementals = guestSceneElementals;
-            sceneSpells = guestSceneSpells;
-        }
+        //if (IsServer)
+        //{
+        //    sceneElementals = hostSceneElementals;
+        //    sceneSpells = hostSceneSpells;
+        //}
+        //else
+        //{
+        //    sceneElementals = guestSceneElementals;
+        //    sceneSpells = guestSceneSpells;
+        //}
 
-        for (int i = 0; i < teambuilder.teamElementalNames.Count; i++)
-            sceneElementals[i].Setup(teambuilder.teamElementalNames[i]);
+        //for (int i = 0; i < 4; i++)
+        //{
+        //    hostSceneElementals[i].Setup(hostElementalNames[i]);
+        //    guestSceneElementals[i].Setup(guestElementalNames[i]);
+        //}
 
-        for (int i = 0; i < teambuilder.teamSpellNames.Count; i++)
-            sceneSpells[i].Setup(teambuilder.teamSpellNames[i]);
+        //for (int i = 0; i < 12; i++)
+        //{
+        //    hostSceneSpells[i].Setup(hostSpellNames[i]);
+        //    guestSceneSpells[i].Setup(guestSpellNames[i]);
+        //}
     }
 }
