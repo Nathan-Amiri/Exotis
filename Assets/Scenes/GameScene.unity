@@ -9048,16 +9048,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6161256475bc29243bb91134af42b609, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneElementals:
+  hostSceneElementals:
   - {fileID: 8136956925640811516}
   - {fileID: 1795908584}
   - {fileID: 1332425096}
   - {fileID: 1496840373}
-  - {fileID: 423872288}
-  - {fileID: 85867609}
-  - {fileID: 284134892}
-  - {fileID: 1449218179}
-  sceneSpells:
+  hostSceneSpells:
   - {fileID: 11210914}
   - {fileID: 613423607}
   - {fileID: 1452954704}
@@ -9070,6 +9066,12 @@ MonoBehaviour:
   - {fileID: 717917749}
   - {fileID: 157597648}
   - {fileID: 1332081096}
+  guestSceneElementals:
+  - {fileID: 423872288}
+  - {fileID: 85867609}
+  - {fileID: 284134892}
+  - {fileID: 1449218179}
+  guestSceneSpells:
   - {fileID: 1511879220}
   - {fileID: 1852524978}
   - {fileID: 1668993494}

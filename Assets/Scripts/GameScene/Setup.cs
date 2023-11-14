@@ -13,9 +13,6 @@ public class Setup : NetworkBehaviour
     [SerializeField] private List<Elemental> guestSceneElementals = new();
     [SerializeField] private List<Spell> guestSceneSpells = new();
 
-    [SerializeField] private List<Elemental> sceneElementals = new();
-    [SerializeField] private List<Spell> sceneSpells = new();
-
     [SerializeField] private List<NetworkObject> guestElementalNetworkObjects = new();
 
     [SerializeField] private Teambuilder teambuilder;
@@ -25,51 +22,50 @@ public class Setup : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsServer)
-            GuestConnectedServerRpc();
+        if (IsServer) return;
+
+        //get guest's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
+        string[] elementals = teambuilder.teamElementalNames.ToArray();
+        StringContainer[] elementalStringContainers = StringContainerConverter.ContainStrings(elementals);
+        string[] spells = teambuilder.teamSpellNames.ToArray();
+        StringContainer[] spellStringContainers = StringContainerConverter.ContainStrings(spells);
+
+        GuestConnectedServerRpc(elementalStringContainers, spellStringContainers);
     }
 
     [ServerRpc (RequireOwnership = false)]
-    public void GuestConnectedServerRpc(ServerRpcParams serverRpcParams = default)
+    public void GuestConnectedServerRpc(StringContainer[] guestElementalNames, StringContainer[] guestSpellNames, ServerRpcParams serverRpcParams = default)
     {
         //make guest the owner of their Elementals
         foreach (NetworkObject networkObject in guestElementalNetworkObjects)
-            networkObject.ChangeOwnership(serverRpcParams.Receive.SenderClientId);        
+            networkObject.ChangeOwnership(serverRpcParams.Receive.SenderClientId);
 
-        SetUpTeamsClientRpc();
+        //get host's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
+        string[] hostElementalNames = teambuilder.teamElementalNames.ToArray();
+        StringContainer[] elementalStringContainers = StringContainerConverter.ContainStrings(hostElementalNames);
+        string[] hostSpellNames = teambuilder.teamSpellNames.ToArray();
+        StringContainer[] spellStringContainers = StringContainerConverter.ContainStrings(hostSpellNames);
+
+        SetUpTeamsClientRpc(elementalStringContainers, spellStringContainers, guestElementalNames, guestSpellNames);
     }
 
     [ClientRpc]
-    public void SetUpTeamsClientRpc()
+    public void SetUpTeamsClientRpc(StringContainer[] hostElementalNames, StringContainer[] hostSpellNames, StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
     {
-        //flip before setting up so Elemental can set status correctly
+        //flip before Elemental.Setup so Elemental can set status correctly
         if (!IsServer)
             GuestFlip?.Invoke();
 
-        //List<Elemental> sceneElementals;
-        //List<Spell> sceneSpells;
+        for (int i = 0; i < 4; i++)
+        {
+            hostSceneElementals[i].Setup(hostElementalNames[i].containedString);
+            guestSceneElementals[i].Setup(guestElementalNames[i].containedString);
+        }
 
-        //if (IsServer)
-        //{
-        //    sceneElementals = hostSceneElementals;
-        //    sceneSpells = hostSceneSpells;
-        //}
-        //else
-        //{
-        //    sceneElementals = guestSceneElementals;
-        //    sceneSpells = guestSceneSpells;
-        //}
-
-        //for (int i = 0; i < 4; i++)
-        //{
-        //    hostSceneElementals[i].Setup(hostElementalNames[i]);
-        //    guestSceneElementals[i].Setup(guestElementalNames[i]);
-        //}
-
-        //for (int i = 0; i < 12; i++)
-        //{
-        //    hostSceneSpells[i].Setup(hostSpellNames[i]);
-        //    guestSceneSpells[i].Setup(guestSpellNames[i]);
-        //}
+        for (int i = 0; i < 12; i++)
+        {
+            hostSceneSpells[i].Setup(hostSpellNames[i].containedString);
+            guestSceneSpells[i].Setup(guestSpellNames[i].containedString);
+        }
     }
 }
