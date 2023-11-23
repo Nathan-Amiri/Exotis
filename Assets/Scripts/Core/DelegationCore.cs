@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,13 +16,28 @@ public class DelegationCore : MonoBehaviour
     //assigned in inspector:
     [SerializeField] private RelayCore relayCore;
 
-    public enum DelegationType { RoundStartOrEnd, TimeScale, Counter, Repopulate, Immediate} //combine roundstartorend and timescale? Don't redo what clock already does!
+    public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Immediate}
 
     //dynamic:
-    private DelegationType delegationType;
+    private DelegationScenario delegationScenario;
 
-    public void RequestDelegation(DelegationType newDelegationType, bool passAvailable = true) //offer player an action
+    public delegate void NewDelegationAction(DelegationScenario scenario);
+    public static event NewDelegationAction NewDelegation;
+
+    public void RequestDelegation(DelegationScenario newDelegationScenario)
     {
+        delegationScenario = newDelegationScenario;
 
+        NewDelegation?.Invoke(delegationScenario);
     }
+
+    public void SelectAction(IDeclarable declaredAction)
+    {
+        if (declaredAction.IsTargeted)
+            Debug.Log("Is Targeted");
+
+        //possible next steps: cancel, submit, target, fail, and misc (rechex, potion/frenzy)
+    }
+
+    //handle repopulation separately and manually in this class
 }

@@ -116,7 +116,7 @@
 32 Unicorn 5f Frost/Jewel
 	Adorn "When I cast a non-damaging Spell, I become Armored this round."
 33 Witch 6m Shadow/Venom
-	Torment "At the end of each round, I can deal 1 to any Stunned Elementals."
+	Deceive "At counter speed, I can target an ally. (even one not in play) If the spell I am countering deals damage to me, the damage redirects to the target."
 34 Shaman 6m Jewel/Shadow
 	Mystic Arts "At any time except counter speed, I can become Concealed until the end of next round. Despite being Concealed, I can end this effect early at any time."
 35 Basilisk 6m Venom/Jewel
@@ -143,6 +143,6 @@ Stunned "I can’t cast Spells.
 Slowed "I’m slower than non-slowed Elementals."
 Trapped "I cannot Swap.
 	(this effect overrides any Spell/Trait effects)"
-Poisoned "I take 1 damage at the end of each round.
+Poisoned "If I am in play at the end of a round, I take 1 damage.
 	(I am not damaged by a certain Elemental, merely by the poison itself)"
 Weakened "My damaging Spells deal -1 damage to all targets."

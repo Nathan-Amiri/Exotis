@@ -31,6 +31,8 @@ public class Elemental : NetworkBehaviour
 
         ElementalInfo info = Resources.Load<ElementalInfo>("ElementalInfos/" + elementalName);
 
+        //call trait setup passing in necessary info
+
         if (info.speed == ElementalInfo.Speed.fast)
         {
             speedColorBackground.color = StaticLibrary.gameColors["fastHealthBack"];
@@ -46,8 +48,6 @@ public class Elemental : NetworkBehaviour
             speedColorBackground.color = StaticLibrary.gameColors["slowHealthBack"];
             healthText.text = "7";
         }
-
-        Debug.Log(name + ", " + IsOwner);
 
         //check Elemental's y position (if IsOwner, is on the bottom of the screen) and status position
         //to ensure that status is on the correct side

@@ -16,6 +16,7 @@ public class Setup : NetworkBehaviour
     [SerializeField] private List<NetworkObject> guestElementalNetworkObjects = new();
 
     [SerializeField] private Teambuilder teambuilder;
+    [SerializeField] private DelegationCore delegationCore;
 
     public delegate void GuestFlipAction();
     public static event GuestFlipAction GuestFlip;
@@ -67,5 +68,8 @@ public class Setup : NetworkBehaviour
             hostSceneSpells[i].Setup(hostSpellNames[i].containedString);
             guestSceneSpells[i].Setup(guestSpellNames[i].containedString);
         }
+
+        //delegationCore.RequestDelegation(DelegationCore.DelegationType.RoundStartOrEnd);
+        delegationCore.RequestDelegation(DelegationCore.DelegationType.TimeScale);
     }
 }
