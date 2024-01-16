@@ -858,6 +858,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3900788759901979431, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -215
+      objectReference: {fileID: 0}
     - target: {fileID: 4326062882031097533, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -3414,6 +3418,14 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 07998abf34c37794b95eaa280359030d, type: 3}
+    - target: {fileID: 3900788759901979431, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -215
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239114911649857245, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4326062882031097533, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -9090,6 +9102,7 @@ MonoBehaviour:
   - {fileID: 1166752870}
   - {fileID: 1454440297}
   teambuilder: {fileID: 1073855615}
+  delegationCore: {fileID: 1386828396}
 --- !u!114 &1265245691
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class StatusIcon : MonoBehaviour
 {
-    //assigned in prefab
+    // Assigned in prefab
     [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text initialsText;
 

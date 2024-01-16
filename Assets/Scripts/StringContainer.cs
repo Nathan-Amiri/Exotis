@@ -14,7 +14,7 @@ public static class StringContainerConverter
 {
     public static StringContainer[] ContainStrings(string[] array)
     {
-        //place each of an array's strings into a serializable container, then return the array of containers
+        // Place each of an array's strings into a serializable container, then return the array of containers
 
         StringContainer[] stringContainers = new StringContainer[array.Length];
         for (int i = 0; i < stringContainers.Length; i++)

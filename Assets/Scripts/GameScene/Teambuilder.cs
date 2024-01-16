@@ -7,14 +7,14 @@ using Unity.Netcode;
 
 public class Teambuilder : MonoBehaviour
 {
-    //temporary class for testing
+    // Temporary class for testing
 
     [SerializeField] private GameObject teambuilderCanvas;
 
     [SerializeField] private List<TMP_InputField> elementalInputFields = new();
     [SerializeField] private List<TMP_InputField> spellInputFields = new();
 
-    //read by setup:
+    // Read by setup:
     [NonSerialized] public List<string> teamElementalNames = new();
     [NonSerialized] public List<string> teamSpellNames = new();
 

@@ -5,7 +5,7 @@ using Unity.Netcode;
 
 public class Setup : NetworkBehaviour
 {
-    //temporary class for testing
+    // Temporary class for testing
 
     [SerializeField] private List<Elemental> hostSceneElementals = new();
     [SerializeField] private List<Spell> hostSceneSpells = new();
@@ -25,7 +25,7 @@ public class Setup : NetworkBehaviour
     {
         if (IsServer) return;
 
-        //get guest's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
+        // Get guest's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
         string[] elementals = teambuilder.teamElementalNames.ToArray();
         StringContainer[] elementalStringContainers = StringContainerConverter.ContainStrings(elementals);
         string[] spells = teambuilder.teamSpellNames.ToArray();
@@ -37,11 +37,11 @@ public class Setup : NetworkBehaviour
     [ServerRpc (RequireOwnership = false)]
     public void GuestConnectedServerRpc(StringContainer[] guestElementalNames, StringContainer[] guestSpellNames, ServerRpcParams serverRpcParams = default)
     {
-        //make guest the owner of their Elementals
+        // Make guest the owner of their Elementals
         foreach (NetworkObject networkObject in guestElementalNetworkObjects)
             networkObject.ChangeOwnership(serverRpcParams.Receive.SenderClientId);
 
-        //get host's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
+        // Get host's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
         string[] hostElementalNames = teambuilder.teamElementalNames.ToArray();
         StringContainer[] elementalStringContainers = StringContainerConverter.ContainStrings(hostElementalNames);
         string[] hostSpellNames = teambuilder.teamSpellNames.ToArray();
@@ -53,7 +53,7 @@ public class Setup : NetworkBehaviour
     [ClientRpc]
     public void SetUpTeamsClientRpc(StringContainer[] hostElementalNames, StringContainer[] hostSpellNames, StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
     {
-        //flip before Elemental.Setup so Elemental can set status correctly
+        // Flip before Elemental.Setup so Elemental can set status correctly
         if (!IsServer)
             GuestFlip?.Invoke();
 
@@ -69,7 +69,6 @@ public class Setup : NetworkBehaviour
             guestSceneSpells[i].Setup(guestSpellNames[i].containedString);
         }
 
-        //delegationCore.RequestDelegation(DelegationCore.DelegationType.RoundStartOrEnd);
-        delegationCore.RequestDelegation(DelegationCore.DelegationType.TimeScale);
+        delegationCore.RequestDelegation(DelegationCore.DelegationScenario.TimeScale);
     }
 }

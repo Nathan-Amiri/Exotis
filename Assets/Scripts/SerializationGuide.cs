@@ -21,18 +21,18 @@ public class SerializationGuide : NetworkBehaviour
         NetworkManager.StartHost();
     }
 
-    //1 & 5
+    // 1 & 5
     [SerializeField] private TestBehaviour assignedTestBehaviour;
 
-    //3 & 5
+    // 3 & 5
     private readonly string[] myStrings = new string[] { "banana", "apple", "strawberry" };
 
     public override void OnNetworkSpawn()
     {
-        //1
+        // 1
         BehaviourServerRpc(assignedTestBehaviour);
 
-        //2
+        // 2
         NetworkBehaviourReference[] testBehaviours = new NetworkBehaviourReference[]
         {
             assignedTestBehaviour,
@@ -40,7 +40,7 @@ public class SerializationGuide : NetworkBehaviour
         };
         BehaviourArrayServerRpc(testBehaviours);
 
-        //3
+        // 3
         StringContainer[] step3StringContainers = new StringContainer[myStrings.Length];
         for (int i = 0; i < step3StringContainers.Length; i++)
         {
@@ -51,14 +51,14 @@ public class SerializationGuide : NetworkBehaviour
         }
         StringArrayServerRpc(step3StringContainers);
 
-        //4
+        // 4
         SimpleStruct simpleStruct = new()
         {
             myInt = 57
         };
         SimpleStructServerRpc(simpleStruct);
 
-        //5
+        // 5
         StringContainer[] step5StringContainers = new StringContainer[myStrings.Length];
         for (int i = 0; i < step5StringContainers.Length; i++)
         {
@@ -75,7 +75,7 @@ public class SerializationGuide : NetworkBehaviour
         ComplexStructServerRpc(complexStruct);
     }
 
-    //1
+    // 1
     [ServerRpc]
     private void BehaviourServerRpc(NetworkBehaviourReference reference)
     {
@@ -83,7 +83,7 @@ public class SerializationGuide : NetworkBehaviour
         Debug.Log(testBehaviour.testVariable);
     }
 
-    //2
+    // 2
     [ServerRpc]
     private void BehaviourArrayServerRpc(NetworkBehaviourReference[] references)
     {
@@ -94,7 +94,7 @@ public class SerializationGuide : NetworkBehaviour
         }
     }
 
-    //3
+    // 3
     [ServerRpc]
     private void StringArrayServerRpc(StringContainer[] newStringContainers)
     {
@@ -102,14 +102,14 @@ public class SerializationGuide : NetworkBehaviour
             Debug.Log(stringContainer.containedString);
     }
 
-    //4
+    // 4
     [ServerRpc]
     private void SimpleStructServerRpc(SimpleStruct simpleStruct)
     {
         Debug.Log(simpleStruct.myInt);
     }
 
-    //5
+    // 5
     [ServerRpc]
     private void ComplexStructServerRpc(ComplexStruct complexStruct)
     {
@@ -121,7 +121,7 @@ public class SerializationGuide : NetworkBehaviour
     }
 }
 
-//3 & 5
+// 3 & 5
 public class StringContainer : INetworkSerializable
 {
     public string containedString;
@@ -134,7 +134,7 @@ public class StringContainer : INetworkSerializable
     }
 }
 
-//4
+// 4
 public struct SimpleStruct : INetworkSerializable
 {
     public int myInt;
@@ -145,7 +145,7 @@ public struct SimpleStruct : INetworkSerializable
     }
 }
 
-//5
+// 5
 public struct ComplexStruct : INetworkSerializable
 {
     public NetworkBehaviourReference testBehaviour;

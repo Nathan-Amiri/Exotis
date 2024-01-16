@@ -7,10 +7,10 @@ using UnityEngine.UI;
 
 public class Spell : NetworkBehaviour
 {
-    //Inherits from NetworkBehaviour to support netcode serialization
-    //(this class does not contain networking logic)
+    // Inherits from NetworkBehaviour to support netcode serialization
+    // (this class does not contain networking logic)
 
-    //assigned in prefab:
+    // Assigned in prefab:
     [SerializeField] private Image image;
     [SerializeField] private TMP_Text timeScaleText;
     [SerializeField] private TMP_Text nameText;
@@ -22,14 +22,14 @@ public class Spell : NetworkBehaviour
 
     private void OnEnable()
     {
-        DelegationCore.UpdateInteractable += UpdateInteractable;
+        // DelegationCore.UpdateInteractable += UpdateInteractable;
     }
     private void OnDisable()
     {
-        DelegationCore.UpdateInteractable -= UpdateInteractable;
+        //DelegationCore.UpdateInteractable -= UpdateInteractable;
     }
 
-    //called by Teambuilder (temporarily, will eventually be called by setup)
+    // Called by Teambuilder (temporarily, will eventually be called by setup)
     public void Setup(string spellName)
     {
         name = spellName;
