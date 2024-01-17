@@ -22,11 +22,13 @@ public class Spell : NetworkBehaviour
 
     private void OnEnable()
     {
-        // DelegationCore.UpdateInteractable += UpdateInteractable;
+        DelegationCore.NewDelegation += NewDelegation;
+        DelegationCore.TurnAllUninteractable += TurnUninteractable;
     }
     private void OnDisable()
     {
-        //DelegationCore.UpdateInteractable -= UpdateInteractable;
+        DelegationCore.NewDelegation -= NewDelegation;
+        DelegationCore.TurnAllUninteractable -= TurnUninteractable;
     }
 
     // Called by Teambuilder (temporarily, will eventually be called by setup)
@@ -54,18 +56,13 @@ public class Spell : NetworkBehaviour
 
     }
 
-    private void UpdateInteractable(bool turnUninteractable = false)
+    private void NewDelegation(DelegationCore.DelegationScenario scenario)
     {
-        //if (turnUninteractable)
-        //{
-        //    button.interactable = false;
-        //    return;
-        //}
 
-        //if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-        //{
-        //    if (isWild || Clock.CurrentTimeScale >= timeScale)
-        //        button.interactable = true;
-        //}
+    }
+
+    private void TurnUninteractable()
+    {
+        button.interactable = false;
     }
 }

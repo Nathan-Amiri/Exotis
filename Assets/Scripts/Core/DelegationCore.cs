@@ -24,11 +24,15 @@ public class DelegationCore : MonoBehaviour
     public delegate void NewDelegationAction(DelegationScenario scenario);
     public static event NewDelegationAction NewDelegation;
 
+    public delegate void TurnAllUninteractableAction();
+    public static event TurnAllUninteractableAction TurnAllUninteractable;
+
     public void RequestDelegation(DelegationScenario newDelegationScenario)
     {
         delegationScenario = newDelegationScenario;
 
         NewDelegation?.Invoke(delegationScenario);
+        //now spells traits etc. turn interactable based on the scenario and delegation core awaits the player to select an action
     }
 
     public void SelectAction(IDeclarable declaredAction)
@@ -37,6 +41,7 @@ public class DelegationCore : MonoBehaviour
             Debug.Log("Is Targeted");
 
         // Possible next steps: cancel, submit, target, fail, and misc (rechex, potion/frenzy)
+        //use turn all uninteractable when needed. Might replace with 'Reset'
     }
 
     // Handle repopulation separately and manually in this class
