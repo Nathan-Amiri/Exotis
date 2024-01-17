@@ -39,7 +39,7 @@
 28 Fanged Bite 3 "I deal 2 to an Elemental. It is Poisoned next round."
 29 Infect ? "I Poison an Elemental for the rest of the game."
 30 Poison Cloud 5 "This round, when I am targeted by an enemy Spell, I deal 1 to the Spell’s caster after the Spell has occurred. At the end of this round, I can deal 2 to an Elemental."
-31 Bile C "I deal 1 to any Elementals."
+31 Bile 4 "I deal 1 to an Elemental. This Spell can be used at counter speed. This Spell can't be countered."
 
 32 Sparkle 3 "I deal 2 to an Elemental. It is Weakened next round."
 33 Allure C "If the Spell I am countering is targeting my ally, it redirects to me instead."
@@ -76,7 +76,7 @@
 12 Hellhound 6m Shadow/Flame
 	Berserk "At the beginning of each round, I can deal 1 to my ally and gain a Potion."
 13 Chimera 5f Flame/Venom
-	Sizzle "My damaging Spells deal +1 damage to Poisoned targets."
+	Sizzle "If I’m casting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell. I can’t use this effect next round."
 14 Genie 6m Jewel/Flame
 	Best Wishes "Once per game, immediately after casting a non-damaging Spell, I can cast a different non-damaging Spell, regardless of its timescale."
 15 Roc 6m Wind/Earth
