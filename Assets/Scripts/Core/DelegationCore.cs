@@ -16,32 +16,32 @@ public class DelegationCore : MonoBehaviour
     // Assigned in inspector:
     [SerializeField] private RelayCore relayCore;
 
-    public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Immediate}
+    public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Immediate, Reset}
 
     // Dynamic:
     private DelegationScenario delegationScenario;
 
-    public delegate void NewDelegationAction(DelegationScenario scenario);
-    public static event NewDelegationAction NewDelegation;
+    public delegate void NewActionNeeded(DelegationScenario scenario);
+    public static event NewActionNeeded NewAction;
 
     public delegate void TurnAllUninteractableAction();
     public static event TurnAllUninteractableAction TurnAllUninteractable;
 
+    // Called by ExecutionCore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
     public void RequestDelegation(DelegationScenario newDelegationScenario)
     {
         delegationScenario = newDelegationScenario;
 
-        NewDelegation?.Invoke(delegationScenario);
-        //now spells traits etc. turn interactable based on the scenario and delegation core awaits the player to select an action
+        NewAction?.Invoke(delegationScenario);
+
+        // DelegationAction buttons turn interactable when appropriate. DelegationCore waits for an action to be selected
+        // (ECore will not request a delegation if no non-pass action is available)
     }
 
-    public void SelectAction(IDeclarable declaredAction)
+    public void SelectAction(IDelegationAction action)
     {
-        if (declaredAction.IsTargeted)
+        if (action.IsTargeted)
             Debug.Log("Is Targeted");
-
-        // Possible next steps: cancel, submit, target, fail, and misc (rechex, potion/frenzy)
-        //use turn all uninteractable when needed. Might replace with 'Reset'
     }
 
     // Handle repopulation separately and manually in this class

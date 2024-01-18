@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Spell : NetworkBehaviour
+public class Spell : NetworkBehaviour, IDelegationAction
 {
     // Inherits from NetworkBehaviour to support netcode serialization
     // (this class does not contain networking logic)
@@ -20,15 +20,16 @@ public class Spell : NetworkBehaviour
     private bool isWild;
     private int timeScale;
 
+    // IDelegationAction fields
+    public bool IsTargeted { get; private set; }
+
     private void OnEnable()
     {
-        DelegationCore.NewDelegation += NewDelegation;
-        DelegationCore.TurnAllUninteractable += TurnUninteractable;
+        DelegationCore.NewAction += OnNewActionNeeded;
     }
     private void OnDisable()
     {
-        DelegationCore.NewDelegation -= NewDelegation;
-        DelegationCore.TurnAllUninteractable -= TurnUninteractable;
+        DelegationCore.NewAction -= OnNewActionNeeded;
     }
 
     // Called by Teambuilder (temporarily, will eventually be called by setup)
@@ -51,18 +52,13 @@ public class Spell : NetworkBehaviour
             timeScale = info.timeScale;
     }
 
+    public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
+    {
+        
+    }
+
     public void OnClick()
     {
 
-    }
-
-    private void NewDelegation(DelegationCore.DelegationScenario scenario)
-    {
-
-    }
-
-    private void TurnUninteractable()
-    {
-        button.interactable = false;
     }
 }
