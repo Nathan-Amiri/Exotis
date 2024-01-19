@@ -5,5 +5,5 @@ using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
-
+    //I NEED A WAY TO TRIGGER AUTOMATIC DRAWS
 }

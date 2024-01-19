@@ -67,9 +67,9 @@ GameObject:
   - component: {fileID: 3417817861089542179}
   - component: {fileID: 1995419079310748871}
   - component: {fileID: 2346368230466658589}
-  - component: {fileID: 6725076354500817308}
+  - component: {fileID: 2637061804302580362}
   m_Layer: 5
-  m_Name: ItemButton (1)
+  m_Name: Gem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -192,8 +192,8 @@ MonoBehaviour:
   onClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6725076354500817308}
-        m_TargetAssemblyTypeName: Item, Assembly-CSharp
+      - m_Target: {fileID: 2637061804302580362}
+        m_TargetAssemblyTypeName: Gem, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
@@ -204,7 +204,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &6725076354500817308
+--- !u!114 &2637061804302580362
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -213,11 +213,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 606456309603647182}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eff631d466d336d4ba990223b3638aec, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a15831662b0ac1418fe96af7ab13f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: 3417817861089542179}
   button: {fileID: 1995419079310748871}
+  delegationCore: {fileID: 0}
 --- !u!1 &621133693837942507
 GameObject:
   m_ObjectHideFlags: 0
@@ -648,6 +648,7 @@ MonoBehaviour:
   healthText: {fileID: 4992702381518349292}
   icon: {fileID: 4617789464618039637}
   targetButton: {fileID: 4613092479266155252}
+  trait: {fileID: 0}
 --- !u!114 &4609456925127082438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1189,6 +1190,8 @@ MonoBehaviour:
   image: {fileID: 9147209889962173083}
   timeScaleText: {fileID: 5440332039977804964}
   nameText: {fileID: 152563077750856118}
+  button: {fileID: 0}
+  delegationCore: {fileID: 0}
 --- !u!114 &8892323734768867851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1588,6 +1591,8 @@ MonoBehaviour:
   image: {fileID: 4811597956001744368}
   timeScaleText: {fileID: 5128730927006716883}
   nameText: {fileID: 7979621165414282829}
+  button: {fileID: 0}
+  delegationCore: {fileID: 0}
 --- !u!114 &5935597135351890220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3139,9 +3144,9 @@ GameObject:
   - component: {fileID: 5789197995900348661}
   - component: {fileID: 687010451299579648}
   - component: {fileID: 7062956468665617715}
-  - component: {fileID: 7275365079566328992}
+  - component: {fileID: 702550637351455029}
   m_Layer: 5
-  m_Name: ItemButton
+  m_Name: Spark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3264,8 +3269,8 @@ MonoBehaviour:
   onClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7275365079566328992}
-        m_TargetAssemblyTypeName: Item, Assembly-CSharp
+      - m_Target: {fileID: 702550637351455029}
+        m_TargetAssemblyTypeName: Spark, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
@@ -3276,7 +3281,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &7275365079566328992
+--- !u!114 &702550637351455029
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3285,11 +3290,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4405989215809878331}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eff631d466d336d4ba990223b3638aec, type: 3}
+  m_Script: {fileID: 11500000, guid: 7a6798c06f0f0ab4b9510dc76b63ae98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: 5789197995900348661}
   button: {fileID: 687010451299579648}
+  delegationCore: {fileID: 0}
 --- !u!1 &4467650097784326648
 GameObject:
   m_ObjectHideFlags: 0
@@ -4151,6 +4156,8 @@ MonoBehaviour:
   image: {fileID: 4448591900768938786}
   timeScaleText: {fileID: 5218900009966536189}
   nameText: {fileID: 7804811815993715988}
+  button: {fileID: 0}
+  delegationCore: {fileID: 0}
 --- !u!114 &1974966559459511743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4628,6 +4635,8 @@ MonoBehaviour:
   image: {fileID: 8638896162105076252}
   timeScaleText: {fileID: 8061952287583240063}
   nameText: {fileID: 2529912421368529097}
+  button: {fileID: 0}
+  delegationCore: {fileID: 0}
 --- !u!114 &5542399757140415611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5918,9 +5927,8 @@ GameObject:
   - component: {fileID: 5155456159478284811}
   - component: {fileID: 566375472851582722}
   - component: {fileID: 6504332319997921322}
-  - component: {fileID: 8294629237159056180}
   m_Layer: 5
-  m_Name: ItemButton (2)
+  m_Name: Potion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6043,7 +6051,7 @@ MonoBehaviour:
   onClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8294629237159056180}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Item, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
@@ -6055,20 +6063,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &8294629237159056180
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8667289734114353413}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eff631d466d336d4ba990223b3638aec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  image: {fileID: 5155456159478284811}
-  button: {fileID: 566375472851582722}
 --- !u!1 &8878731320631455544
 GameObject:
   m_ObjectHideFlags: 0

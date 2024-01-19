@@ -39,7 +39,7 @@
 28 Fanged Bite 3 "I deal 2 to an Elemental. It is Poisoned next round."
 29 Infect ? "I Poison an Elemental for the rest of the game."
 30 Poison Cloud 5 "This round, when I am targeted by an enemy Spell, I deal 1 to the Spell’s caster after the Spell has occurred. At the end of this round, I can deal 2 to an Elemental."
-31 Bile 4 "I deal 1 to an Elemental. This Spell can be used at counter speed. This Spell can't be countered."
+31 Bile C "I deal 1 to an Elemental."
 
 32 Sparkle 3 "I deal 2 to an Elemental. It is Weakened next round."
 33 Allure C "If the Spell I am countering is targeting my ally, it redirects to me instead."
@@ -137,12 +137,12 @@ Wearied "I cannot perform any actions that would cause me to become Weary.
 Enraged "I am immune to damage."
 Armored "If I would take damage from an enemy spell, I take -1 damage and am no longer Armored."
 Concealed "I cannot act, and I’m immune to/unaffected by everything.
-	(I am immune to damage, can’t cast Spells or Traits, can’t Swap, and can’t be targeted)"
-Stunned "I can’t cast Spells.
+	(I am immune to damage, can’t cast Spells or Traits, can't use Items, can’t Swap, and can’t be targeted)"
+Stunned "I cannot cast Spells.
 	(I can still use Items, use my Trait, and Retreat)"
 Slowed "I’m slower than non-slowed Elementals."
 Trapped "I cannot Swap.
 	(this effect overrides any Spell/Trait effects)"
 Poisoned "If I am in play at the end of a round, I take 1 damage.
-	(I am not damaged by a certain Elemental, merely by the poison itself)"
+	(I am not damaged by a certain Elemental, merely by the Poison itself)"
 Weakened "My damaging Spells deal -1 damage to all targets."

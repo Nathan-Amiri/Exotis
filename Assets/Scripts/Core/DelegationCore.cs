@@ -16,7 +16,7 @@ public class DelegationCore : MonoBehaviour
     // Assigned in inspector:
     [SerializeField] private RelayCore relayCore;
 
-    public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Immediate, Reset}
+    public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Reset}
 
     // Dynamic:
     private DelegationScenario delegationScenario;
@@ -24,18 +24,24 @@ public class DelegationCore : MonoBehaviour
     public delegate void NewActionNeeded(DelegationScenario scenario);
     public static event NewActionNeeded NewAction;
 
-    public delegate void TurnAllUninteractableAction();
-    public static event TurnAllUninteractableAction TurnAllUninteractable;
-
-    // Called by ExecutionCore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
-    public void RequestDelegation(DelegationScenario newDelegationScenario)
+    // Called by ECore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
+    public void RequestDelegation(DelegationScenario newDelegationScenario, IDelegationAction immediateAction = null)
     {
+        //handle immediate manually without invoking NewAction
+
         delegationScenario = newDelegationScenario;
 
+        // NewAction is never 'Repopulate;' Repopulate is only requested by ECore, but is handled manually below
         NewAction?.Invoke(delegationScenario);
 
-        // DelegationAction buttons turn interactable when appropriate. DelegationCore waits for an action to be selected
+        // DelegationAction buttons turn interactable when appropriate. DCore waits for an action to be selected
         // (ECore will not request a delegation if no non-pass action is available)
+    }
+
+    // Called by ECore
+    public void RequestRepopulation()
+    {
+
     }
 
     public void SelectAction(IDelegationAction action)
@@ -43,6 +49,4 @@ public class DelegationCore : MonoBehaviour
         if (action.IsTargeted)
             Debug.Log("Is Targeted");
     }
-
-    // Handle repopulation separately and manually in this class
 }
