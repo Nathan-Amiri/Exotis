@@ -31,15 +31,15 @@ public class Setup : NetworkBehaviour
         string[] spells = teambuilder.teamSpellNames.ToArray();
         StringContainer[] spellStringContainers = StringContainerConverter.ContainStrings(spells);
 
-        GuestConnectedServerRpc(elementalStringContainers, spellStringContainers);
+        GuestConnectedRpc(elementalStringContainers, spellStringContainers);
     }
 
-    [ServerRpc (RequireOwnership = false)]
-    public void GuestConnectedServerRpc(StringContainer[] guestElementalNames, StringContainer[] guestSpellNames, ServerRpcParams serverRpcParams = default)
+    [Rpc(SendTo.Server)]
+    public void GuestConnectedRpc(StringContainer[] guestElementalNames, StringContainer[] guestSpellNames, RpcParams rpcParams = default)
     {
         // Make guest the owner of their Elementals
         foreach (NetworkObject networkObject in guestElementalNetworkObjects)
-            networkObject.ChangeOwnership(serverRpcParams.Receive.SenderClientId);
+            networkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
 
         // Get host's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
         string[] hostElementalNames = teambuilder.teamElementalNames.ToArray();
@@ -47,11 +47,11 @@ public class Setup : NetworkBehaviour
         string[] hostSpellNames = teambuilder.teamSpellNames.ToArray();
         StringContainer[] spellStringContainers = StringContainerConverter.ContainStrings(hostSpellNames);
 
-        SetUpTeamsClientRpc(elementalStringContainers, spellStringContainers, guestElementalNames, guestSpellNames);
+        SetUpTeamsRpc(elementalStringContainers, spellStringContainers, guestElementalNames, guestSpellNames);
     }
 
-    [ClientRpc]
-    public void SetUpTeamsClientRpc(StringContainer[] hostElementalNames, StringContainer[] hostSpellNames, StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
+    [Rpc(SendTo.ClientsAndHost)]
+    public void SetUpTeamsRpc(StringContainer[] hostElementalNames, StringContainer[] hostSpellNames, StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
     {
         // Flip before Elemental.Setup so Elemental can set status correctly
         if (!IsServer)

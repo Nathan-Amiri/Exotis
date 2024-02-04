@@ -28,7 +28,7 @@ public class Elemental : NetworkBehaviour
     public int MaxHealth { get; private set; }
     public int Health { get; private set; }
 
-    // Called by Teambuilder (temporarily, will eventually be called by setup)
+    // Called by Setup
     public void Setup(string elementalName)
     {
         // Handle color outline

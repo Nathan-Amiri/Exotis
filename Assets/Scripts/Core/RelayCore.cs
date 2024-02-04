@@ -16,14 +16,14 @@ public class RelayCore : NetworkBehaviour
     // Assigned in inspector:
     [SerializeField] private ExecutionCore executionCore;
 
-    [ServerRpc (RequireOwnership = false)]
-    public void RelayServerRpc(RelayPacket packet) // Called by DelegationCore
+    [Rpc(SendTo.Server)]
+    public void RelayToServerRpc(RelayPacket packet) // Called by DelegationCore
     {
-        RelayClientRpc(packet);
+        RelayToClientRpc(packet);
     }
 
-    [ClientRpc]
-    private void RelayClientRpc(RelayPacket packet)
+    [Rpc(SendTo.ClientsAndHost)]
+    private void RelayToClientRpc(RelayPacket packet)
     {
         executionCore.ReceivePacket(packet);
     }

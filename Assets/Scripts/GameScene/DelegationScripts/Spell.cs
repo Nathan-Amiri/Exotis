@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -51,10 +50,10 @@ public class Spell : NetworkBehaviour, IDelegationAction
 
         if (info.timeScale.ToString() == "C")
             isCounter = true;
-        else if (info.timeScale.ToString() == "W")
+        else if (info.timeScale.ToString() == "?")
             isWild = true;
         else
-            timeScale = info.timeScale;
+            timeScale = (int)char.GetNumericValue(info.timeScale);
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
@@ -76,6 +75,7 @@ public class Spell : NetworkBehaviour, IDelegationAction
 
     public void OnClick()
     {
+        Debug.Log("Onclick");
         delegationCore.SelectAction(this);
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked
