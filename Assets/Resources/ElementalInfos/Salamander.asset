@@ -13,3 +13,7 @@ MonoBehaviour:
   m_Name: Salamander
   m_EditorClassIdentifier: 
   speed: 0
+  usableRoundStart: 1
+  usableRoundEnd: 1
+  usableCounterSpeed: 0
+  usableDuringTimeScaleSpeeds: 1

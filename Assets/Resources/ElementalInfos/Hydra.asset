@@ -13,3 +13,7 @@ MonoBehaviour:
   m_Name: Hydra
   m_EditorClassIdentifier: 
   speed: 2
+  usableRoundStart: 0
+  usableRoundEnd: 1
+  usableCounterSpeed: 0
+  usableDuringTimeScaleSpeeds: 0

@@ -16,6 +16,8 @@ public class Gem : MonoBehaviour, IDelegationAction
 
     [NonSerialized] public Elemental elemental;
 
+    private bool hasGem;
+
     private void OnEnable()
     {
         DelegationCore.NewAction += OnNewActionNeeded;
@@ -25,15 +27,18 @@ public class Gem : MonoBehaviour, IDelegationAction
         DelegationCore.NewAction -= OnNewActionNeeded;
     }
 
+    private void Awake()
+    {
+        IsTargeted = true;
+    }
+
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
-        if (delegationScenario == DelegationCore.DelegationScenario.Reset)
-        {
-            button.interactable = true;
-            return;
-        }
+        if (!hasGem) return;
 
-        if (elemental.Health != elemental.MaxHealth)
+        if (delegationScenario == DelegationCore.DelegationScenario.Reset)
+            button.interactable = false;
+        else if (elemental.Health != elemental.MaxHealth)
             button.interactable = true;
     }
 

@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Spark : MonoBehaviour, IDelegationAction
+public class Retreat : MonoBehaviour, IDelegationAction
 {
     // Assigned in prefab:
     [SerializeField] private Button button;
@@ -13,7 +14,7 @@ public class Spark : MonoBehaviour, IDelegationAction
 
     public bool IsTargeted { get; private set; }
 
-    private bool hasSpark;
+    [NonSerialized] public Elemental elemental;
 
     private void OnEnable()
     {
@@ -31,20 +32,17 @@ public class Spark : MonoBehaviour, IDelegationAction
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
-        if (delegationScenario == DelegationCore.DelegationScenario.Reset)
-            button.interactable = false;
-        else if (delegationScenario == DelegationCore.DelegationScenario.Counter)
-            button.interactable = true;
+        //if elemental is trapped or first benched elemental isn't in slot assignment (no available swap), interactable = false, then return
+
+        button.interactable = delegationScenario != DelegationCore.DelegationScenario.Reset;
     }
 
     public void OnClick()
     {
-        if (!hasSpark)
-            return;
-
         delegationCore.SelectAction(this);
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked
         button.interactable = false;
     }
+
 }

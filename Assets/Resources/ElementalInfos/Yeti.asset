@@ -13,3 +13,7 @@ MonoBehaviour:
   m_Name: Yeti
   m_EditorClassIdentifier: 
   speed: 2
+  usableRoundStart: 1
+  usableRoundEnd: 1
+  usableCounterSpeed: 1
+  usableDuringTimeScaleSpeeds: 1

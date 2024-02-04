@@ -46,7 +46,6 @@ public class DelegationCore : MonoBehaviour
 
     public void SelectAction(IDelegationAction action)
     {
-        if (action.IsTargeted)
-            Debug.Log("Is Targeted");
+        Debug.Log("Is targeted? " + action.IsTargeted);
     }
 }

@@ -66,7 +66,6 @@ GameObject:
   - component: {fileID: 4224551666798485833}
   - component: {fileID: 3417817861089542179}
   - component: {fileID: 1995419079310748871}
-  - component: {fileID: 2346368230466658589}
   - component: {fileID: 2637061804302580362}
   m_Layer: 5
   m_Name: Gem
@@ -172,24 +171,9 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 3417817861089542179}
   m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &2346368230466658589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 606456309603647182}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2637061804302580362}
@@ -1034,7 +1018,6 @@ GameObject:
   - component: {fileID: 1969077306019816961}
   - component: {fileID: 9147209889962173083}
   - component: {fileID: 6006373699372451695}
-  - component: {fileID: 8867728796499936526}
   - component: {fileID: 746978815362249106}
   - component: {fileID: 8892323734768867851}
   m_Layer: 5
@@ -1143,24 +1126,9 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 9147209889962173083}
   m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &8867728796499936526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1880666954361974415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 746978815362249106}
@@ -1190,7 +1158,7 @@ MonoBehaviour:
   image: {fileID: 9147209889962173083}
   timeScaleText: {fileID: 5440332039977804964}
   nameText: {fileID: 152563077750856118}
-  button: {fileID: 0}
+  button: {fileID: 6006373699372451695}
   delegationCore: {fileID: 0}
 --- !u!114 &8892323734768867851
 MonoBehaviour:
@@ -1435,8 +1403,7 @@ GameObject:
   - component: {fileID: 5929323834982788738}
   - component: {fileID: 4811597956001744368}
   - component: {fileID: 3325593020697755665}
-  - component: {fileID: 1924876081287751658}
-  - component: {fileID: 4415139988847502157}
+  - component: {fileID: 1894539201454206837}
   - component: {fileID: 5935597135351890220}
   m_Layer: 5
   m_Name: TraitButton
@@ -1548,24 +1515,9 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4811597956001744368}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
---- !u!114 &1924876081287751658
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3127449500859301108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onClick:
-    m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4415139988847502157}
-        m_TargetAssemblyTypeName: Spell, Assembly-CSharp
+      - m_Target: {fileID: 1894539201454206837}
+        m_TargetAssemblyTypeName: Trait, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
         m_Arguments:
@@ -1576,7 +1528,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &4415139988847502157
+--- !u!114 &1894539201454206837
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1585,13 +1537,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3127449500859301108}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
+  m_Script: {fileID: 11500000, guid: f21a55ee1ff90154ea5b6ccf0962f91a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: 4811597956001744368}
-  timeScaleText: {fileID: 5128730927006716883}
-  nameText: {fileID: 7979621165414282829}
-  button: {fileID: 0}
+  button: {fileID: 3325593020697755665}
   delegationCore: {fileID: 0}
 --- !u!114 &5935597135351890220
 MonoBehaviour:
@@ -3143,7 +3092,6 @@ GameObject:
   - component: {fileID: 4440348223841050526}
   - component: {fileID: 5789197995900348661}
   - component: {fileID: 687010451299579648}
-  - component: {fileID: 7062956468665617715}
   - component: {fileID: 702550637351455029}
   m_Layer: 5
   m_Name: Spark
@@ -3249,24 +3197,9 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 5789197995900348661}
   m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &7062956468665617715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4405989215809878331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 702550637351455029}
@@ -3349,7 +3282,6 @@ GameObject:
   - component: {fileID: 7217182570202640242}
   - component: {fileID: 2868772388668648658}
   - component: {fileID: 4390679080903958386}
-  - component: {fileID: 8372457470664440599}
   m_Layer: 5
   m_Name: TargetButton
   m_TagString: Untagged
@@ -3454,24 +3386,9 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 2868772388668648658}
   m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &8372457470664440599
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4613092479266155252}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onClick:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &4772591784921166369
@@ -4000,7 +3917,6 @@ GameObject:
   - component: {fileID: 8699272634266766109}
   - component: {fileID: 4448591900768938786}
   - component: {fileID: 7893370039366900750}
-  - component: {fileID: 2577918743146144552}
   - component: {fileID: 5814517674153488385}
   - component: {fileID: 1974966559459511743}
   m_Layer: 5
@@ -4113,23 +4029,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4448591900768938786}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
---- !u!114 &2577918743146144552
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5450667707110579739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onClick:
-    m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5814517674153488385}
+      - m_Target: {fileID: 746978815362249106}
         m_TargetAssemblyTypeName: Spell, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
@@ -4156,7 +4057,7 @@ MonoBehaviour:
   image: {fileID: 4448591900768938786}
   timeScaleText: {fileID: 5218900009966536189}
   nameText: {fileID: 7804811815993715988}
-  button: {fileID: 0}
+  button: {fileID: 6006373699372451695}
   delegationCore: {fileID: 0}
 --- !u!114 &1974966559459511743
 MonoBehaviour:
@@ -4190,7 +4091,7 @@ GameObject:
   - component: {fileID: 4275207782282455661}
   - component: {fileID: 6328369989342399561}
   - component: {fileID: 848823463219368241}
-  - component: {fileID: 5477383892055452315}
+  - component: {fileID: 7552450330328619223}
   m_Layer: 5
   m_Name: RetreatButton
   m_TagString: Untagged
@@ -4295,12 +4196,24 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 6328369989342399561}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
---- !u!114 &5477383892055452315
+      m_Calls:
+      - m_Target: {fileID: 7552450330328619223}
+        m_TargetAssemblyTypeName: Retreat, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &7552450330328619223
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4309,12 +4222,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5715814106061368755}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
+  m_Script: {fileID: 11500000, guid: fec34635be5f6e840ac106a2dc8d0ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onClick:
-    m_PersistentCalls:
-      m_Calls: []
+  button: {fileID: 848823463219368241}
+  delegationCore: {fileID: 0}
 --- !u!1 &5819701459220182900
 GameObject:
   m_ObjectHideFlags: 0
@@ -4479,7 +4391,6 @@ GameObject:
   - component: {fileID: 5781613981377379550}
   - component: {fileID: 8638896162105076252}
   - component: {fileID: 5265503217003988670}
-  - component: {fileID: 3432474142495600668}
   - component: {fileID: 6134846885505851686}
   - component: {fileID: 5542399757140415611}
   m_Layer: 5
@@ -4588,24 +4499,9 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 8638896162105076252}
   m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &3432474142495600668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5890982857604281332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6134846885505851686}
@@ -4635,7 +4531,7 @@ MonoBehaviour:
   image: {fileID: 8638896162105076252}
   timeScaleText: {fileID: 8061952287583240063}
   nameText: {fileID: 2529912421368529097}
-  button: {fileID: 0}
+  button: {fileID: 5265503217003988670}
   delegationCore: {fileID: 0}
 --- !u!114 &5542399757140415611
 MonoBehaviour:
@@ -5926,7 +5822,6 @@ GameObject:
   - component: {fileID: 5741090546084324988}
   - component: {fileID: 5155456159478284811}
   - component: {fileID: 566375472851582722}
-  - component: {fileID: 6504332319997921322}
   m_Layer: 5
   m_Name: Potion
   m_TagString: Untagged
@@ -6031,38 +5926,11 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 5155456159478284811}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &6504332319997921322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8667289734114353413}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d52abdeb394836546a9d21babffff7fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Item, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &8878731320631455544
 GameObject:
   m_ObjectHideFlags: 0
