@@ -25,11 +25,6 @@ public class Retreat : MonoBehaviour, IDelegationAction
         DelegationCore.NewAction -= OnNewActionNeeded;
     }
 
-    private void Awake()
-    {
-        IsTargeted = true;
-    }
-
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
         //if elemental is trapped or first benched elemental isn't in slot assignment (no available swap), interactable = false, then return

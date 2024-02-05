@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using System;
-using Unity.Netcode;
 
 public class Teambuilder : MonoBehaviour
 {

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementColor: 0
   timeScale: 55
+  isTargeted: 1

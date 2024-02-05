@@ -18,6 +18,6 @@ public class GuestFlip : MonoBehaviour
 
     private void Flip()
     {
-        transform.position = new Vector2(transform.position.x, -transform.position.y);
+        transform.localPosition = new Vector2(transform.localPosition.x, -transform.localPosition.y);
     }
 }

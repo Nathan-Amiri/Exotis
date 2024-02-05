@@ -54,6 +54,8 @@ public class Spell : NetworkBehaviour, IDelegationAction
             isWild = true;
         else
             timeScale = (int)char.GetNumericValue(info.timeScale);
+
+        IsTargeted = info.isTargeted;
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
@@ -67,6 +69,7 @@ public class Spell : NetworkBehaviour, IDelegationAction
                 button.interactable = isCounter;
                 break;
             case DelegationCore.DelegationScenario.TimeScale:
+                if (isCounter) return;
                 button.interactable = isWild || Clock.CurrentTimeScale >= timeScale;
                 break;
             // If DelegationScenario is RoundStart or RoundEnd, do nothing

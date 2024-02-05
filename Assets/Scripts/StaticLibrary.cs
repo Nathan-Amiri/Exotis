@@ -29,7 +29,6 @@ public static class StaticLibrary
         { "pink", new(255, 0, 150, 255) }, // FF0096
         { "blue", new(125, 190, 255, 255) }, // 7DBEFF
 
-
         { "allyOutline", new(62, 165, 168, 255) }, // 3EA5A8
         { "enemyOutline", new(138, 46, 92, 255) }, // 8A2E5C
 

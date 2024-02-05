@@ -20,6 +20,7 @@ public class Elemental : NetworkBehaviour
     [SerializeField] private TMP_Text healthText;
     [SerializeField] private Image icon; // Set a to 150 when targeting
     [SerializeField] private GameObject targetButton;
+    [SerializeField] private Image retreatButton;
     
     // Assigned in Scene:
     [SerializeField] private Trait trait;
@@ -57,11 +58,6 @@ public class Elemental : NetworkBehaviour
             healthText.text = "7";
         }
 
-        // Check Elemental's y position (if IsOwner, is on the bottom of the screen) and status position
-        // to ensure that status is on the correct side
-        if (IsOwner != status.transform.localPosition.y > 0)
-            status.transform.localPosition *= new Vector2(1, -1);
-
         // If in slot 4 5 6 or 7, is benched
         if (SlotAssignment.GetSlot(this) > 3)
             ToggleBenched(true);
@@ -71,6 +67,8 @@ public class Elemental : NetworkBehaviour
         trait.usableRoundEnd = info.usableRoundEnd;
         trait.usableDuringTimeScaleSpeeds = info.usableDuringTimeScaleSpeeds;
         trait.usableCounterSpeed = info.usableCounterSpeed;
+
+        retreatButton.color = IsOwner ? StaticLibrary.gameColors["pink"] : StaticLibrary.gameColors["gray"];
     }
 
     public void ToggleBenched(bool benched)

@@ -798,6 +798,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 621133693837942507, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 702550637351455029, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -809,6 +813,10 @@ PrefabInstance:
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
       value: GuestElemental1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -826,6 +834,18 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 3270945686079438834, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900788759901979431, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -215
+      objectReference: {fileID: 0}
+    - target: {fileID: 5098283419360841771, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 843896935
@@ -850,6 +870,10 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 6884489858224398479, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7552450330328619223, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -2226,6 +2250,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 621133693837942507, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 702550637351455029, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -2237,6 +2265,10 @@ PrefabInstance:
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
       value: GuestElemental2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -2254,6 +2286,18 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 3270945686079438834, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900788759901979431, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -215
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239114911649857245, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 991382092
@@ -2278,6 +2322,10 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 6884489858224398479, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7552450330328619223, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -3025,6 +3073,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 621133693837942507, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 702550637351455029, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -3036,6 +3088,10 @@ PrefabInstance:
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
       value: GuestElemental0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -3053,6 +3109,14 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 3270945686079438834, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900788759901979431, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -215
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 345835420
@@ -3073,10 +3137,18 @@ PrefabInstance:
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3605062872
       objectReference: {fileID: 0}
+    - target: {fileID: 6114938859253517300, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 6884489858224398479, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7552450330328619223, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -9821,6 +9893,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 621133693837942507, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 702550637351455029, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -9832,6 +9908,10 @@ PrefabInstance:
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
       value: HostElemental2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -9849,6 +9929,14 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 3270945686079438834, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239114911649857245, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3015047411
@@ -9868,6 +9956,10 @@ PrefabInstance:
     - target: {fileID: 5935597135351890220, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3605062872
+      objectReference: {fileID: 0}
+    - target: {fileID: 6114938859253517300, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -10581,6 +10673,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GuestElemental3
       objectReference: {fileID: 0}
+    - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -10597,6 +10693,18 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 3270945686079438834, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900788759901979431, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -215
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239114911649857245, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2053789027
@@ -10616,6 +10724,10 @@ PrefabInstance:
     - target: {fileID: 5935597135351890220, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3605062872
+      objectReference: {fileID: 0}
+    - target: {fileID: 6114938859253517300, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -11339,6 +11451,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 621133693837942507, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 702550637351455029, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -11350,6 +11466,10 @@ PrefabInstance:
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
       value: HostElemental3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -11367,6 +11487,14 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 3270945686079438834, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4239114911649857245, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2613115082
@@ -11386,6 +11514,10 @@ PrefabInstance:
     - target: {fileID: 5935597135351890220, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3605062872
+      objectReference: {fileID: 0}
+    - target: {fileID: 6114938859253517300, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -13640,6 +13772,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 621133693837942507, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 702550637351455029, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
       value: 
@@ -13651,6 +13787,10 @@ PrefabInstance:
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
       value: HostElemental1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -13668,6 +13808,10 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 3270945686079438834, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1174618455
@@ -13687,6 +13831,10 @@ PrefabInstance:
     - target: {fileID: 5935597135351890220, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
       value: 3605062872
+      objectReference: {fileID: 0}
+    - target: {fileID: 6114938859253517300, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6134846885505851686, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore

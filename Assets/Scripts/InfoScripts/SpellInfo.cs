@@ -8,4 +8,6 @@ public class SpellInfo : ScriptableObject
     public ElementColor elementColor;
 
     public char timeScale;
+
+    public bool isTargeted;
 }

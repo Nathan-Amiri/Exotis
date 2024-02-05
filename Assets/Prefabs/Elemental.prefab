@@ -653,6 +653,7 @@ MonoBehaviour:
   healthText: {fileID: 4992702381518349292}
   icon: {fileID: 4617789464618039637}
   targetButton: {fileID: 4613092479266155252}
+  retreatButton: {fileID: 6328369989342399561}
   trait: {fileID: 1894539201454206837}
 --- !u!114 &4609456925127082438
 MonoBehaviour:
@@ -4046,7 +4047,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 746978815362249106}
+      - m_Target: {fileID: 5814517674153488385}
         m_TargetAssemblyTypeName: Spell, Assembly-CSharp
         m_MethodName: OnClick
         m_Mode: 1
