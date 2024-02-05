@@ -75,7 +75,6 @@ public class Spell : NetworkBehaviour, IDelegationAction
 
     public void OnClick()
     {
-        Debug.Log("Onclick");
         delegationCore.SelectAction(this);
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked

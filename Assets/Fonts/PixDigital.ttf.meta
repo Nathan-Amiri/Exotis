@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6c29deffb811ebf4f941ca5e4581b77e
+guid: 2bb77d5ec223e0941b87dc1075311575
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -10,7 +10,8 @@ TrueTypeFontImporter:
   includeFontData: 1
   fontNames:
   - PixDigital
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 6c29deffb811ebf4f941ca5e4581b77e, type: 3}
   customCharacters: 
   fontRenderingMode: 2
   ascentCalculationMode: 1

@@ -28,8 +28,6 @@ public static class StaticLibrary
         { "gray", new(185, 185, 185, 255) }, // B9B9B9
         { "pink", new(255, 0, 150, 255) }, // FF0096
         { "blue", new(125, 190, 255, 255) }, // 7DBEFF
-        { "allyRetreatButton", new(255, 0, 150, 255) }, // FF0096, standard pink
-        { "enemyRetreatButton", new(180, 180, 180, 255) }, // B4B4B4
 
 
         { "allyOutline", new(62, 165, 168, 255) }, // 3EA5A8
