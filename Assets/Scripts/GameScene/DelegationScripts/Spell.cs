@@ -1,16 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Spell : NetworkBehaviour, IDelegationAction
+public class Spell : MonoBehaviour, IDelegationAction
 {
-    // Inherits from NetworkBehaviour to support netcode serialization
-    // (this class does not contain networking logic)
-
     // Assigned in prefab:
+    [SerializeField] private Elemental parentElemental;
+
     [SerializeField] private Image image;
     [SerializeField] private TMP_Text timeScaleText;
     [SerializeField] private TMP_Text nameText;
@@ -60,6 +58,9 @@ public class Spell : NetworkBehaviour, IDelegationAction
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
+        if (!parentElemental.isAlly)
+            return;
+
         switch (delegationScenario)
         {
             case DelegationCore.DelegationScenario.Reset:

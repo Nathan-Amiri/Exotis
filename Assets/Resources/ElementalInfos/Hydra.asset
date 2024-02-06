@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Hydra
   m_EditorClassIdentifier: 
   speed: 2
+  traitName: Eclipse
   usableRoundStart: 0
   usableRoundEnd: 1
   usableCounterSpeed: 0

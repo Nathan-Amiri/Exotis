@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Kraken
   m_EditorClassIdentifier: 
   speed: 0
+  traitName: Reservoir
   usableRoundStart: 1
   usableRoundEnd: 1
   usableCounterSpeed: 1

@@ -2,15 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Elemental : NetworkBehaviour
+public class Elemental : MonoBehaviour
 {
-    // Inherits from NetworkBehaviour to support netcode serialization
-    // (this class does not contain networking logic)
-
     // Assigned in prefab:
     [SerializeField] private GameObject extra; // Everything but display. Set inactive when benched
     [SerializeField] private GameObject status; // Flip if enemy
@@ -26,21 +22,19 @@ public class Elemental : NetworkBehaviour
     [SerializeField] private Trait trait;
 
     // Dynamic:
+        // Set by Setup, read by Trait/Spell, true if this Elemental is owned by the local player
+    [NonSerialized] public bool isAlly;
     public int MaxHealth { get; private set; }
     public int Health { get; private set; }
 
     // Called by Setup
     public void Setup(string elementalName)
     {
-        // Handle color outline
-
         name = elementalName;
         nameText.text = elementalName;
         icon.sprite = Resources.Load<Sprite>("ElementalSprites/" + elementalName);
 
         ElementalInfo info = Resources.Load<ElementalInfo>("ElementalInfos/" + elementalName);
-
-        // Call trait setup passing in necessary info
 
         if (info.speed == ElementalInfo.Speed.fast)
         {
@@ -62,13 +56,18 @@ public class Elemental : NetworkBehaviour
         if (SlotAssignment.GetSlot(this) > 3)
             ToggleBenched(true);
 
+        foreach (Image outline in colorOutlines)
+            outline.color = isAlly ? StaticLibrary.gameColors["allyOutline"] : StaticLibrary.gameColors["enemyOutline"];
+
+        retreatButton.color = isAlly ? StaticLibrary.gameColors["pink"] : StaticLibrary.gameColors["gray"];
+
         // Trait setup
+        trait.nameText.text = info.traitName;
+        trait.SetIsTargeted(info.traitIsTargeted);
         trait.usableRoundStart = info.usableRoundStart;
         trait.usableRoundEnd = info.usableRoundEnd;
         trait.usableDuringTimeScaleSpeeds = info.usableDuringTimeScaleSpeeds;
         trait.usableCounterSpeed = info.usableCounterSpeed;
-
-        retreatButton.color = IsOwner ? StaticLibrary.gameColors["pink"] : StaticLibrary.gameColors["gray"];
     }
 
     public void ToggleBenched(bool benched)

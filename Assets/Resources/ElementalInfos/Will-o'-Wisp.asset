@@ -13,3 +13,8 @@ MonoBehaviour:
   m_Name: Will-o'-Wisp
   m_EditorClassIdentifier: 
   speed: 1
+  traitName: Carefree
+  usableRoundStart: 0
+  usableRoundEnd: 0
+  usableCounterSpeed: 0
+  usableDuringTimeScaleSpeeds: 0

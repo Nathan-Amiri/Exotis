@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Thunderbird
   m_EditorClassIdentifier: 
   speed: 1
+  traitName: Sacrifice
+  traitIsTargeted: 1
+  usableRoundStart: 1
+  usableRoundEnd: 1
+  usableCounterSpeed: 1
+  usableDuringTimeScaleSpeeds: 1

@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Golem
   m_EditorClassIdentifier: 
   speed: 1
+  traitName: High Voltage
+  traitIsTargeted: 0
+  usableRoundStart: 0
+  usableRoundEnd: 0
+  usableCounterSpeed: 0
+  usableDuringTimeScaleSpeeds: 0

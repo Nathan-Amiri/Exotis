@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Hellhound
   m_EditorClassIdentifier: 
   speed: 1
+  traitName: Berserk
+  traitIsTargeted: 0
   usableRoundStart: 1
   usableRoundEnd: 0
   usableCounterSpeed: 0

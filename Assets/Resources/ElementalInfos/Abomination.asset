@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Abomination
   m_EditorClassIdentifier: 
   speed: 1
+  traitName: Freak
+  traitIsTargeted: 0
+  usableRoundStart: 0
+  usableRoundEnd: 0
+  usableCounterSpeed: 0
+  usableDuringTimeScaleSpeeds: 0

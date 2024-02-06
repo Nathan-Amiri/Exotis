@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Siren
   m_EditorClassIdentifier: 
   speed: 2
+  traitName: Scourge
+  traitIsTargeted: 1
   usableRoundStart: 0
   usableRoundEnd: 1
   usableCounterSpeed: 0

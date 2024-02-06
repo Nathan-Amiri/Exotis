@@ -200,6 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a15831662b0ac1418fe96af7ab13f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentElemental: {fileID: 8031699915942597635}
   button: {fileID: 1995419079310748871}
   delegationCore: {fileID: 0}
 --- !u!1 &621133693837942507
@@ -1157,6 +1158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentElemental: {fileID: 8031699915942597635}
   image: {fileID: 9147209889962173083}
   timeScaleText: {fileID: 5440332039977804964}
   nameText: {fileID: 152563077750856118}
@@ -1249,7 +1251,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: T
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 08b5f64238876da40935bc8cb26c2447, type: 2}
   m_sharedMaterial: {fileID: -6514438819929155754, guid: 08b5f64238876da40935bc8cb26c2447, type: 2}
@@ -1543,7 +1545,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f21a55ee1ff90154ea5b6ccf0962f91a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentElemental: {fileID: 8031699915942597635}
   button: {fileID: 3325593020697755665}
+  nameText: {fileID: 7979621165414282829}
   delegationCore: {fileID: 0}
 --- !u!114 &5935597135351890220
 MonoBehaviour:
@@ -3243,6 +3247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a6798c06f0f0ab4b9510dc76b63ae98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentElemental: {fileID: 8031699915942597635}
   button: {fileID: 687010451299579648}
   delegationCore: {fileID: 0}
 --- !u!1 &4467650097784326648
@@ -4071,6 +4076,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentElemental: {fileID: 8031699915942597635}
   image: {fileID: 4448591900768938786}
   timeScaleText: {fileID: 5218900009966536189}
   nameText: {fileID: 7804811815993715988}
@@ -4243,6 +4249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fec34635be5f6e840ac106a2dc8d0ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentElemental: {fileID: 8031699915942597635}
   button: {fileID: 848823463219368241}
   delegationCore: {fileID: 0}
 --- !u!1 &5819701459220182900
@@ -4546,6 +4553,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9efd8023924f9c4384158f75d1ca8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentElemental: {fileID: 8031699915942597635}
   image: {fileID: 8638896162105076252}
   timeScaleText: {fileID: 8061952287583240063}
   nameText: {fileID: 2529912421368529097}

@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class Retreat : MonoBehaviour, IDelegationAction
 {
     // Assigned in prefab:
+    [SerializeField] private Elemental parentElemental;
+
     [SerializeField] private Button button;
 
     // Assigned in scene:
@@ -25,8 +27,16 @@ public class Retreat : MonoBehaviour, IDelegationAction
         DelegationCore.NewAction -= OnNewActionNeeded;
     }
 
+    private void Awake()
+    {
+        IsTargeted = true;
+    }
+
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
+        if (!parentElemental.isAlly)
+            return;
+
         //if elemental is trapped or first benched elemental isn't in slot assignment (no available swap), interactable = false, then return
 
         button.interactable = delegationScenario != DelegationCore.DelegationScenario.Reset;

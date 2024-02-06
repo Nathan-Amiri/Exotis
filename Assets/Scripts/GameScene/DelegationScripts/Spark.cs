@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class Spark : MonoBehaviour, IDelegationAction
 {
     // Assigned in prefab:
+    [SerializeField] private Elemental parentElemental;
+
     [SerializeField] private Button button;
 
     // Assigned in scene:
@@ -31,6 +33,9 @@ public class Spark : MonoBehaviour, IDelegationAction
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
+        if (!parentElemental.isAlly)
+            return;
+
         if (delegationScenario == DelegationCore.DelegationScenario.Reset)
             button.interactable = false;
         else if (delegationScenario == DelegationCore.DelegationScenario.Counter)

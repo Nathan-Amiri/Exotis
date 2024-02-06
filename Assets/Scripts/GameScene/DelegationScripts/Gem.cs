@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class Gem : MonoBehaviour, IDelegationAction
 {
     // Assigned in prefab:
+    [SerializeField] private Elemental parentElemental;
+
     [SerializeField] private Button button;
 
     // Assigned in scene:
@@ -34,6 +36,9 @@ public class Gem : MonoBehaviour, IDelegationAction
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
+        if (!parentElemental.isAlly)
+            return;
+
         if (!hasGem) return;
 
         if (delegationScenario == DelegationCore.DelegationScenario.Reset)

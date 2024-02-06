@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Dragon
   m_EditorClassIdentifier: 
   speed: 1
+  traitName: Devour
+  traitIsTargeted: 0
+  usableRoundStart: 0
+  usableRoundEnd: 0
+  usableCounterSpeed: 0
+  usableDuringTimeScaleSpeeds: 0

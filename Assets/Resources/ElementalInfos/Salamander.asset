@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Salamander
   m_EditorClassIdentifier: 
   speed: 0
+  traitName: Burrow
+  traitIsTargeted: 1
   usableRoundStart: 1
   usableRoundEnd: 1
   usableCounterSpeed: 0

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Roc
   m_EditorClassIdentifier: 
   speed: 1
+  traitName: Screech
+  traitIsTargeted: 0
   usableRoundStart: 1
   usableRoundEnd: 1
   usableCounterSpeed: 1

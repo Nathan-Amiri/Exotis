@@ -1,13 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Trait : MonoBehaviour, IDelegationAction
 {
     // Assigned in prefab:
+    [SerializeField] private Elemental parentElemental;
+
     [SerializeField] private Button button;
+        // Accessed by Elemental
+    public TMP_Text nameText;
 
     // Assigned in scene:
     [SerializeField] private DelegationCore delegationCore;
@@ -30,8 +35,17 @@ public class Trait : MonoBehaviour, IDelegationAction
         DelegationCore.NewAction -= OnNewActionNeeded;
     }
 
+    // Called by Elemental
+    public void SetIsTargeted(bool newIsTargeted)
+    {
+        IsTargeted = newIsTargeted;
+    }
+
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
+        if (!parentElemental.isAlly)
+            return;
+
         switch (delegationScenario)
         {
             case DelegationCore.DelegationScenario.Reset:

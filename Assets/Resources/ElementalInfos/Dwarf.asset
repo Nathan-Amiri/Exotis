@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Dwarf
   m_EditorClassIdentifier: 
   speed: 1
+  traitName: Inspire
+  traitIsTargeted: 1
   usableRoundStart: 0
   usableRoundEnd: 1
   usableCounterSpeed: 0

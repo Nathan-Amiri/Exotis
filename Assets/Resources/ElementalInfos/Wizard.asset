@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Wizard
   m_EditorClassIdentifier: 
   speed: 0
+  traitName: Astonish
+  traitIsTargeted: 0
+  usableRoundStart: 0
+  usableRoundEnd: 0
+  usableCounterSpeed: 0
+  usableDuringTimeScaleSpeeds: 0

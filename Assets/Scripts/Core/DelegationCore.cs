@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,8 +14,9 @@ public class DelegationCore : MonoBehaviour
     // Core logic classes can only impact each other in one direction:
     // DelegationCore > RelayCore > ExecutionCore > DelegationCore
 
-    // Assigned in inspector:
+    // Assigned in Scene:
     [SerializeField] private RelayCore relayCore;
+    [SerializeField] private Console console;
 
     public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Reset}
 
@@ -30,6 +32,16 @@ public class DelegationCore : MonoBehaviour
         //handle immediate manually without invoking NewAction
 
         delegationScenario = newDelegationScenario;
+
+        if (newDelegationScenario == DelegationScenario.TimeScale)
+            console.WriteConsoleMessage("Choose an action");
+        else if (newDelegationScenario == DelegationScenario.Counter)
+            console.WriteConsoleMessage("Choose a counter action");
+        else if (newDelegationScenario != DelegationScenario.Reset)
+        {
+            string time = newDelegationScenario == DelegationScenario.RoundStart ? "beginning" : "end";
+            console.WriteConsoleMessage("Choose an action to use at the " + time + " of the round");
+        }
 
         // NewAction is never 'Repopulate;' Repopulate is only requested by ECore, but is handled manually below
         NewAction?.Invoke(delegationScenario);

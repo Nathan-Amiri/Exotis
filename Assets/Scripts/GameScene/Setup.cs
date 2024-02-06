@@ -5,15 +5,11 @@ using Unity.Netcode;
 
 public class Setup : NetworkBehaviour
 {
-    // Temporary class for testing
-
     [SerializeField] private List<Elemental> hostSceneElementals = new();
     [SerializeField] private List<Spell> hostSceneSpells = new();
 
     [SerializeField] private List<Elemental> guestSceneElementals = new();
     [SerializeField] private List<Spell> guestSceneSpells = new();
-
-    [SerializeField] private List<NetworkObject> guestElementalNetworkObjects = new();
 
     [SerializeField] private Teambuilder teambuilder;
     [SerializeField] private DelegationCore delegationCore;
@@ -35,11 +31,11 @@ public class Setup : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void GuestConnectedRpc(StringContainer[] guestElementalNames, StringContainer[] guestSpellNames, RpcParams rpcParams = default)
+    public void GuestConnectedRpc(StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
     {
         // Make guest the owner of their Elementals
-        foreach (NetworkObject networkObject in guestElementalNetworkObjects)
-            networkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
+        //foreach (NetworkObject networkObject in guestElementalNetworkObjects)
+        //    networkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
 
         // Get host's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
         string[] hostElementalNames = teambuilder.teamElementalNames.ToArray();
@@ -53,8 +49,12 @@ public class Setup : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     public void SetUpTeamsRpc(StringContainer[] hostElementalNames, StringContainer[] hostSpellNames, StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
     {
+        List<Elemental> allyElementals = IsHost ? hostSceneElementals : guestSceneElementals;
+        foreach (Elemental elemental in allyElementals)
+            elemental.isAlly = true;
+
         // Flip before Elemental.Setup so Elemental can set status correctly
-        if (!IsServer)
+        if (!IsHost)
             GuestFlip?.Invoke();
 
         for (int i = 0; i < 4; i++)
@@ -69,6 +69,6 @@ public class Setup : NetworkBehaviour
             guestSceneSpells[i].Setup(guestSpellNames[i].containedString);
         }
 
-        delegationCore.RequestDelegation(DelegationCore.DelegationScenario.TimeScale);
+        delegationCore.RequestDelegation(DelegationCore.DelegationScenario.RoundStart);
     }
 }
