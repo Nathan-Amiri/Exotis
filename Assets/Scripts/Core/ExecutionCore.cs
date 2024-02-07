@@ -10,7 +10,7 @@ public class ExecutionCore : MonoBehaviour
     // Core logic classes can only impact each other in one direction:
     // DelegationCore > RelayCore > ExecutionCore > DelegationCore
 
-    // Assigned in inspector:
+    // SCENE REFERENCE:
     [SerializeField] private DelegationCore delegationCore;
     [SerializeField] private Clock clock;
 

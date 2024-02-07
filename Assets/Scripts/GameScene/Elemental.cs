@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Elemental : MonoBehaviour
 {
-    // Assigned in prefab:
+    // PREFAB REFERENCE:
     [SerializeField] private GameObject extra; // Everything but display. Set inactive when benched
     [SerializeField] private GameObject status; // Flip if enemy
     [SerializeField] private List<Image> colorOutlines;
@@ -17,11 +17,11 @@ public class Elemental : MonoBehaviour
     [SerializeField] private Image icon; // Set a to 150 when targeting
     [SerializeField] private GameObject targetButton;
     [SerializeField] private Image retreatButton;
-    
-    // Assigned in Scene:
+
+    // SCENE REFERENCE:
     [SerializeField] private Trait trait;
 
-    // Dynamic:
+    // DYNAMIC:
         // Set by Setup, read by Trait/Spell, true if this Elemental is owned by the local player
     [NonSerialized] public bool isAlly;
     public int MaxHealth { get; private set; }

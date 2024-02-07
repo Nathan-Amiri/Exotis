@@ -13,7 +13,7 @@ public class RelayCore : NetworkBehaviour
     // Core logic classes can only impact each other in one direction:
     // DelegationCore > RelayCore > ExecutionCore > DelegationCore
 
-    // Assigned in inspector:
+    // SCENE REFERENCE:
     [SerializeField] private ExecutionCore executionCore;
 
     [Rpc(SendTo.Server)]

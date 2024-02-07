@@ -5,6 +5,11 @@ using Unity.Netcode;
 
 public class Setup : NetworkBehaviour
 {
+    // STATIC:
+    public delegate void GuestFlipAction();
+    public static event GuestFlipAction GuestFlip;
+
+    // SCENE REFERENCE:
     [SerializeField] private List<Elemental> hostSceneElementals = new();
     [SerializeField] private List<Spell> hostSceneSpells = new();
 
@@ -13,9 +18,6 @@ public class Setup : NetworkBehaviour
 
     [SerializeField] private Teambuilder teambuilder;
     [SerializeField] private DelegationCore delegationCore;
-
-    public delegate void GuestFlipAction();
-    public static event GuestFlipAction GuestFlip;
 
     public override void OnNetworkSpawn()
     {

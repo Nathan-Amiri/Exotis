@@ -7,23 +7,24 @@ using UnityEngine.UI;
 
 public class Trait : MonoBehaviour, IDelegationAction
 {
-    // Assigned in prefab:
+    // PREFAB REFERENCE:
     [SerializeField] private Elemental parentElemental;
 
     [SerializeField] private Button button;
         // Accessed by Elemental
     public TMP_Text nameText;
 
-    // Assigned in scene:
+    // SCENE REFERENCE:
     [SerializeField] private DelegationCore delegationCore;
 
-    // ElementalInfo fields: (set up by Elemental)
+    // DYNAMIC:
+        // ElementalInfo fields: (set up by Elemental)
     [NonSerialized] public bool usableRoundStart;
     [NonSerialized] public bool usableRoundEnd;
     [NonSerialized] public bool usableCounterSpeed;
     [NonSerialized] public bool usableDuringTimeScaleSpeeds;
 
-    // IDelegationAction fields:
+        // IDelegationAction fields:
     public bool IsTargeted { get; private set; }
 
     private void OnEnable()

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Spell : MonoBehaviour, IDelegationAction
 {
-    // Assigned in prefab:
+    // PREFAB REFERENCE:
     [SerializeField] private Elemental parentElemental;
 
     [SerializeField] private Image image;
@@ -14,15 +14,16 @@ public class Spell : MonoBehaviour, IDelegationAction
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private Button button;
 
-    // Assigned in scene:
+    // SCENE REFERENCE
     [SerializeField] private DelegationCore delegationCore;
 
-    // SpellInfo fields
+    // DYNAMIC:
+        // SpellInfo fields
     private bool isCounter;
     private bool isWild;
     private int timeScale;
 
-    // IDelegationAction fields
+        // IDelegationAction fields
     public bool IsTargeted { get; private set; }
 
     private void OnEnable()

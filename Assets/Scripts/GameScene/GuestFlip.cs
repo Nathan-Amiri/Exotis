@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GuestFlip : MonoBehaviour
 {
-    //flip y positions of certain scene objects for guest
+    // If a non-host client, all scene objects with this script attached have their y positions flipped
 
     private void OnEnable()
     {

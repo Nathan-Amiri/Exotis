@@ -14,13 +14,13 @@ public class DelegationCore : MonoBehaviour
     // Core logic classes can only impact each other in one direction:
     // DelegationCore > RelayCore > ExecutionCore > DelegationCore
 
-    // Assigned in Scene:
+    // SCENE REFERENCE:
     [SerializeField] private RelayCore relayCore;
     [SerializeField] private Console console;
 
     public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Reset}
 
-    // Dynamic:
+    // DYNAMIC:
     private DelegationScenario delegationScenario;
 
     public delegate void NewActionNeeded(DelegationScenario scenario);

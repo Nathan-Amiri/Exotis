@@ -5,14 +5,15 @@ using UnityEngine.UI;
 
 public class Spark : MonoBehaviour, IDelegationAction
 {
-    // Assigned in prefab:
+    // PREFAB REFERENCE:
     [SerializeField] private Elemental parentElemental;
 
     [SerializeField] private Button button;
 
-    // Assigned in scene:
+    // SCENE REFERENCE:
     [SerializeField] private DelegationCore delegationCore;
 
+    // DYNAMIC:
     public bool IsTargeted { get; private set; }
 
     private bool hasSpark;
