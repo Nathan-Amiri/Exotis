@@ -32,14 +32,8 @@ public class DelegationCore : MonoBehaviour
     public delegate void NewActionNeeded(DelegationScenario scenario);
     public static event NewActionNeeded NewAction;
 
-    private void Reset()
-    {
-        cancelButton.SetActive(false);
-        submitButton.SetActive(false);
-        NewAction?.Invoke(DelegationScenario.Reset);
-    }
-
-    // Called by ECore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
+    // INPUT METHODS:
+        // Called by ECore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
     public void RequestDelegation(DelegationScenario newDelegationScenario, IDelegationAction immediateAction = null)
     {
         //.handle immediate manually without invoking NewAction
@@ -63,7 +57,7 @@ public class DelegationCore : MonoBehaviour
         // (ECore will not request a delegation if no non-pass action is available)
     }
 
-    // Called by ECore
+        // Called by ECore
     public void RequestRepopulation()
     {
 
@@ -99,6 +93,23 @@ public class DelegationCore : MonoBehaviour
         elementalTargetButtons[targetSlots[4]].SetActive(action.CanTargetBenchedAlly);
     }
 
+    public void SelectTarget(Elemental target)
+    {
+
+    }
+
+    public void SelectSubmit()
+    {
+
+    }
+
+    public void SelectHexEffect(int hexEffect)
+    {
+        // 0 = Slow, 1 = Poison, 2 = Weaken
+
+    }
+
+    // HELPER METHODS:
     private List<int> GetTargetSlots(int selfSlot)
     {
         // Returns { AllySlot, Enemy1Slot, Enemy2Slot, BenchedAlly1Slot, BenchedAlly2Slot }
@@ -116,5 +127,37 @@ public class DelegationCore : MonoBehaviour
         //.check whether that slot contains an Elemental, and if they're Disengaged
 
         return true;
+    }
+
+    // STATE METHODS:
+
+    private void RepopulationRequested()
+    {
+
+    }
+
+    private void ChooseTarget()
+    {
+        //.no target available
+        //.display submit if a target's already selected
+        //.potion interactable controlled here
+        //.message disappears if all available targets are chosen
+    }
+
+    private void Reset()
+    {
+        cancelButton.SetActive(false);
+        submitButton.SetActive(false);
+        NewAction?.Invoke(DelegationScenario.Reset);
+    }
+
+    private void RechargeDelegation()
+    {
+
+    }
+
+    private void HexDelegation()
+    {
+
     }
 }
