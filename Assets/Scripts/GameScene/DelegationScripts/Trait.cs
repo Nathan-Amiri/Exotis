@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class Trait : MonoBehaviour, IDelegationAction
 {
     // PREFAB REFERENCE:
-    [SerializeField] private Elemental parentElemental;
+    [SerializeField] private Elemental parentReference;
 
     [SerializeField] private Button button;
         // Accessed by Elemental
@@ -18,14 +18,18 @@ public class Trait : MonoBehaviour, IDelegationAction
     [SerializeField] private DelegationCore delegationCore;
 
     // DYNAMIC:
-        // ElementalInfo fields: (set up by Elemental)
-    [NonSerialized] public bool usableRoundStart;
-    [NonSerialized] public bool usableRoundEnd;
-    [NonSerialized] public bool usableCounterSpeed;
-    [NonSerialized] public bool usableDuringTimeScaleSpeeds;
-
         // IDelegationAction fields:
-    public bool IsTargeted { get; private set; }
+    public Elemental ParentElemental { get; set; }
+    public bool IsTargeted { get; private set; }    
+    public bool CanTargetSelf { get; private set; }
+    public bool CanTargetAlly { get; private set; }
+    public bool CanTargetEnemy { get; private set; }
+    public bool CanTargetBenchedAlly { get; private set; }
+
+    private bool usableRoundStart;
+    private bool usableRoundEnd;
+    private bool usableCounterSpeed;
+    private bool usableDuringTimeScaleSpeeds;
 
     private void OnEnable()
     {
@@ -37,14 +41,24 @@ public class Trait : MonoBehaviour, IDelegationAction
     }
 
     // Called by Elemental
-    public void SetIsTargeted(bool newIsTargeted)
+    public void SetElementalInfoFields(ElementalInfo info)
     {
-        IsTargeted = newIsTargeted;
+        ParentElemental = parentReference;
+        IsTargeted = info.traitIsTargeted;
+        CanTargetSelf = info.traitCanTargetSelf;
+        CanTargetAlly = info.traitCanTargetAlly;
+        CanTargetEnemy = info.traitCanTargetEnemy;
+        CanTargetBenchedAlly = info.traitCanTargetBenchedAlly;
+
+        usableRoundStart = info.usableRoundStart;
+        usableRoundEnd = info.usableRoundEnd;
+        usableDuringTimeScaleSpeeds = info.usableDuringTimeScaleSpeeds;
+        usableCounterSpeed = info.usableCounterSpeed;
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
-        if (!parentElemental.isAlly)
+        if (!ParentElemental.isAlly)
             return;
 
         switch (delegationScenario)

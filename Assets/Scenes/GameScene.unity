@@ -812,7 +812,7 @@ PrefabInstance:
       objectReference: {fileID: 1386828396}
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: GuestElemental1
+      value: Elemental3
       objectReference: {fileID: 0}
     - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
@@ -2264,7 +2264,7 @@ PrefabInstance:
       objectReference: {fileID: 1386828396}
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: GuestElemental2
+      value: Elemental6
       objectReference: {fileID: 0}
     - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
@@ -3087,7 +3087,7 @@ PrefabInstance:
       objectReference: {fileID: 1386828396}
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: GuestElemental0
+      value: Elemental2
       objectReference: {fileID: 0}
     - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
@@ -4118,7 +4118,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 531067114}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1386828396}
+        m_TargetAssemblyTypeName: DelegationCore, Assembly-CSharp
+        m_MethodName: SelectCancel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &531067114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6534,9 +6546,9 @@ RectTransform:
   - {fileID: 2051511830}
   - {fileID: 517592343}
   - {fileID: 1239772143}
+  - {fileID: 1466363741}
   - {fileID: 1079674394}
   - {fileID: 531067112}
-  - {fileID: 1466363741}
   - {fileID: 237787284}
   - {fileID: 1906505426}
   - {fileID: 1464401372}
@@ -9885,7 +9897,7 @@ PrefabInstance:
       objectReference: {fileID: 1386828396}
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: HostElemental2
+      value: Elemental4
       objectReference: {fileID: 0}
     - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
@@ -10351,6 +10363,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   relayCore: {fileID: 1386828395}
   console: {fileID: 1265245692}
+  passButton: {fileID: 1466363740}
+  cancelButton: {fileID: 531067111}
+  submitButton: {fileID: 1079674393}
+  elementalTargetButtons: []
 --- !u!114 &1386828397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10650,7 +10666,7 @@ PrefabInstance:
       objectReference: {fileID: 1386828396}
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: GuestElemental3
+      value: Elemental7
       objectReference: {fileID: 0}
     - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
@@ -11280,7 +11296,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1466363743}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1386828396}
+        m_TargetAssemblyTypeName: DelegationCore, Assembly-CSharp
+        m_MethodName: SelectPass
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1466363743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11433,7 +11461,7 @@ PrefabInstance:
       objectReference: {fileID: 1386828396}
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: HostElemental3
+      value: Elemental5
       objectReference: {fileID: 0}
     - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
@@ -13754,7 +13782,7 @@ PrefabInstance:
       objectReference: {fileID: 1386828396}
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: HostElemental1
+      value: Elemental1
       objectReference: {fileID: 0}
     - target: {fileID: 1687309159340764762, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_IsActive
@@ -15632,7 +15660,7 @@ PrefabInstance:
       objectReference: {fileID: 1386828396}
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
-      value: HostElemental0
+      value: Elemental0
       objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore
@@ -15650,6 +15678,10 @@ PrefabInstance:
       propertyPath: delegationCore
       value: 
       objectReference: {fileID: 1386828396}
+    - target: {fileID: 4613092479266155252, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5542399757140415611, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 4035307928

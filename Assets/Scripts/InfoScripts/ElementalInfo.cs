@@ -10,6 +10,10 @@ public class ElementalInfo : ScriptableObject
     public string traitName;
 
     public bool traitIsTargeted;
+    public bool traitCanTargetSelf;
+    public bool traitCanTargetAlly;
+    public bool traitCanTargetEnemy;
+    public bool traitCanTargetBenchedAlly;
 
     public bool usableRoundStart;
     public bool usableRoundEnd;

@@ -15,6 +15,10 @@ MonoBehaviour:
   speed: 2
   traitName: Chill
   traitIsTargeted: 1
+  traitCanTargetSelf: 0
+  traitCanTargetAlly: 1
+  traitCanTargetEnemy: 1
+  traitCanTargetBenchedAlly: 0
   usableRoundStart: 1
   usableRoundEnd: 1
   usableCounterSpeed: 1

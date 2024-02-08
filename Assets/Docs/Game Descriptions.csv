@@ -12,28 +12,28 @@
 7 Hellfire 3 "I deal 4 to an Elemental. Then, I am Eliminated."
 
 8 Empower 2 "I deal 2 to an Elemental. If I took damage this round, I deal 3 instead."
-9 Fortify 7 "This round, I am Concealed and my ally is Armored. I am Wearied until the end of next round."
+9 Fortify 7 "This round, I am Disengaged and my ally is Armored. I am Wearied until the end of next round."
 10 Block C "I am Armored this round. At the end of this round, I can deal 1 to any Elementals."
 11 Landslide 3 "I deal 2 to all other Elementals in play."
 
 12 Swoop 4 "I deal 2 to an Elemental."
 13 Take Flight 4 "I heal 1, then deal 1 to an Elemental, then Swap if I’m not Trapped."
 14 Whirlwind 3 "I deal 2 to an Elemental. I am Enraged and Weakened next round. I am Wearied until the end of next round."
-15 Ascend 7 "I am Concealed this round, and I am Stunned and Trapped next round. At the beginning of next round, I can deal 2 to an Elemental."
+15 Ascend 7 "I am Disengaged this round, and I am Stunned and Trapped next round. At the beginning of next round, I can deal 2 to an Elemental."
 
 16 Surge 3 "I deal 2 to an Elemental. The first time I cast this Spell, I gain a Spark."
 17 Blink C "I target an Elemental. I am Enraged until the Spell I am countering has occurred. Then, I deal 1 to the target. I am Wearied until the end of next round. I can’t cast this Spell again until I Swap."
-18 Defuse 6 "I Stun an enemy this round. I can’t cast this Spell again until I Swap."
+18 Defuse 6 "I Stun an Elemental this round. I can’t cast this Spell again until I Swap."
 19 Recharge 1 "I or my ally heals 1 and gains a Spark. The other either heals 1 or gains a Spark, but not both."
 
 20 Icy Breath 3 "I deal 2 to an Elemental and Slow it until the end of next round."
 21 Hail 4 "I deal 1 to any Elementals and Slow them until the end of next round."
-22 Freeze C "The Spell I am countering is postponed until the end of next round. Until then, the Spell’s caster and I are Concealed."
+22 Freeze C "The Spell I am countering is postponed until the end of next round. Until then, the Spell’s caster and I are Disengaged."
 23 Numbing Cold 5 "I target an Elemental that is slower than me. This round, the target’s Trait, Spells, and Items deal 0 damage. I can’t cast this Spell on the same target next round."
 
 24 Enchain: 3 "I deal 2 to an Elemental. At the beginning of next round, if the Elemental is in play, it is Trapped that round."
 25 Animate 5 "My ally gains an action. This round, I am Armored and my ally is Trapped. I can’t cast this Spell again until I Swap."
-26 Nightmare ? "I target an enemy. It is Stunned next round. I can’t cast this Spell on the same target next round."
+26 Nightmare ? "I target an Elemental. It is Stunned next round. I can’t cast this Spell on the same target next round."
 27 Hex 5 "I heal myself 2. Then, I Slow, Poison, or Weaken an Elemental this round. I am Wearied until the end of next round."
 
 28 Fanged Bite 3 "I deal 2 to an Elemental. It is Poisoned next round."
@@ -84,7 +84,7 @@
 16 Golem 6m Lightning/Earth
 	High Voltage "At the end of each round, I deal 1 to all other Elementals in play."
 17 Yeti 7s Frost/Earth
-	Chill "Once per game, at any time, I can target a Slowed Elemental. It is Concealed next round."
+	Chill "Once per game, at any time, I can target a Slowed Elemental. It is Disengaged next round."
 18 Ogre 6m Shadow/Earth
 	Juggernaut "I am permanently Slowed. My damaging Spells deal +1 damage to all targets."
 19 Scorpio 7s Earth/Venom
@@ -110,15 +110,15 @@
 29 Angel 7s Lightning/Jewel
 	Smite "Each round, the first time I take damage from an enemy Spell, I gain a Spark."
 30 Werewolf 5f Shadow/Frost
-	Shapeshift "Once per game, at the beginning of a round, I can choose an ally. My Spells become its Spells until the end of the round."
+	Shapeshift "Once per game, at the beginning of a round, I can choose any ally, even one not in play. My Spells become its Spells until the end of the round."
 31 Wyrm 6m Venom/Frost
 	Rancid Aura "Once per game, at counter speed, I can Weaken all Elementals, even ones not in play, until the end of next round."
 32 Unicorn 5f Frost/Jewel
 	Adorn "When I cast a non-damaging Spell, I become Armored this round."
 33 Witch 6m Shadow/Venom
-	Deceive "At counter speed, I can target an ally. (even one not in play) If the spell I am countering deals damage to me, the damage redirects to the target."
+	Deceive "At counter speed, I can target any ally, even one not in play. If the spell I am countering deals damage to me, the damage redirects to the target."
 34 Shaman 6m Jewel/Shadow
-	Mystic Arts "At any time except counter speed, I can become Concealed until the end of next round. Despite being Concealed, I can end this effect early at any time."
+	Mystic Arts "At any time except counter speed, I can become Disengaged until the end of next round. Despite being Disengaged, I can end this effect early at any time."
 35 Basilisk 6m Venom/Jewel
 	Stony Gaze "Once per game, at the beginning of a round, I can Stun and Trap an Elemental and myself this round."
 
@@ -136,7 +136,7 @@ Wearied "I cannot perform any actions that would cause me to become Weary.
 	(Weariness is like a cooldown—it is inflicted by actions that protect or greatly heal the caster, preventing similar spells from being used again the next round and stalling the game)"
 Enraged "I am immune to damage."
 Armored "If I would take damage from an enemy spell, I take -1 damage and am no longer Armored."
-Concealed "I cannot act, and I’m immune to/unaffected by everything.
+Disengaged "I cannot act, and I’m immune to/unaffected by everything.
 	(I am immune to damage, can’t cast Spells or Traits, can't use Items, can’t Swap, and can’t be targeted)"
 Stunned "I cannot cast Spells.
 	(I can still use Items, use my Trait, and Retreat)"

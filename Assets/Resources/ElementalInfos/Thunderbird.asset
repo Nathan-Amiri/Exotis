@@ -15,6 +15,10 @@ MonoBehaviour:
   speed: 1
   traitName: Sacrifice
   traitIsTargeted: 1
+  traitCanTargetSelf: 0
+  traitCanTargetAlly: 1
+  traitCanTargetEnemy: 0
+  traitCanTargetBenchedAlly: 1
   usableRoundStart: 1
   usableRoundEnd: 1
   usableCounterSpeed: 1

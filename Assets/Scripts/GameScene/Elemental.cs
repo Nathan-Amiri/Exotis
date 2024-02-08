@@ -63,11 +63,7 @@ public class Elemental : MonoBehaviour
 
         // Trait setup
         trait.nameText.text = info.traitName;
-        trait.SetIsTargeted(info.traitIsTargeted);
-        trait.usableRoundStart = info.usableRoundStart;
-        trait.usableRoundEnd = info.usableRoundEnd;
-        trait.usableDuringTimeScaleSpeeds = info.usableDuringTimeScaleSpeeds;
-        trait.usableCounterSpeed = info.usableCounterSpeed;
+        trait.SetElementalInfoFields(info);
     }
 
     public void ToggleBenched(bool benched)

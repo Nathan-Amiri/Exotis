@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Spark : MonoBehaviour, IDelegationAction
 {
     // PREFAB REFERENCE:
-    [SerializeField] private Elemental parentElemental;
+    [SerializeField] private Elemental parentReference;
 
     [SerializeField] private Button button;
 
@@ -14,7 +14,12 @@ public class Spark : MonoBehaviour, IDelegationAction
     [SerializeField] private DelegationCore delegationCore;
 
     // DYNAMIC:
+    public Elemental ParentElemental { get; set; }
     public bool IsTargeted { get; private set; }
+    public bool CanTargetSelf { get; private set; }
+    public bool CanTargetAlly { get; private set; }
+    public bool CanTargetEnemy { get; private set; }
+    public bool CanTargetBenchedAlly { get; private set; }
 
     private bool hasSpark;
 
@@ -29,12 +34,17 @@ public class Spark : MonoBehaviour, IDelegationAction
 
     private void Awake()
     {
+        ParentElemental = parentReference;
         IsTargeted = true;
+        CanTargetSelf = false;
+        CanTargetAlly = false;
+        CanTargetEnemy = true;
+        CanTargetBenchedAlly = false;
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
-        if (!parentElemental.isAlly)
+        if (!ParentElemental.isAlly)
             return;
 
         if (delegationScenario == DelegationCore.DelegationScenario.Reset)

@@ -15,6 +15,10 @@ MonoBehaviour:
   speed: 1
   traitName: Inspire
   traitIsTargeted: 1
+  traitCanTargetSelf: 1
+  traitCanTargetAlly: 1
+  traitCanTargetEnemy: 0
+  traitCanTargetBenchedAlly: 0
   usableRoundStart: 0
   usableRoundEnd: 1
   usableCounterSpeed: 0

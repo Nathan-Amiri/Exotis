@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Spell : MonoBehaviour, IDelegationAction
 {
     // PREFAB REFERENCE:
-    [SerializeField] private Elemental parentElemental;
+    [SerializeField] private Elemental parentReference;
 
     [SerializeField] private Image image;
     [SerializeField] private TMP_Text timeScaleText;
@@ -24,7 +24,12 @@ public class Spell : MonoBehaviour, IDelegationAction
     private int timeScale;
 
         // IDelegationAction fields
+    public Elemental ParentElemental { get; set; }
     public bool IsTargeted { get; private set; }
+    public bool CanTargetSelf {  get; private set; }
+    public bool CanTargetAlly { get; private set; }
+    public bool CanTargetEnemy { get; private set; }
+    public bool CanTargetBenchedAlly { get; private set; }
 
     private void OnEnable()
     {
@@ -54,12 +59,17 @@ public class Spell : MonoBehaviour, IDelegationAction
         else
             timeScale = (int)char.GetNumericValue(info.timeScale);
 
+        ParentElemental = parentReference;
         IsTargeted = info.isTargeted;
+        CanTargetSelf = info.canTargetSelf;
+        CanTargetAlly = info.canTargetAlly;
+        CanTargetEnemy = info.canTargetEnemy;
+        CanTargetBenchedAlly = info.canTargetBenchedAlly;
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
-        if (!parentElemental.isAlly)
+        if (!ParentElemental.isAlly)
             return;
 
         switch (delegationScenario)

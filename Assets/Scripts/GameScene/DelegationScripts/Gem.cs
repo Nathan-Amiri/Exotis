@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Gem : MonoBehaviour, IDelegationAction
 {
     // PREFAB REFERENCE:
-    [SerializeField] private Elemental parentElemental;
+    [SerializeField] private Elemental parentReference;
 
     [SerializeField] private Button button;
 
@@ -15,7 +15,12 @@ public class Gem : MonoBehaviour, IDelegationAction
     [SerializeField] private DelegationCore delegationCore;
 
     // DYNAMIC:
+    public Elemental ParentElemental { get; set; }
     public bool IsTargeted { get; private set; }
+    public bool CanTargetSelf { get; private set; }
+    public bool CanTargetAlly { get; private set; }
+    public bool CanTargetEnemy { get; private set; }
+    public bool CanTargetBenchedAlly { get; private set; }
 
     [NonSerialized] public Elemental elemental;
 
@@ -32,12 +37,14 @@ public class Gem : MonoBehaviour, IDelegationAction
 
     private void Awake()
     {
-        IsTargeted = true;
+        ParentElemental = parentReference;
+        IsTargeted = false;
+        // Other IDelegationAction fields remain unused
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
-        if (!parentElemental.isAlly)
+        if (!ParentElemental.isAlly)
             return;
 
         if (!hasGem) return;

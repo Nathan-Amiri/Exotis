@@ -10,4 +10,8 @@ public class SpellInfo : ScriptableObject
     public char timeScale;
 
     public bool isTargeted;
+    public bool canTargetSelf;
+    public bool canTargetAlly;
+    public bool canTargetEnemy;
+    public bool canTargetBenchedAlly;
 }

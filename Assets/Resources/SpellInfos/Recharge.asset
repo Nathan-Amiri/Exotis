@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementColor: 4
   timeScale: 49
-  isTargeted: 1
+  isTargeted: 0
+  canTargetSelf: 0
+  canTargetAlly: 0
+  canTargetEnemy: 0
+  canTargetBenchedAlly: 0

@@ -15,3 +15,7 @@ MonoBehaviour:
   elementColor: 8
   timeScale: 63
   isTargeted: 1
+  canTargetSelf: 1
+  canTargetAlly: 1
+  canTargetEnemy: 0
+  canTargetBenchedAlly: 1

@@ -15,6 +15,10 @@ MonoBehaviour:
   speed: 0
   traitName: Burrow
   traitIsTargeted: 1
+  traitCanTargetSelf: 0
+  traitCanTargetAlly: 0
+  traitCanTargetEnemy: 0
+  traitCanTargetBenchedAlly: 1
   usableRoundStart: 1
   usableRoundEnd: 1
   usableCounterSpeed: 0

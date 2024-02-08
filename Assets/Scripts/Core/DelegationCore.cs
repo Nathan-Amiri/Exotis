@@ -18,6 +18,12 @@ public class DelegationCore : MonoBehaviour
     [SerializeField] private RelayCore relayCore;
     [SerializeField] private Console console;
 
+    [SerializeField] private GameObject passButton;
+    [SerializeField] private GameObject cancelButton;
+    [SerializeField] private GameObject submitButton;
+
+    [SerializeField] private List<GameObject> elementalTargetButtons = new();
+
     public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Reset}
 
     // DYNAMIC:
@@ -26,10 +32,17 @@ public class DelegationCore : MonoBehaviour
     public delegate void NewActionNeeded(DelegationScenario scenario);
     public static event NewActionNeeded NewAction;
 
+    private void Reset()
+    {
+        cancelButton.SetActive(false);
+        submitButton.SetActive(false);
+        NewAction?.Invoke(DelegationScenario.Reset);
+    }
+
     // Called by ECore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
     public void RequestDelegation(DelegationScenario newDelegationScenario, IDelegationAction immediateAction = null)
     {
-        //handle immediate manually without invoking NewAction
+        //.handle immediate manually without invoking NewAction
 
         delegationScenario = newDelegationScenario;
 
@@ -43,7 +56,7 @@ public class DelegationCore : MonoBehaviour
             console.WriteConsoleMessage("Choose an action to use at the " + time + " of the round");
         }
 
-        // NewAction is never 'Repopulate;' Repopulate is only requested by ECore, but is handled manually below
+        passButton.SetActive(true);
         NewAction?.Invoke(delegationScenario);
 
         // DelegationAction buttons turn interactable when appropriate. DCore waits for an action to be selected
@@ -56,8 +69,52 @@ public class DelegationCore : MonoBehaviour
 
     }
 
+    public void SelectCancel()
+    {
+        Reset();
+
+        RequestDelegation(delegationScenario);
+    }
+
+    public void SelectPass()
+    {
+        passButton.SetActive(false);
+
+        submitButton.SetActive(true);
+        cancelButton.SetActive(true);
+    }
+
     public void SelectAction(IDelegationAction action)
     {
-        Debug.Log("Is targeted? " + action.IsTargeted);
+        //.if Recharge or Hex, handle separately
+
+        int selfSlot = SlotAssignment.GetSlot(action.ParentElemental);
+        List<int> targetSlots = GetTargetSlots(selfSlot);
+
+        elementalTargetButtons[selfSlot].SetActive(action.CanTargetSelf);
+        elementalTargetButtons[targetSlots[0]].SetActive(action.CanTargetAlly);
+        elementalTargetButtons[targetSlots[1]].SetActive(action.CanTargetEnemy);
+        elementalTargetButtons[targetSlots[2]].SetActive(action.CanTargetEnemy);
+        elementalTargetButtons[targetSlots[3]].SetActive(action.CanTargetBenchedAlly);
+        elementalTargetButtons[targetSlots[4]].SetActive(action.CanTargetBenchedAlly);
+    }
+
+    private List<int> GetTargetSlots(int selfSlot)
+    {
+        // Returns { AllySlot, Enemy1Slot, Enemy2Slot, BenchedAlly1Slot, BenchedAlly2Slot }
+        if (selfSlot == 0) return new() { 1, 2, 3, 4, 5 };
+        else if (selfSlot == 1) return new() { 0, 2, 3, 4, 5 };
+        else if (selfSlot == 2) return new() { 3, 0, 1, 6, 7 };
+        else if (selfSlot == 3) return new() { 2, 0, 1, 6, 7 };
+
+        Debug.LogError("SelfSlot not found");
+        return default;
+    }
+
+    private bool CheckTargetAvailable(int slot)
+    {
+        //.check whether that slot contains an Elemental, and if they're Disengaged
+
+        return true;
     }
 }
