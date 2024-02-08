@@ -82,15 +82,15 @@ public class DelegationCore : MonoBehaviour
     {
         //.if Recharge or Hex, handle separately
 
-        int selfSlot = SlotAssignment.GetSlot(action.ParentElemental);
-        List<int> targetSlots = GetTargetSlots(selfSlot);
+        //int selfSlot = SlotAssignment.GetSlot(action.ParentElemental);
+        //List<int> targetSlots = GetTargetSlots(selfSlot);
 
-        elementalTargetButtons[selfSlot].SetActive(action.CanTargetSelf);
-        elementalTargetButtons[targetSlots[0]].SetActive(action.CanTargetAlly);
-        elementalTargetButtons[targetSlots[1]].SetActive(action.CanTargetEnemy);
-        elementalTargetButtons[targetSlots[2]].SetActive(action.CanTargetEnemy);
-        elementalTargetButtons[targetSlots[3]].SetActive(action.CanTargetBenchedAlly);
-        elementalTargetButtons[targetSlots[4]].SetActive(action.CanTargetBenchedAlly);
+        //elementalTargetButtons[selfSlot].SetActive(action.CanTargetSelf);
+        //elementalTargetButtons[targetSlots[0]].SetActive(action.CanTargetAlly);
+        //elementalTargetButtons[targetSlots[1]].SetActive(action.CanTargetEnemy);
+        //elementalTargetButtons[targetSlots[2]].SetActive(action.CanTargetEnemy);
+        //elementalTargetButtons[targetSlots[3]].SetActive(action.CanTargetBenchedAlly);
+        //elementalTargetButtons[targetSlots[4]].SetActive(action.CanTargetBenchedAlly);
     }
 
     public void SelectTarget(Elemental target)
@@ -110,18 +110,6 @@ public class DelegationCore : MonoBehaviour
     }
 
     // HELPER METHODS:
-    private List<int> GetTargetSlots(int selfSlot)
-    {
-        // Returns { AllySlot, Enemy1Slot, Enemy2Slot, BenchedAlly1Slot, BenchedAlly2Slot }
-        if (selfSlot == 0) return new() { 1, 2, 3, 4, 5 };
-        else if (selfSlot == 1) return new() { 0, 2, 3, 4, 5 };
-        else if (selfSlot == 2) return new() { 3, 0, 1, 6, 7 };
-        else if (selfSlot == 3) return new() { 2, 0, 1, 6, 7 };
-
-        Debug.LogError("SelfSlot not found");
-        return default;
-    }
-
     private bool CheckTargetAvailable(int slot)
     {
         //.check whether that slot contains an Elemental, and if they're Disengaged
