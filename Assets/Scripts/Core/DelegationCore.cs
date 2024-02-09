@@ -2,6 +2,7 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class DelegationCore : MonoBehaviour
@@ -13,6 +14,10 @@ public class DelegationCore : MonoBehaviour
 
     // Core logic classes can only impact each other in one direction:
     // DelegationCore > RelayCore > ExecutionCore > DelegationCore
+
+    // STATIC:
+    public delegate void NewActionNeeded(DelegationScenario scenario);
+    public static event NewActionNeeded NewAction;
 
     // SCENE REFERENCE:
     [SerializeField] private RelayCore relayCore;
@@ -29,11 +34,10 @@ public class DelegationCore : MonoBehaviour
     // DYNAMIC:
     private DelegationScenario delegationScenario;
 
-    public delegate void NewActionNeeded(DelegationScenario scenario);
-    public static event NewActionNeeded NewAction;
+    private RelayPacket packet;
 
     // INPUT METHODS:
-        // Called by ECore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
+    // Called by ECore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
     public void RequestDelegation(DelegationScenario newDelegationScenario, IDelegationAction immediateAction = null)
     {
         //.handle immediate manually without invoking NewAction
@@ -66,21 +70,26 @@ public class DelegationCore : MonoBehaviour
     public void SelectCancel()
     {
         Reset();
+        packet = default;
 
         RequestDelegation(delegationScenario);
     }
 
     public void SelectPass()
     {
-        passButton.SetActive(false);
+        Reset();
 
         submitButton.SetActive(true);
         cancelButton.SetActive(true);
+
+        packet.actionType = "pass";
     }
 
     public void SelectAction(IDelegationAction action)
     {
         //.if Recharge or Hex, handle separately
+
+
 
         //int selfSlot = SlotAssignment.GetSlot(action.ParentElemental);
         //List<int> targetSlots = GetTargetSlots(selfSlot);
@@ -100,7 +109,10 @@ public class DelegationCore : MonoBehaviour
 
     public void SelectSubmit()
     {
+        Reset();
 
+        packet.player = NetworkManager.Singleton.IsHost ? 0 : 1;
+        relayCore.PrepareToRelayPacket(packet);
     }
 
     public void SelectHexEffect(int hexEffect)
@@ -134,8 +146,10 @@ public class DelegationCore : MonoBehaviour
 
     private void Reset()
     {
+        passButton.SetActive(false);
         cancelButton.SetActive(false);
         submitButton.SetActive(false);
+
         NewAction?.Invoke(DelegationScenario.Reset);
     }
 

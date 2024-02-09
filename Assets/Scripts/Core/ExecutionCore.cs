@@ -16,6 +16,6 @@ public class ExecutionCore : MonoBehaviour
 
     public void ReceivePacket(RelayPacket packet) // Called by RelayCore
     {
-
+        Debug.Log(packet.actionType);
     }
 }

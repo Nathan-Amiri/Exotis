@@ -35,10 +35,6 @@ public class Setup : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void GuestConnectedRpc(StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
     {
-        // Make guest the owner of their Elementals
-        //foreach (NetworkObject networkObject in guestElementalNetworkObjects)
-        //    networkObject.ChangeOwnership(rpcParams.Receive.SenderClientId);
-
         // Get host's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
         string[] hostElementalNames = teambuilder.teamElementalNames.ToArray();
         StringContainer[] elementalStringContainers = StringContainerConverter.ContainStrings(hostElementalNames);

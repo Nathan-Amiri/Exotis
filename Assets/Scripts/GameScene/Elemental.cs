@@ -22,7 +22,7 @@ public class Elemental : MonoBehaviour
     [SerializeField] private Trait trait;
 
     // DYNAMIC:
-        // Set by Setup, read by Trait/Spell, true if this Elemental is owned by the local player
+        // Set by Setup, read by Trait/Spell, true if this Elemental is on the local player's team
     [NonSerialized] public bool isAlly;
     public int MaxHealth { get; private set; }
     public int Health { get; private set; }
