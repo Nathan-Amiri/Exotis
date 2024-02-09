@@ -19,7 +19,7 @@ public class RelayCore : NetworkBehaviour
     public void PrepareToRelayPacket(RelayPacket packet)
     {
         // This method acts as a safety net to prevent serialization errors
-        // (Netcode cannot serialize a null string or array)
+        // (Netcode cannot serialize a struct that contains a null variable, such as a null string or array)
 
         packet.actionType ??= string.Empty;
         packet.name ??= string.Empty;
