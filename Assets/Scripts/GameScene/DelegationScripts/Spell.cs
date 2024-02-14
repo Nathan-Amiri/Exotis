@@ -20,8 +20,9 @@ public class Spell : MonoBehaviour, IDelegationAction
     // DYNAMIC:
         // SpellInfo fields
     private bool isCounter;
-    private bool isWild;
     private int timeScale;
+
+    public bool IsWild { get; private set; }
     public bool IsDamaging { get; private set; }
 
     // IDelegationAction fields
@@ -62,7 +63,7 @@ public class Spell : MonoBehaviour, IDelegationAction
         if (info.timeScale.ToString() == "C")
             isCounter = true;
         else if (info.timeScale.ToString() == "?")
-            isWild = true;
+            IsWild = true;
         else
             timeScale = (int)char.GetNumericValue(info.timeScale);
 
@@ -92,7 +93,7 @@ public class Spell : MonoBehaviour, IDelegationAction
             // If DelegationScenario is RoundStart or RoundEnd, do nothing
             case DelegationCore.DelegationScenario.TimeScale:
                 if (isCounter) return;
-                button.interactable = isWild || Clock.CurrentTimeScale >= timeScale;
+                button.interactable = IsWild || Clock.CurrentTimeScale >= timeScale;
                 break;
             case DelegationCore.DelegationScenario.Counter:
                 button.interactable = isCounter;

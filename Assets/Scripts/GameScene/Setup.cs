@@ -74,6 +74,6 @@ public class Setup : NetworkBehaviour
             guestSceneSpells[i].Setup(guestSpellNames[i].containedString);
         }
 
-        delegationCore.RequestDelegation(DelegationCore.DelegationScenario.Repopulation);
+        delegationCore.RequestDelegation(DelegationCore.DelegationScenario.TimeScale);
     }
 }

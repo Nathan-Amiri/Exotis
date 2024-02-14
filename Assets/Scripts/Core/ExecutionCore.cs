@@ -23,5 +23,8 @@ public class ExecutionCore : MonoBehaviour
         //    Debug.Log(slot);
         //Debug.Log(packet.name);
         //Debug.Log(packet.potion);
+        //Debug.Log(packet.wildTimeScale);
+        //Debug.Log(packet.rechargeType);
+        //Debug.Log(packet.hexType);
     }
 }

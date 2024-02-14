@@ -30,6 +30,10 @@ public class DelegationCore : MonoBehaviour
     [SerializeField] private GameObject cancelButton;
     [SerializeField] private GameObject submitButton;
 
+    [SerializeField] private List<GameObject> wildButtons = new();
+    [SerializeField] private List<GameObject> rechargeButtons = new();
+    [SerializeField] private List<GameObject> hexButtons = new();
+
     [SerializeField] private List<GameObject> elementalTargetButtons = new();
 
     [SerializeField] private List<Button> potionButtons = new();
@@ -126,15 +130,42 @@ public class DelegationCore : MonoBehaviour
 
     public void SelectAction(IDelegationAction action)
     {
-        //.if Recharge or Hex, handle separately
-
         currentAction = action;
+
+        if (currentAction is Spell spell)
+        {
+            packet.name = spell.name;
+
+            if (spell.IsWild && packet.wildTimeScale == 0)
+            {
+                ResetScene();
+
+                cancelButton.SetActive(true);
+                console.WriteConsoleMessage("At what time?");
+
+                wildButtons[0].SetActive(true);
+                wildButtons[1].SetActive(Clock.CurrentTimeScale >= 5);
+
+                return;
+            }
+            else if (spell.name == "Hex" && packet.hexType == null)
+            {
+                ResetScene();
+
+                cancelButton.SetActive(true);
+                console.WriteConsoleMessage("Choose an effect");
+                foreach (GameObject button in hexButtons)
+                    button.SetActive(true);
+
+                return;
+            }
+        }
+        else
+            spell = null;
 
         // Set packet info
         packet.actionType = currentAction.ActionType;
         packet.casterSlot = SlotAssignment.GetSlot(currentAction.ParentElemental);
-        if (currentAction.ActionType == "spell")
-            packet.name = action.Name;
 
         // Reset before proceeding
         ResetScene();
@@ -149,8 +180,40 @@ public class DelegationCore : MonoBehaviour
             return;
         }
 
-        // Check if the action has an available target
-        if (!CheckTargetAvailable(packet.casterSlot))
+        // Get targetable slots
+        List<int> availableTargetSlots = new();
+
+        Dictionary<string, int> potentialTargetSlots = SlotAssignment.GetSlotDesignations(packet.casterSlot);
+
+        if (currentAction.CanTargetSelf)
+            availableTargetSlots.Add(packet.casterSlot);
+
+        int allySlot = potentialTargetSlots["allySlot"];
+        if (currentAction.CanTargetAlly && CheckTargetAvailable(allySlot))
+            availableTargetSlots.Add(allySlot);
+
+        int enemy1Slot = potentialTargetSlots["enemy1Slot"];
+        if (currentAction.CanTargetEnemy)
+        {
+            if (CheckTargetAvailable(enemy1Slot))
+                availableTargetSlots.Add(enemy1Slot);
+            // Enemy 2
+            if (CheckTargetAvailable(enemy1Slot + 1))
+                availableTargetSlots.Add(enemy1Slot + 1);
+        }
+
+        int benchedAlly1Slot = potentialTargetSlots["benchedAlly1Slot"];
+        if (currentAction.CanTargetBenchedAlly)
+        {
+            if (CheckTargetAvailable(benchedAlly1Slot))
+                availableTargetSlots.Add(benchedAlly1Slot);
+            // Benched ally 2
+            if (CheckTargetAvailable(benchedAlly1Slot + 1))
+                availableTargetSlots.Add(benchedAlly1Slot + 1);
+        }
+
+        // Check if there's no available targets
+        if (availableTargetSlots.Count == 0)
         {
             packet = default;
 
@@ -161,18 +224,29 @@ public class DelegationCore : MonoBehaviour
         }
 
         // Turn on target buttons
+        foreach (int availableTargetSlot in availableTargetSlots)
+            elementalTargetButtons[availableTargetSlot].SetActive(true);
+
         string message = action.MaxTargets == 1 ? "Choose a target" : "Choose target(s)";
+
+        if (spell != null && spell.name == "Recharge")
+            message = "Choose an ally to heal 1 and gain a Spark";
+
         console.WriteConsoleMessage(message);
         cancelButton.SetActive(true);
+    }
 
-        Dictionary<string, int> potentialTargetSlots = SlotAssignment.GetSlotDesignations(packet.casterSlot);
+    public void SelectWildButton(int wildTimeScale)
+    {
+        packet.wildTimeScale = wildTimeScale;
 
-        elementalTargetButtons[packet.casterSlot].SetActive(currentAction.CanTargetSelf);
-        elementalTargetButtons[potentialTargetSlots["allySlot"]].SetActive(currentAction.CanTargetAlly);
-        elementalTargetButtons[potentialTargetSlots["enemy1Slot"]].SetActive(currentAction.CanTargetEnemy);
-        elementalTargetButtons[potentialTargetSlots["enemy2Slot"]].SetActive(currentAction.CanTargetEnemy);
-        elementalTargetButtons[potentialTargetSlots["benchedAlly1Slot"]].SetActive(currentAction.CanTargetBenchedAlly);
-        elementalTargetButtons[potentialTargetSlots["benchedAlly2Slot"]].SetActive(currentAction.CanTargetBenchedAlly);
+        SelectAction(currentAction);
+    }
+    public void SelectHexButton(string hexType)
+    {
+        packet.hexType = hexType;
+
+        SelectAction(currentAction);
     }
 
     public void SelectConsoleButton()
@@ -192,6 +266,21 @@ public class DelegationCore : MonoBehaviour
             List<int> temp = packet.targetSlots.ToList();
             temp.Add(targetSlot);
             packet.targetSlots = temp.ToArray();
+        }
+
+        if (currentAction is Spell spell && spell.name == "Recharge" && packet.rechargeType == null)
+        {
+            ResetScene();
+
+            int targetAllySlot = SlotAssignment.GetSlotDesignations(targetSlot)["allySlot"];
+            string targetAllyName = SlotAssignment.Elementals[targetAllySlot].name;
+
+            cancelButton.SetActive(true);
+            console.WriteConsoleMessage("Will " + targetAllyName + " heal 1 or gain a Spark?");
+            foreach (GameObject button in rechargeButtons)
+                button.SetActive(true);
+
+            return;
         }
 
         // Make Potion interactable if currentAction is a single-target damaging Spell
@@ -217,6 +306,18 @@ public class DelegationCore : MonoBehaviour
         submitButton.SetActive(true);
         cancelButton.SetActive(true);
     }
+
+    public void SelectRechargeButton(string rechargeType)
+    {
+        packet.rechargeType = rechargeType;
+
+        console.WriteConsoleMessage(string.Empty);
+        foreach (GameObject button in rechargeButtons)
+            button.SetActive(false);
+
+        submitButton.SetActive(true);
+    }
+
     private bool PotionInteractable()
     {
         // CurrentAction is null when repopulating
@@ -283,6 +384,12 @@ public class DelegationCore : MonoBehaviour
         submitButton.SetActive(false);
 
         foreach (GameObject button in elementalTargetButtons)
+            button.SetActive(false);
+        foreach (GameObject button in wildButtons)
+            button.SetActive(false);
+        foreach (GameObject button in rechargeButtons)
+            button.SetActive(false);
+        foreach (GameObject button in hexButtons)
             button.SetActive(false);
 
         NewAction?.Invoke(DelegationScenario.Reset);
