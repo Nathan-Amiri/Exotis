@@ -6,7 +6,7 @@ using System;
 
 public class Teambuilder : MonoBehaviour
 {
-    // Temporary class for testing
+    //.temporary class for testing
 
     [SerializeField] private GameObject teambuilderCanvas;
 

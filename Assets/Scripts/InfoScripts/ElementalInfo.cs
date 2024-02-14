@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ElementalInfo", menuName = "ScriptableObjects/ElementalInfo")]
@@ -9,7 +8,7 @@ public class ElementalInfo : ScriptableObject
 
     public string traitName;
 
-    public bool traitIsTargeted;
+    public int traitMaxTargets;
     public bool traitCanTargetSelf;
     public bool traitCanTargetAlly;
     public bool traitCanTargetEnemy;

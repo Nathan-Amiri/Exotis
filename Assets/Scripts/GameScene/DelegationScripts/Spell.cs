@@ -22,14 +22,17 @@ public class Spell : MonoBehaviour, IDelegationAction
     private bool isCounter;
     private bool isWild;
     private int timeScale;
+    public bool IsDamaging { get; private set; }
 
-        // IDelegationAction fields
-    public Elemental ParentElemental { get; set; }
-    public bool IsTargeted { get; private set; }
+    // IDelegationAction fields
+    public string ActionType { get; private set; }
+    public Elemental ParentElemental { get; private set; }
+    public int MaxTargets { get; private set; }
     public bool CanTargetSelf {  get; private set; }
     public bool CanTargetAlly { get; private set; }
     public bool CanTargetEnemy { get; private set; }
     public bool CanTargetBenchedAlly { get; private set; }
+    public string Name { get; private set; }
 
     private void OnEnable()
     {
@@ -43,7 +46,11 @@ public class Spell : MonoBehaviour, IDelegationAction
     // Called by Teambuilder (temporarily, will eventually be called by setup)
     public void Setup(string spellName)
     {
+        // Name in inspector
         name = spellName;
+        // IDelegationAction name
+        Name = spellName;
+        // In-game name
         nameText.text = spellName;
 
         SpellInfo info = Resources.Load<SpellInfo>("SpellInfos/" + spellName);
@@ -59,8 +66,11 @@ public class Spell : MonoBehaviour, IDelegationAction
         else
             timeScale = (int)char.GetNumericValue(info.timeScale);
 
+        IsDamaging = info.isDamaging;
+
+        ActionType = "spell";
         ParentElemental = parentReference;
-        IsTargeted = info.isTargeted;
+        MaxTargets = info.maxTargets;
         CanTargetSelf = info.canTargetSelf;
         CanTargetAlly = info.canTargetAlly;
         CanTargetEnemy = info.canTargetEnemy;
@@ -72,19 +82,24 @@ public class Spell : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
+        //.handle nightmare & numbing cold interactable
+
         switch (delegationScenario)
         {
             case DelegationCore.DelegationScenario.Reset:
                 button.interactable = false;
                 break;
-            case DelegationCore.DelegationScenario.Counter:
-                button.interactable = isCounter;
-                break;
+            // If DelegationScenario is RoundStart or RoundEnd, do nothing
             case DelegationCore.DelegationScenario.TimeScale:
                 if (isCounter) return;
                 button.interactable = isWild || Clock.CurrentTimeScale >= timeScale;
                 break;
-            // If DelegationScenario is RoundStart or RoundEnd, do nothing
+            case DelegationCore.DelegationScenario.Counter:
+                button.interactable = isCounter;
+                break;
+            case DelegationCore.DelegationScenario.Immediate:
+                button.interactable = true;
+                break;
         }
     }
 

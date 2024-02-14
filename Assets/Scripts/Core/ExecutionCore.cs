@@ -16,6 +16,12 @@ public class ExecutionCore : MonoBehaviour
 
     public void ReceivePacket(RelayPacket packet) // Called by RelayCore
     {
-        Debug.Log(packet.actionType);
+        //Debug.Log(packet.player);
+        //Debug.Log(packet.actionType);
+        //Debug.Log(packet.casterSlot);
+        //foreach (int slot in packet.targetSlots)
+        //    Debug.Log(slot);
+        //Debug.Log(packet.name);
+        //Debug.Log(packet.potion);
     }
 }

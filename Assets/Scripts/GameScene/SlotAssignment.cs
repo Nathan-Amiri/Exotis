@@ -38,9 +38,9 @@ public class SlotAssignment : MonoBehaviour
         {
             { "allySlot", slotsToDesignate[0] },
             { "enemy1Slot", slotsToDesignate[1] },
-            { "enemy2Slot", slotsToDesignate[1] },
-            { "benchedAlly1Slot", slotsToDesignate[1] },
-            { "benchedAlly2Slot", slotsToDesignate[1] },
+            { "enemy2Slot", slotsToDesignate[2] },
+            { "benchedAlly1Slot", slotsToDesignate[3] },
+            { "benchedAlly2Slot", slotsToDesignate[4] },
         };
     }
 }

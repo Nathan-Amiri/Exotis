@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   traitName: Sacrifice
-  traitIsTargeted: 1
+  traitMaxTargets: 1
   traitCanTargetSelf: 0
   traitCanTargetAlly: 1
   traitCanTargetEnemy: 0

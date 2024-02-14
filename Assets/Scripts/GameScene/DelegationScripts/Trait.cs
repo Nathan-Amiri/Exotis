@@ -19,12 +19,15 @@ public class Trait : MonoBehaviour, IDelegationAction
 
     // DYNAMIC:
         // IDelegationAction fields:
+    public string ActionType { get; private set; }
     public Elemental ParentElemental { get; set; }
-    public bool IsTargeted { get; private set; }    
+    public int MaxTargets { get; private set; }
     public bool CanTargetSelf { get; private set; }
     public bool CanTargetAlly { get; private set; }
     public bool CanTargetEnemy { get; private set; }
     public bool CanTargetBenchedAlly { get; private set; }
+    public string Name { get; private set; }
+
 
     private bool usableRoundStart;
     private bool usableRoundEnd;
@@ -43,12 +46,14 @@ public class Trait : MonoBehaviour, IDelegationAction
     // Called by Elemental
     public void SetElementalInfoFields(ElementalInfo info)
     {
+        ActionType = "trait";
         ParentElemental = parentReference;
-        IsTargeted = info.traitIsTargeted;
+        MaxTargets = info.traitMaxTargets;
         CanTargetSelf = info.traitCanTargetSelf;
         CanTargetAlly = info.traitCanTargetAlly;
         CanTargetEnemy = info.traitCanTargetEnemy;
         CanTargetBenchedAlly = info.traitCanTargetBenchedAlly;
+        Name = info.traitName;
 
         usableRoundStart = info.usableRoundStart;
         usableRoundEnd = info.usableRoundEnd;
@@ -77,6 +82,9 @@ public class Trait : MonoBehaviour, IDelegationAction
                 break;
             case DelegationCore.DelegationScenario.Counter:
                 button.interactable = usableCounterSpeed;
+                break;
+            case DelegationCore.DelegationScenario.Immediate:
+                button.interactable = true;
                 break;
         }
     }

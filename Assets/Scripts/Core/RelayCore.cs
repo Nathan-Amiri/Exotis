@@ -24,7 +24,7 @@ public class RelayCore : NetworkBehaviour
         packet.actionType ??= string.Empty;
         packet.name ??= string.Empty;
         packet.hexType ??= string.Empty;
-        packet.targetSlots ??= new int[] { };
+        packet.targetSlots ??= new int[0];
 
         RelayToServerRpc(packet);
     }
@@ -46,13 +46,13 @@ public struct RelayPacket : INetworkSerializable
 {
     public int player;
     public string actionType; // Possible values: pass, repopulate, trait, retreat, gem, spark, spell (recast?)
-    // Only above variables used for pass
+    // Only above variables used for Pass
 
     public int casterSlot;
-    // Only above variables used for repopulate
-
     public int[] targetSlots; // In the order they were selected
     // Only above variables used for trait, retreat, gem, spark
+
+    //Only player and targetSlots used for Repopulate
 
     // Below variables only used for Spells
     public string name;

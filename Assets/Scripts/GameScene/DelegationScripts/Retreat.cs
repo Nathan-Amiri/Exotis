@@ -15,12 +15,14 @@ public class Retreat : MonoBehaviour, IDelegationAction
     [SerializeField] private DelegationCore delegationCore;
 
     // DYNAMIC:
+    public string ActionType { get; private set; }
     public Elemental ParentElemental { get; set; }
-    public bool IsTargeted { get; private set; }
+    public int MaxTargets { get; private set; }
     public bool CanTargetSelf { get; private set; }
     public bool CanTargetAlly { get; private set; }
     public bool CanTargetEnemy { get; private set; }
     public bool CanTargetBenchedAlly { get; private set; }
+    public string Name { get; private set; }
 
     [NonSerialized] public Elemental elemental;
 
@@ -35,12 +37,14 @@ public class Retreat : MonoBehaviour, IDelegationAction
 
     private void Awake()
     {
+        ActionType = "retreat";
         ParentElemental = parentReference;
-        IsTargeted = true;
+        MaxTargets = 1;
         CanTargetSelf = false;
         CanTargetAlly = false;
         CanTargetEnemy = false;
         CanTargetBenchedAlly = true;
+        // IDelegationAction Name is unnecessary, as it is used only for Spell/Trait
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)

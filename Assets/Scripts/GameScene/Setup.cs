@@ -9,6 +9,9 @@ public class Setup : NetworkBehaviour
     public delegate void GuestFlipAction();
     public static event GuestFlipAction GuestFlip;
 
+    public delegate void GuestSwitchAction();
+    public static event GuestSwitchAction GuestSwitch;
+
     // SCENE REFERENCE:
     [SerializeField] private List<Elemental> hostSceneElementals = new();
     [SerializeField] private List<Spell> hostSceneSpells = new();
@@ -52,8 +55,12 @@ public class Setup : NetworkBehaviour
             elemental.isAlly = true;
 
         // Flip before Elemental.Setup so Elemental can set status correctly
+        // Switch benched Elementals after Flipping to prevent execution order bugs
         if (!IsHost)
+        {
             GuestFlip?.Invoke();
+            GuestSwitch?.Invoke();
+        }
 
         for (int i = 0; i < 4; i++)
         {
@@ -67,6 +74,6 @@ public class Setup : NetworkBehaviour
             guestSceneSpells[i].Setup(guestSpellNames[i].containedString);
         }
 
-        delegationCore.RequestDelegation(DelegationCore.DelegationScenario.RoundStart);
+        delegationCore.RequestDelegation(DelegationCore.DelegationScenario.Repopulation);
     }
 }

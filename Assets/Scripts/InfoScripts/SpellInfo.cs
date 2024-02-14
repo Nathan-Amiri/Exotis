@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SpellInfo", menuName = "ScriptableObjects/SpellInfo")]
@@ -9,9 +8,11 @@ public class SpellInfo : ScriptableObject
 
     public char timeScale;
 
-    public bool isTargeted;
+    public int maxTargets;
     public bool canTargetSelf;
     public bool canTargetAlly;
     public bool canTargetEnemy;
     public bool canTargetBenchedAlly;
+
+    public bool isDamaging;
 }

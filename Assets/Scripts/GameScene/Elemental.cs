@@ -27,6 +27,12 @@ public class Elemental : MonoBehaviour
     public int MaxHealth { get; private set; }
     public int Health { get; private set; }
 
+    [NonSerialized] public bool hasSpark;
+    [NonSerialized] public bool hasGem;
+     public bool hasPotion; //.nonserialized
+
+    [NonSerialized] public bool isDisengaged;
+
     // Called by Setup
     public void Setup(string elementalName)
     {

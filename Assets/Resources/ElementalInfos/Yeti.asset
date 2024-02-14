@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   traitName: Chill
-  traitIsTargeted: 1
+  traitMaxTargets: 1
   traitCanTargetSelf: 0
   traitCanTargetAlly: 1
   traitCanTargetEnemy: 1

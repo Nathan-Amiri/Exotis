@@ -15,16 +15,16 @@ public class Gem : MonoBehaviour, IDelegationAction
     [SerializeField] private DelegationCore delegationCore;
 
     // DYNAMIC:
+    public string ActionType { get; private set; }
     public Elemental ParentElemental { get; set; }
-    public bool IsTargeted { get; private set; }
+    public int MaxTargets { get; private set; }
     public bool CanTargetSelf { get; private set; }
     public bool CanTargetAlly { get; private set; }
     public bool CanTargetEnemy { get; private set; }
     public bool CanTargetBenchedAlly { get; private set; }
+    public string Name { get; private set; }
 
     [NonSerialized] public Elemental elemental;
-
-    private bool hasGem;
 
     private void OnEnable()
     {
@@ -37,9 +37,11 @@ public class Gem : MonoBehaviour, IDelegationAction
 
     private void Awake()
     {
+        ActionType = "gem";
         ParentElemental = parentReference;
-        IsTargeted = false;
-        // Other IDelegationAction fields remain unused
+        MaxTargets = 0;
+        // IDelegationAction target bools are unnecessary
+        // IDelegationAction Name is unnecessary, as it is used only for Spell/Trait
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
@@ -47,7 +49,8 @@ public class Gem : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
-        if (!hasGem) return;
+        if (!ParentElemental.hasGem)
+            return;
 
         if (delegationScenario == DelegationCore.DelegationScenario.Reset)
             button.interactable = false;

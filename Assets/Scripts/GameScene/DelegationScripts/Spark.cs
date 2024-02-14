@@ -14,14 +14,15 @@ public class Spark : MonoBehaviour, IDelegationAction
     [SerializeField] private DelegationCore delegationCore;
 
     // DYNAMIC:
+    public string ActionType { get; private set; }
     public Elemental ParentElemental { get; set; }
-    public bool IsTargeted { get; private set; }
+    public int MaxTargets { get; private set; }
     public bool CanTargetSelf { get; private set; }
     public bool CanTargetAlly { get; private set; }
     public bool CanTargetEnemy { get; private set; }
     public bool CanTargetBenchedAlly { get; private set; }
+    public string Name { get; private set; }
 
-    private bool hasSpark;
 
     private void OnEnable()
     {
@@ -34,17 +35,22 @@ public class Spark : MonoBehaviour, IDelegationAction
 
     private void Awake()
     {
+        ActionType = "spark";
         ParentElemental = parentReference;
-        IsTargeted = true;
+        MaxTargets = 1;
         CanTargetSelf = false;
         CanTargetAlly = false;
         CanTargetEnemy = true;
         CanTargetBenchedAlly = false;
+        // IDelegationAction Name is unnecessary, as it is used only for Spell/Trait
     }
 
     public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
     {
         if (!ParentElemental.isAlly)
+            return;
+
+        if (!ParentElemental.hasSpark)
             return;
 
         if (delegationScenario == DelegationCore.DelegationScenario.Reset)
@@ -55,9 +61,6 @@ public class Spark : MonoBehaviour, IDelegationAction
 
     public void OnClick()
     {
-        if (!hasSpark)
-            return;
-
         delegationCore.SelectAction(this);
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked

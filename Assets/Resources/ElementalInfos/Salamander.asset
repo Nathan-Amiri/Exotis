@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0
   traitName: Burrow
-  traitIsTargeted: 1
+  traitMaxTargets: 1
   traitCanTargetSelf: 0
   traitCanTargetAlly: 0
   traitCanTargetEnemy: 0
