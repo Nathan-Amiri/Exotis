@@ -258,7 +258,7 @@ public class DelegationCore : MonoBehaviour
 
     public void SelectTarget(int targetSlot)
     {
-        // Add value to array
+        // Add value to packet's targetSlots array
         if (packet.targetSlots == null)
             packet.targetSlots = new int[] { targetSlot };
         else
@@ -268,15 +268,33 @@ public class DelegationCore : MonoBehaviour
             packet.targetSlots = temp.ToArray();
         }
 
+        if (delegationScenario == DelegationScenario.Repopulation)
+        {
+            foreach (GameObject button in elementalTargetButtons)
+                button.SetActive(false);
+
+            console.WriteConsoleMessage(string.Empty);
+
+            submitButton.SetActive(true);
+            cancelButton.SetActive(true);
+        }
+
         if (currentAction is Spell spell && spell.name == "Recharge" && packet.rechargeType == null)
         {
             ResetScene();
 
             int targetAllySlot = SlotAssignment.GetSlotDesignations(targetSlot)["allySlot"];
-            string targetAllyName = SlotAssignment.Elementals[targetAllySlot].name;
+            if (!CheckTargetAvailable(targetAllySlot))
+            {
+                cancelButton.SetActive(true);
+                submitButton.SetActive(true);
+
+                return;
+            }
+
+            console.WriteConsoleMessage("Will " + SlotAssignment.Elementals[targetAllySlot].name + " heal 1 or gain a Spark?");
 
             cancelButton.SetActive(true);
-            console.WriteConsoleMessage("Will " + targetAllyName + " heal 1 or gain a Spark?");
             foreach (GameObject button in rechargeButtons)
                 button.SetActive(true);
 
@@ -289,8 +307,7 @@ public class DelegationCore : MonoBehaviour
         // Turn off unavailable target buttons
         elementalTargetButtons[targetSlot].SetActive(false);
 
-            // Check for Repopulation first since currentAction is null when Repopulating
-        if (delegationScenario == DelegationScenario.Repopulation || packet.targetSlots.Length == currentAction.MaxTargets)
+        if (packet.targetSlots.Length == currentAction.MaxTargets)
             foreach (GameObject button in elementalTargetButtons)
                 button.SetActive(false);
 
@@ -391,6 +408,8 @@ public class DelegationCore : MonoBehaviour
             button.SetActive(false);
         foreach (GameObject button in hexButtons)
             button.SetActive(false);
+
+        console.WriteConsoleMessage(string.Empty);
 
         NewAction?.Invoke(DelegationScenario.Reset);
     }
