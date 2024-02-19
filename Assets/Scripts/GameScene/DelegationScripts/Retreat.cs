@@ -24,8 +24,6 @@ public class Retreat : MonoBehaviour, IDelegationAction
     public bool CanTargetBenchedAlly { get; private set; }
     public string Name { get; private set; }
 
-    [NonSerialized] public Elemental elemental;
-
     private void OnEnable()
     {
         DelegationCore.NewAction += OnNewActionNeeded;

@@ -22,10 +22,10 @@ public class RelayCore : NetworkBehaviour
         // (Netcode cannot serialize a struct that contains a null variable, such as a null string or array)
 
         packet.actionType ??= string.Empty;
+        packet.targetSlots ??= new int[0];
         packet.name ??= string.Empty;
         packet.rechargeType ??= string.Empty;
         packet.hexType ??= string.Empty;
-        packet.targetSlots ??= new int[0];
 
         RelayToServerRpc(packet);
     }

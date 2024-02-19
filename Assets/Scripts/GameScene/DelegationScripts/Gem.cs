@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,8 +22,6 @@ public class Gem : MonoBehaviour, IDelegationAction
     public bool CanTargetEnemy { get; private set; }
     public bool CanTargetBenchedAlly { get; private set; }
     public string Name { get; private set; }
-
-    [NonSerialized] public Elemental elemental;
 
     private void OnEnable()
     {
@@ -54,7 +51,7 @@ public class Gem : MonoBehaviour, IDelegationAction
 
         if (delegationScenario == DelegationCore.DelegationScenario.Reset)
             button.interactable = false;
-        else if (elemental.Health != elemental.MaxHealth)
+        else if (ParentElemental.Health != ParentElemental.MaxHealth)
             button.interactable = true;
     }
 

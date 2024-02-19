@@ -14,17 +14,56 @@ public class ExecutionCore : MonoBehaviour
     [SerializeField] private DelegationCore delegationCore;
     [SerializeField] private Clock clock;
 
+    private void DebugPacket(RelayPacket packet)
+    {
+        string message = "player[" + packet.player + "], " + packet.actionType;
+
+        if (packet.actionType == "pass")
+        {
+            Debug.Log(message);
+            return;
+        }
+
+        message += ", caster[" + packet.casterSlot + "]";
+
+        if (packet.targetSlots.Length > 0)
+        {
+            string plural = packet.targetSlots.Length == 1 ? string.Empty : "s";
+            message += ", target" + plural + "[" + packet.targetSlots[0];
+            for (int i = 1; i < packet.targetSlots.Length; i++)
+                message += ", " + packet.targetSlots[i];
+            message += "]";
+        }
+
+        if (packet.actionType != "spell")
+        {
+            Debug.Log(message);
+            return;
+        }
+
+        if (packet.name != string.Empty)
+            message += ", " + packet.name.ToLower();
+
+        if (packet.wildTimeScale != 0)
+            message += ", wild[" + packet.wildTimeScale + "]";
+
+        if (packet.rechargeType != string.Empty)
+            message += "[" + packet.rechargeType + "]";
+
+        if (packet.hexType != string.Empty)
+            message += "[" + packet.hexType + "]";
+
+        if (packet.potion == true)
+            message += ", potion";
+
+        if (packet.frenzy == true)
+            message += ", frenzy";
+
+        Debug.Log(message);
+    }
+
     public void ReceivePacket(RelayPacket packet) // Called by RelayCore
     {
-        //Debug.Log(packet.player);
-        //Debug.Log(packet.actionType);
-        //Debug.Log(packet.casterSlot);
-        //foreach (int slot in packet.targetSlots)
-        //    Debug.Log(slot);
-        //Debug.Log(packet.name);
-        //Debug.Log(packet.potion);
-        //Debug.Log(packet.wildTimeScale);
-        //Debug.Log(packet.rechargeType);
-        //Debug.Log(packet.hexType);
+        DebugPacket(packet);
     }
 }
