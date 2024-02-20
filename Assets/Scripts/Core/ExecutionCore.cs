@@ -66,4 +66,14 @@ public class ExecutionCore : MonoBehaviour
     {
         DebugPacket(packet);
     }
+
+    private void RequestDelegation()
+    {
+
+    }
+
+    public void SelectConsoleButton()
+    {
+
+    }
 }

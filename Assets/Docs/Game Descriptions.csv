@@ -108,7 +108,7 @@
 28 Abomination 6m Lightning/Venom
 	Freak "When I enter play due to a Swap, my ally can immediately Swap. If it has an action, it transfers to its replacement."
 29 Angel 7s Lightning/Jewel
-	Smite "Each round, the first time I take damage from an enemy Spell, I gain a Spark."
+	Smite "Each round, the first time I take damage from a Spell, I gain a Spark."
 30 Werewolf 5f Shadow/Frost
 	Shapeshift "Once per game, at the beginning of a round, I can choose any ally, even one not in play. My Spells become its Spells until the end of the round."
 31 Wyrm 6m Venom/Frost
@@ -116,7 +116,7 @@
 32 Unicorn 5f Frost/Jewel
 	Adorn "When I cast a non-damaging Spell, I become Armored this round."
 33 Witch 6m Shadow/Venom
-	Deceive "At counter speed, I can target any ally, even one not in play. If the spell I am countering deals damage to me, the damage redirects to the target."
+	Deceive "At counter speed, I can target any ally, even one not in play. If the Spell I am countering deals damage to me, the damage redirects to the target."
 34 Shaman 6m Jewel/Shadow
 	Mystic Arts "At any time except counter speed, I can become Disengaged until the end of next round. Despite being Disengaged, I can end this effect early at any time."
 35 Basilisk 6m Venom/Jewel
