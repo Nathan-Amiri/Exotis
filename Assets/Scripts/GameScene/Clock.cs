@@ -5,15 +5,14 @@ using UnityEngine;
 public class Clock : MonoBehaviour
 {
     // No roundstartmessages currently exist in game
-    public enum RoundState { RoundStartDelay, RoundStartCycle, TimeScale, RoundEndCycle, RoundEndMessage, RoundEndDelay, Repopulate}
+    public enum RoundState { RoundStart, TimeScale, RoundEnd, Repopulate}
     public static RoundState CurrentRoundState {  get; private set; }
 
     public static int CurrentTimeScale;
 
     private void Start()
     {
-        // Start with RoundStartCycles since there can be no DelayedEffects at the start of a game
-        CurrentRoundState = RoundState.RoundStartCycle;
+        CurrentRoundState = RoundState.RoundStart;
 
         CurrentTimeScale = 7;
     }

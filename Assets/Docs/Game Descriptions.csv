@@ -22,7 +22,7 @@
 15 Ascend 7 "I am Disengaged this round, and I am Stunned and Trapped next round. At the beginning of next round, I can deal 2 to an Elemental."
 
 16 Surge 3 "I deal 2 to an Elemental. The first time I cast this Spell, I gain a Spark."
-17 Blink C "I target an Elemental. I am Enraged until the Spell I am countering has occurred. Then, I deal 1 to the target. I am Wearied until the end of next round. I can’t cast this Spell again until I Swap."
+17 Blink C "I gain a Spark, and am Enraged until the Spell I am countering has occurred. I am Wearied until the end of next round. I can’t cast this Spell again until I Swap."
 18 Defuse 6 "I Stun an Elemental this round. I can’t cast this Spell again until I Swap."
 19 Recharge 1 "I or my ally heals 1 and gains a Spark. The other either heals 1 or gains a Spark, but not both."
 
@@ -127,7 +127,7 @@
 
 Gem "At any time, I can heal 2."
 Potion "If I’m casting a damaging Spell that has one target, that Spell deals +1 damage."
-Spark "Can only be used at counter speed. I target an Elemental. After the enemy Spell I am countering has occurred, I deal 1 to the target."
+Spark "At counter speed, I can target an Elemental. After the enemy Spell I am countering has occurred, I deal 1 to the target even if I am Eliminated or no longer in play."
 
 
 	STATUS:

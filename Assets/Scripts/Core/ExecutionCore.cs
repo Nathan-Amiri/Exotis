@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class ExecutionCore : MonoBehaviour
@@ -13,6 +14,13 @@ public class ExecutionCore : MonoBehaviour
     // SCENE REFERENCE:
     [SerializeField] private DelegationCore delegationCore;
     [SerializeField] private Clock clock;
+
+    // DYNAMIC:
+    private bool expectingSinglePacket;
+
+    private RelayPacket singlePacket;
+    private RelayPacket allyPacket;
+    private RelayPacket enemyPacket;
 
     private void DebugPacket(RelayPacket packet)
     {
@@ -62,12 +70,48 @@ public class ExecutionCore : MonoBehaviour
         Debug.Log(message);
     }
 
+    private void RoundStart()
+    {
+        //.delayed effects occur simultaneously and silently
+        //.cycle text messages using preset order (see bible)
+
+        //.start roundstart cycle
+    }
+
+    private void NewCycle()
+    {
+        //.if immediate available, do immediate things
+        //.if no actions available, autopass and "You have no available actions"
+
+        // Request roundstart/end/timescale delegation
+        DelegationCore.DelegationScenario scenario;
+
+        if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
+            scenario = DelegationCore.DelegationScenario.RoundStart;
+        else if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
+            scenario = DelegationCore.DelegationScenario.TimeScale;
+        else
+            scenario = DelegationCore.DelegationScenario.RoundEnd;
+
+        expectingSinglePacket = false;
+        delegationCore.RequestDelegation(scenario);
+    }
+
     public void ReceivePacket(RelayPacket packet) // Called by RelayCore
     {
         DebugPacket(packet);
+
+        if (expectingSinglePacket)
+            singlePacket = packet;
+        else if (packet.player == 0 == NetworkManager.Singleton.IsHost)
+            allyPacket = packet;
+        else
+            enemyPacket = packet;
+
+
     }
 
-    private void RequestDelegation()
+    private void TieBreaker()
     {
 
     }
