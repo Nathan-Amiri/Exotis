@@ -57,7 +57,7 @@ public class DelegationCore : MonoBehaviour
                 return;
             }
 
-            console.WriteConsoleMessage("Activate " + immediateAction.ParentElemental.name + "'s " + immediateAction.Name + "?");
+            console.WriteSingleConsoleMessage("Activate " + immediateAction.ParentElemental.name + "'s " + immediateAction.Name + "?", true);
 
             passButton.SetActive(true);
             immediateAction.OnNewActionNeeded(DelegationScenario.Immediate);
@@ -68,7 +68,7 @@ public class DelegationCore : MonoBehaviour
         // Repopulation only requires a delegation if there are two allies on the Bench
         if (newDelegationScenario == DelegationScenario.Repopulation)
         {
-            console.WriteConsoleMessage("Choose a Benched Elemental to Swap into play");
+            console.WriteSingleConsoleMessage("Choose a Benched Elemental to Swap into play", true);
 
             if (NetworkManager.Singleton.IsHost)
             {
@@ -85,13 +85,13 @@ public class DelegationCore : MonoBehaviour
         }
 
         if (newDelegationScenario == DelegationScenario.TimeScale)
-            console.WriteConsoleMessage("Choose an action");
+            console.WriteSingleConsoleMessage("Choose an action", true);
         else if (newDelegationScenario == DelegationScenario.Counter)
-            console.WriteConsoleMessage("Choose a counter action");
+            console.WriteSingleConsoleMessage("Choose a counter action", true);
         else if (newDelegationScenario != DelegationScenario.Reset)
         {
             string time = newDelegationScenario == DelegationScenario.RoundStart ? "beginning" : "end";
-            console.WriteConsoleMessage("Choose an action to use at the " + time + " of the round");
+            console.WriteSingleConsoleMessage("Choose an action to use at the " + time + " of the round", true);
         }
 
         passButton.SetActive(true);
@@ -139,7 +139,7 @@ public class DelegationCore : MonoBehaviour
                 ResetScene();
 
                 cancelButton.SetActive(true);
-                console.WriteConsoleMessage("At what time?");
+                console.WriteSingleConsoleMessage("At what time?", true);
 
                 wildButtons[0].SetActive(true);
                 wildButtons[1].SetActive(Clock.CurrentTimeScale >= 5);
@@ -151,7 +151,7 @@ public class DelegationCore : MonoBehaviour
                 ResetScene();
 
                 cancelButton.SetActive(true);
-                console.WriteConsoleMessage("Choose an effect");
+                console.WriteSingleConsoleMessage("Choose an effect", true);
                 foreach (GameObject button in hexButtons)
                     button.SetActive(true);
 
@@ -171,7 +171,7 @@ public class DelegationCore : MonoBehaviour
         // Check if the action is untargeted
         if (currentAction.MaxTargets == 0)
         {
-            console.WriteConsoleMessage(string.Empty);
+            console.HideConsole();
             cancelButton.SetActive(true);
             submitButton.SetActive(true);
 
@@ -215,7 +215,7 @@ public class DelegationCore : MonoBehaviour
         {
             packet = default;
 
-            console.WriteConsoleMessage("No available targets. Choose a different action");
+            console.WriteSingleConsoleMessage("No available targets. Choose a different action", true);
             consoleButton.SetActive(true);
 
             return;
@@ -230,7 +230,7 @@ public class DelegationCore : MonoBehaviour
         if (spell != null && spell.name == "Recharge")
             message = "Choose an ally to heal 1 and gain a Spark";
 
-        console.WriteConsoleMessage(message);
+        console.WriteSingleConsoleMessage(message, true);
         cancelButton.SetActive(true);
     }
 
@@ -271,7 +271,7 @@ public class DelegationCore : MonoBehaviour
             foreach (GameObject button in elementalTargetButtons)
                 button.SetActive(false);
 
-            console.WriteConsoleMessage(string.Empty);
+            console.HideConsole();
 
             submitButton.SetActive(true);
             cancelButton.SetActive(true);
@@ -290,7 +290,7 @@ public class DelegationCore : MonoBehaviour
                 return;
             }
 
-            console.WriteConsoleMessage("Will " + SlotAssignment.Elementals[targetAllySlot].name + " heal 1 or gain a Spark?");
+            console.WriteSingleConsoleMessage("Will " + SlotAssignment.Elementals[targetAllySlot].name + " heal 1 or gain a Spark?", true);
 
             cancelButton.SetActive(true);
             foreach (GameObject button in rechargeButtons)
@@ -315,7 +315,7 @@ public class DelegationCore : MonoBehaviour
             if (button.activeSelf)
                 moreTargetsAvailable = true;
         if (!moreTargetsAvailable)
-            console.WriteConsoleMessage(string.Empty);
+            console.HideConsole();
 
         // Allow packet to be submitted
         submitButton.SetActive(true);
@@ -326,7 +326,7 @@ public class DelegationCore : MonoBehaviour
     {
         packet.rechargeType = rechargeType;
 
-        console.WriteConsoleMessage(string.Empty);
+        console.HideConsole();
         foreach (GameObject button in rechargeButtons)
             button.SetActive(false);
 
@@ -361,14 +361,14 @@ public class DelegationCore : MonoBehaviour
         // Turn off any remaining target buttons
         foreach (GameObject button in elementalTargetButtons)
             button.SetActive(false);
-        console.WriteConsoleMessage(string.Empty);
+        console.HideConsole();
     }
 
     public void SelectSubmit()
     {
         ResetScene();
 
-        console.WriteConsoleMessage("Waiting for enemy");
+        console.WriteSingleConsoleMessage("Waiting for enemy", true);
 
         packet.player = NetworkManager.Singleton.IsHost ? 0 : 1;
         relayCore.PrepareToRelayPacket(packet);
@@ -407,7 +407,7 @@ public class DelegationCore : MonoBehaviour
         foreach (GameObject button in hexButtons)
             button.SetActive(false);
 
-        console.WriteConsoleMessage(string.Empty);
+        console.HideConsole();
 
         NewAction?.Invoke(DelegationScenario.Reset);
     }

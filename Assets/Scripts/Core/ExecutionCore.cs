@@ -70,12 +70,13 @@ public class ExecutionCore : MonoBehaviour
         Debug.Log(message);
     }
 
-    private void RoundStart()
+    // Called by Setup
+    public void RoundStart()
     {
         //.delayed effects occur simultaneously and silently
         //.cycle text messages using preset order (see bible)
 
-        //.start roundstart cycle
+        NewCycle();
     }
 
     private void NewCycle()
@@ -101,6 +102,7 @@ public class ExecutionCore : MonoBehaviour
     {
         DebugPacket(packet);
 
+        // Cache packets
         if (expectingSinglePacket)
             singlePacket = packet;
         else if (packet.player == 0 == NetworkManager.Singleton.IsHost)
@@ -108,13 +110,84 @@ public class ExecutionCore : MonoBehaviour
         else
             enemyPacket = packet;
 
+        // Return if expecting multiple packets, but only one has been received
+        if (!expectingSinglePacket && (allyPacket.actionType == null || enemyPacket.actionType == null))
+            return;
 
+        // Proceed down the corrent logic path
+        if (Clock.CurrentRoundState == Clock.RoundState.Repopulate)
+            Repopulate();
+        else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+        {
+            if (expectingSinglePacket)
+                SingleCounter();
+            else
+                CounterTieBreaker();
+        }
+        else
+            TieBreaker();
     }
 
     private void TieBreaker()
     {
+        Debug.Log(allyPacket.player);
+        Debug.Log(enemyPacket.player);
+    }
+
+    private void SingleCounter()
+    {
 
     }
+
+    private void CounterTieBreaker()
+    {
+
+    }
+
+    private void GemEffect()
+    {
+
+    }
+
+    private void RetreatEffect()
+    {
+
+    }
+
+    private void TraitEffect()
+    {
+
+    }
+
+    private void SpellEffect()
+    {
+
+    }
+
+    private void SparkEffect()
+    {
+
+    }
+
+    private void RoundEnd()
+    {
+
+    }
+
+    private void Repopulate()
+    {
+
+    }
+
+
+    private bool CheckForGameOver()
+    {
+        //.eliminate elementals below 0 health
+
+        return false;
+    }
+
+
 
     public void SelectConsoleButton()
     {

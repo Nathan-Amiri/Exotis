@@ -10472,6 +10472,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1265245688}
   - component: {fileID: 1265245689}
+  - component: {fileID: 1265245693}
   - component: {fileID: 1265245690}
   - component: {fileID: 1265245691}
   - component: {fileID: 1265245687}
@@ -10580,7 +10581,7 @@ MonoBehaviour:
   - {fileID: 954370429}
   - {fileID: 1089244142}
   teambuilder: {fileID: 1073855615}
-  delegationCore: {fileID: 1386828396}
+  executionCore: {fileID: 1386828397}
 --- !u!114 &1265245691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10615,9 +10616,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   console: {fileID: 1239772142}
+  delegationCore: {fileID: 0}
+  executionCore: {fileID: 0}
   middleConsoleText: {fileID: 1568962831}
   allyConsoleText: {fileID: 286533291}
   enemyConsoleText: {fileID: 773757578}
+--- !u!114 &1265245693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1265245686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b82d35eb372f9b43803502f5749cbfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1278761691
 GameObject:
   m_ObjectHideFlags: 0

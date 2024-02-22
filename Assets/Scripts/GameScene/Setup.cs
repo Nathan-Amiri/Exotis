@@ -20,7 +20,7 @@ public class Setup : NetworkBehaviour
     [SerializeField] private List<Spell> guestSceneSpells = new();
 
     [SerializeField] private Teambuilder teambuilder;
-    [SerializeField] private DelegationCore delegationCore;
+    [SerializeField] private ExecutionCore executionCore;
 
     public override void OnNetworkSpawn()
     {
@@ -74,6 +74,6 @@ public class Setup : NetworkBehaviour
             guestSceneSpells[i].Setup(guestSpellNames[i].containedString);
         }
 
-        delegationCore.RequestDelegation(DelegationCore.DelegationScenario.TimeScale);
+        executionCore.RoundStart();
     }
 }
