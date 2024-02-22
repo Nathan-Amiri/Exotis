@@ -11904,6 +11904,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   delegationCore: {fileID: 1386828396}
   clock: {fileID: 1265245687}
+  console: {fileID: 1265245692}
 --- !u!1 &1420317835
 GameObject:
   m_ObjectHideFlags: 0
