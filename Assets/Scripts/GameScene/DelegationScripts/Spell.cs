@@ -78,27 +78,30 @@ public class Spell : MonoBehaviour, IDelegationAction
         CanTargetBenchedAlly = info.canTargetBenchedAlly;
     }
 
-    public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
+    public void OnNewActionNeeded(bool reset = false)
     {
         if (!ParentElemental.isAlly)
             return;
 
         //.handle nightmare & numbing cold interactable
 
-        switch (delegationScenario)
+        if (reset)
         {
-            case DelegationCore.DelegationScenario.Reset:
-                button.interactable = false;
-                break;
+            button.interactable = false;
+            return;
+        }
+
+        switch (Clock.CurrentRoundState)
+        {
             // If DelegationScenario is RoundStart or RoundEnd, do nothing
-            case DelegationCore.DelegationScenario.TimeScale:
+            case Clock.RoundState.TimeScale:
                 if (isCounter) return;
                 button.interactable = IsWild || Clock.CurrentTimeScale >= timeScale;
                 break;
-            case DelegationCore.DelegationScenario.Counter:
+            case Clock.RoundState.Counter:
                 button.interactable = isCounter;
                 break;
-            case DelegationCore.DelegationScenario.Immediate:
+            case Clock.RoundState.Immediate:
                 button.interactable = true;
                 break;
         }

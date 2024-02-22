@@ -16,7 +16,7 @@ public class DelegationCore : MonoBehaviour
     // DelegationCore > RelayCore > ExecutionCore > DelegationCore
 
     // STATIC:
-    public delegate void NewActionNeeded(DelegationScenario scenario);
+    public delegate void NewActionNeeded(bool reset = false);
     public static event NewActionNeeded NewAction;
 
     // SCENE REFERENCE:
@@ -36,20 +36,14 @@ public class DelegationCore : MonoBehaviour
 
     [SerializeField] private List<Button> potionButtons = new();
 
-    public enum DelegationScenario { RoundStart, RoundEnd, TimeScale, Counter, Immediate, Repopulation, Reset}
-
     // DYNAMIC:
-    private DelegationScenario delegationScenario;
-
     private RelayPacket packet;
     private IDelegationAction currentAction;
 
     // Called by ECore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
-    public void RequestDelegation(DelegationScenario newDelegationScenario, IDelegationAction immediateAction = null)
+    public void RequestDelegation(IDelegationAction immediateAction = null)
     {
-        delegationScenario = newDelegationScenario;
-
-        if (newDelegationScenario == DelegationScenario.Immediate)
+        if (Clock.CurrentRoundState == Clock.RoundState.Immediate)
         {
             if (immediateAction == null)
             {
@@ -60,13 +54,13 @@ public class DelegationCore : MonoBehaviour
             console.WriteSingleConsoleMessage("Activate " + immediateAction.ParentElemental.name + "'s " + immediateAction.Name + "?", true);
 
             passButton.SetActive(true);
-            immediateAction.OnNewActionNeeded(DelegationScenario.Immediate);
+            immediateAction.OnNewActionNeeded();
 
             return;
         }
 
         // Repopulation only requires a delegation if there are two allies on the Bench
-        if (newDelegationScenario == DelegationScenario.Repopulation)
+        if (Clock.CurrentRoundState == Clock.RoundState.Repopulation)
         {
             console.WriteSingleConsoleMessage("Choose a Benched Elemental to Swap into play", true);
 
@@ -84,18 +78,18 @@ public class DelegationCore : MonoBehaviour
             return;
         }
 
-        if (newDelegationScenario == DelegationScenario.TimeScale)
+        if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
             console.WriteSingleConsoleMessage("Choose an action", true);
-        else if (newDelegationScenario == DelegationScenario.Counter)
+        else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
             console.WriteSingleConsoleMessage("Choose a counter action", true);
-        else if (newDelegationScenario != DelegationScenario.Reset)
+        else
         {
-            string time = newDelegationScenario == DelegationScenario.RoundStart ? "beginning" : "end";
+            string time = Clock.CurrentRoundState == Clock.RoundState.RoundStart ? "beginning" : "end";
             console.WriteSingleConsoleMessage("Choose an action to use at the " + time + " of the round", true);
         }
 
         passButton.SetActive(true);
-        NewAction?.Invoke(delegationScenario);
+        NewAction?.Invoke();
 
         // DelegationAction buttons turn interactable when appropriate. DCore waits for an action to be selected
         // (ECore will not request a delegation if no non-pass action is available)
@@ -107,12 +101,12 @@ public class DelegationCore : MonoBehaviour
         packet = default;
 
         // If Immediate, immediate action must be passed into RequestDelegation
-        if (delegationScenario == DelegationScenario.Immediate)
-            RequestDelegation(delegationScenario, currentAction);
+        if (Clock.CurrentRoundState == Clock.RoundState.Immediate)
+            RequestDelegation(currentAction);
         else
         {
             currentAction = null;
-            RequestDelegation(delegationScenario);
+            RequestDelegation();
         }
     }
 
@@ -251,7 +245,7 @@ public class DelegationCore : MonoBehaviour
     {
         consoleButton.SetActive(false);
 
-        RequestDelegation(delegationScenario);
+        RequestDelegation();
     }
 
     public void SelectTarget(int targetSlot)
@@ -266,7 +260,7 @@ public class DelegationCore : MonoBehaviour
             packet.targetSlots = temp.ToArray();
         }
 
-        if (delegationScenario == DelegationScenario.Repopulation)
+        if (Clock.CurrentRoundState == Clock.RoundState.Repopulation)
         {
             foreach (GameObject button in elementalTargetButtons)
                 button.SetActive(false);
@@ -409,6 +403,6 @@ public class DelegationCore : MonoBehaviour
 
         console.HideConsole();
 
-        NewAction?.Invoke(DelegationScenario.Reset);
+        NewAction?.Invoke(true);
     }
 }

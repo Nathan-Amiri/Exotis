@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,14 +46,23 @@ public class Retreat : MonoBehaviour, IDelegationAction
         // IDelegationAction Name is unnecessary, as it is used only for Spell/Trait
     }
 
-    public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
+    public void OnNewActionNeeded(bool reset = false)
     {
         if (!ParentElemental.isAlly)
             return;
 
-        //if elemental is trapped or first benched elemental isn't in slot assignment (no available swap), interactable = false, then return
+        if (ParentElemental.isTrapped)
+            return;
 
-        button.interactable = delegationScenario != DelegationCore.DelegationScenario.Reset;
+        // Check if any benched allies exist
+        int guestAdd = NetworkManager.Singleton.IsHost ? 0 : 2;
+        if (SlotAssignment.Elementals[4 + guestAdd] == null && SlotAssignment.Elementals[5 + guestAdd] == null)
+        {
+            button.interactable = false;
+            return;
+        }
+
+        button.interactable = !reset;
     }
 
     public void OnClick()

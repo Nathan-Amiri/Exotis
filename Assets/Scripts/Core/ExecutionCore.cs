@@ -22,6 +22,31 @@ public class ExecutionCore : MonoBehaviour
     private RelayPacket allyPacket;
     private RelayPacket enemyPacket;
 
+    /*
+        Todo:
+
+    tiebreaker
+    singlecounter
+    countertiebreaker
+    immediate (and immediate tiebreaker?)
+    
+    selectconsolebutton
+    
+    gemeffect
+    retreateffect
+    traiteffect
+    spelleffect
+    sparkeffect
+
+    roundend
+    repopulation (and repopulation tiebreaker?)
+    roundstart
+    
+    checkforavailableactions
+    checkforgameover
+
+    */
+
     private void DebugPacket(RelayPacket packet)
     {
         string message = "player[" + packet.player + "], " + packet.actionType;
@@ -85,17 +110,9 @@ public class ExecutionCore : MonoBehaviour
         //.if no actions available, autopass and "You have no available actions"
 
         // Request roundstart/end/timescale delegation
-        DelegationCore.DelegationScenario scenario;
-
-        if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
-            scenario = DelegationCore.DelegationScenario.RoundStart;
-        else if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-            scenario = DelegationCore.DelegationScenario.TimeScale;
-        else
-            scenario = DelegationCore.DelegationScenario.RoundEnd;
 
         expectingSinglePacket = false;
-        delegationCore.RequestDelegation(scenario);
+        delegationCore.RequestDelegation();
     }
 
     public void ReceivePacket(RelayPacket packet) // Called by RelayCore
@@ -115,8 +132,10 @@ public class ExecutionCore : MonoBehaviour
             return;
 
         // Proceed down the corrent logic path
-        if (Clock.CurrentRoundState == Clock.RoundState.Repopulate)
-            Repopulate();
+        if (Clock.CurrentRoundState == Clock.RoundState.Immediate)
+            Immediate();
+        if (Clock.CurrentRoundState == Clock.RoundState.Repopulation)
+            Repopulation();
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
         {
             if (expectingSinglePacket)
@@ -126,6 +145,12 @@ public class ExecutionCore : MonoBehaviour
         }
         else
             TieBreaker();
+    }
+
+    // Logic paths:
+    private void Immediate()
+    {
+
     }
 
     private void TieBreaker()
@@ -144,6 +169,7 @@ public class ExecutionCore : MonoBehaviour
 
     }
 
+    // Effect methods:
     private void GemEffect()
     {
 
@@ -174,12 +200,16 @@ public class ExecutionCore : MonoBehaviour
 
     }
 
-    private void Repopulate()
+    private void Repopulation()
     {
 
     }
 
 
+    private bool CheckForAvailableActions()
+    {
+        return true;
+    }
     private bool CheckForGameOver()
     {
         //.eliminate elementals below 0 health

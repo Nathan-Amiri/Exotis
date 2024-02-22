@@ -45,7 +45,7 @@ public class Spark : MonoBehaviour, IDelegationAction
         // IDelegationAction Name is unnecessary, as it is used only for Spell/Trait
     }
 
-    public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
+    public void OnNewActionNeeded(bool reset = false)
     {
         if (!ParentElemental.isAlly)
             return;
@@ -53,9 +53,9 @@ public class Spark : MonoBehaviour, IDelegationAction
         if (!ParentElemental.hasSpark)
             return;
 
-        if (delegationScenario == DelegationCore.DelegationScenario.Reset)
+        if (reset)
             button.interactable = false;
-        else if (delegationScenario == DelegationCore.DelegationScenario.Counter)
+        else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
             button.interactable = true;
     }
 

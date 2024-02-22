@@ -15,5 +15,5 @@ public interface IDelegationAction
     // Name only used for Spells and Traits
     string Name { get; }
 
-    void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario);
+    void OnNewActionNeeded(bool reset = false);
 }

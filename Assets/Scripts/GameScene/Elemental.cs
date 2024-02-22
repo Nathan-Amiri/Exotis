@@ -29,9 +29,10 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public bool hasSpark;
     [NonSerialized] public bool hasGem;
-     public bool hasPotion; //.nonserialized
+    [NonSerialized] public bool hasPotion;
 
     [NonSerialized] public bool isDisengaged;
+    [NonSerialized] public bool isTrapped;
 
     // Called by Setup
     public void Setup(string elementalName)

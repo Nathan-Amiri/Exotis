@@ -60,29 +60,32 @@ public class Trait : MonoBehaviour, IDelegationAction
         usableCounterSpeed = info.usableCounterSpeed;
     }
 
-    public void OnNewActionNeeded(DelegationCore.DelegationScenario delegationScenario)
+    public void OnNewActionNeeded(bool reset)
     {
         if (!ParentElemental.isAlly)
             return;
 
-        switch (delegationScenario)
+        if (reset)
         {
-            case DelegationCore.DelegationScenario.Reset:
-                button.interactable = false;
-                break;
-            case DelegationCore.DelegationScenario.RoundStart:
+            button.interactable = false;
+            return;
+        }
+
+        switch (Clock.CurrentRoundState)
+        {
+            case Clock.RoundState.RoundStart:
                 button.interactable = usableRoundStart;
                 break;
-            case DelegationCore.DelegationScenario.RoundEnd:
+            case Clock.RoundState.RoundEnd:
                 button.interactable = usableRoundEnd;
                 break;
-            case DelegationCore.DelegationScenario.TimeScale:
+            case Clock.RoundState.TimeScale:
                 button.interactable = usableDuringTimeScaleSpeeds;
                 break;
-            case DelegationCore.DelegationScenario.Counter:
+            case Clock.RoundState.Counter:
                 button.interactable = usableCounterSpeed;
                 break;
-            case DelegationCore.DelegationScenario.Immediate:
+            case Clock.RoundState.Immediate:
                 button.interactable = true;
                 break;
         }
