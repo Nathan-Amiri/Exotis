@@ -23,6 +23,10 @@ public class ExecutionCore : MonoBehaviour
     private RelayPacket allyPacket;
     private RelayPacket enemyPacket;
 
+        // The method SelectConsoleButton will call next
+    private delegate void ConsoleReturn();
+    private ConsoleReturn consoleReturn;
+
     /*
         Todo:
 
@@ -354,7 +358,7 @@ public class ExecutionCore : MonoBehaviour
 
     public void SelectConsoleButton()
     {
-
+        consoleReturn();
     }
 
     private void ResetPackets()
