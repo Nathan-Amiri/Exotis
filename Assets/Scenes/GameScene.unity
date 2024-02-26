@@ -10616,11 +10616,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   console: {fileID: 1239772142}
-  delegationCore: {fileID: 0}
-  executionCore: {fileID: 0}
   middleConsoleText: {fileID: 1568962831}
   allyConsoleText: {fileID: 286533291}
   enemyConsoleText: {fileID: 773757578}
+  consoleButton: {fileID: 1740752641}
 --- !u!114 &1265245693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11858,7 +11857,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   relayCore: {fileID: 1386828395}
   console: {fileID: 1265245692}
-  consoleButton: {fileID: 1740752641}
   passButton: {fileID: 1466363740}
   cancelButton: {fileID: 531067111}
   submitButton: {fileID: 1079674393}
@@ -15162,8 +15160,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1386828396}
-        m_TargetAssemblyTypeName: DelegationCore, Assembly-CSharp
+      - m_Target: {fileID: 1265245692}
+        m_TargetAssemblyTypeName: Console, Assembly-CSharp
         m_MethodName: SelectConsoleButton
         m_Mode: 1
         m_Arguments:

@@ -1,73 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 public class Console : MonoBehaviour
 {
     [SerializeField] private GameObject console;
-    [SerializeField] private DelegationCore delegationCore;
-    [SerializeField] private ExecutionCore executionCore;
 
     [SerializeField] private TMP_Text middleConsoleText;
     [SerializeField] private TMP_Text allyConsoleText;
     [SerializeField] private TMP_Text enemyConsoleText;
 
+    [SerializeField] private GameObject consoleButton;
 
-    private readonly List<(string, string)> messageQueue = new();
-    private bool outputDelegationCore;
-    public void WriteSingleConsoleMessage(string message, bool isDelegationCore, bool queuedMessage = false)
+    public delegate void OutputMethod();
+    public OutputMethod currentOutputMethod;
+    public void WriteConsoleMessage(string singleOrAllyMessage, string enemyMessage = null, OutputMethod outputMethod = null)
     {
-        outputDelegationCore = isDelegationCore;
+        // Reset all text
+        ResetConsole();
 
-        if (queuedMessage)
-            messageQueue.Add((message, string.Empty));
+        console.SetActive(true);
+
+        if (enemyMessage == null)
+            middleConsoleText.text = singleOrAllyMessage;
         else
         {
-            console.SetActive(true);
-            middleConsoleText.text = message;
-        }
-    }
-    public void WriteMultipleConsoleMessage(string allyMessage, string enemyMessage, bool queuedMessage = false)
-    {
-        // Multiple messages are never written by DelegationCore
-        outputDelegationCore = false;
-
-        if (queuedMessage)
-            messageQueue.Add((allyMessage, enemyMessage));
-        else
-        {
-            console.SetActive(true);
-            allyConsoleText.text = allyMessage;
+            allyConsoleText.text = singleOrAllyMessage;
             enemyConsoleText.text = enemyMessage;
         }
-    }
-    public void HideConsole()
-    {
-        console.SetActive(false);
-        middleConsoleText.text = string.Empty;
+
+        if (outputMethod != null)
+        {
+            currentOutputMethod = outputMethod;
+            consoleButton.SetActive(true);
+        }
     }
 
     public void SelectConsoleButton()
     {
-        if (messageQueue.Count > 0)
-        {
-            if (messageQueue[0].Item2 != string.Empty)
-                middleConsoleText.text = messageQueue[0].Item1;
-            else
-            {
-                allyConsoleText.text = messageQueue[0].Item1;
-                enemyConsoleText.text = messageQueue[0].Item2;
-            }
+        ResetConsole();
 
-            messageQueue.RemoveAt(0);
-            return;
-        }
+        currentOutputMethod();
+        currentOutputMethod = null;
+    }
 
-        if (outputDelegationCore)
-            delegationCore.SelectConsoleButton();
-        else
-            executionCore.SelectConsoleButton();
+    public void ResetConsole()
+    {
+        console.SetActive(false);
+        consoleButton.SetActive(false);
+
+        middleConsoleText.text = string.Empty;
+        allyConsoleText.text = string.Empty;
+        enemyConsoleText.text = string.Empty;
     }
 }

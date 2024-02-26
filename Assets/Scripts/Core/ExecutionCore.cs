@@ -23,21 +23,14 @@ public class ExecutionCore : MonoBehaviour
     private RelayPacket allyPacket;
     private RelayPacket enemyPacket;
 
-        // The method SelectConsoleButton will call next
-    private delegate void ConsoleReturn();
-    private ConsoleReturn consoleReturn;
-
     /*
         Todo:
 
     tiebreaker
 
-    selectconsolebutton
-
     singlecounter
     countertiebreaker
     immediate (and immediate tiebreaker?)
-    
     
     gemeffect
     retreateffect
@@ -56,50 +49,50 @@ public class ExecutionCore : MonoBehaviour
 
     private void DebugPacket(RelayPacket packet)
     {
-        string message = "player[" + packet.player + "], " + packet.actionType;
+        string debugMessage = "player[" + packet.player + "], " + packet.actionType;
 
         if (packet.actionType == "pass")
         {
-            Debug.Log(message);
+            Debug.Log(debugMessage);
             return;
         }
 
-        message += ", caster[" + packet.casterSlot + "]";
+        debugMessage += ", caster[" + packet.casterSlot + "]";
 
         if (packet.targetSlots.Length > 0)
         {
             string plural = packet.targetSlots.Length == 1 ? string.Empty : "s";
-            message += ", target" + plural + "[" + packet.targetSlots[0];
+            debugMessage += ", target" + plural + "[" + packet.targetSlots[0];
             for (int i = 1; i < packet.targetSlots.Length; i++)
-                message += ", " + packet.targetSlots[i];
-            message += "]";
+                debugMessage += ", " + packet.targetSlots[i];
+            debugMessage += "]";
         }
 
         if (packet.actionType != "spell")
         {
-            Debug.Log(message);
+            Debug.Log(debugMessage);
             return;
         }
 
         if (packet.name != string.Empty)
-            message += ", " + packet.name.ToLower();
+            debugMessage += ", " + packet.name.ToLower();
 
         if (packet.wildTimeScale != 0)
-            message += ", wild[" + packet.wildTimeScale + "]";
+            debugMessage += ", wild[" + packet.wildTimeScale + "]";
 
         if (packet.rechargeType != string.Empty)
-            message += "[" + packet.rechargeType + "]";
+            debugMessage += "[" + packet.rechargeType + "]";
 
         if (packet.hexType != string.Empty)
-            message += "[" + packet.hexType + "]";
+            debugMessage += "[" + packet.hexType + "]";
 
         if (packet.potion == true)
-            message += ", potion";
+            debugMessage += ", potion";
 
         if (packet.frenzy == true)
-            message += ", frenzy";
+            debugMessage += ", frenzy";
 
-        Debug.Log(message);
+        Debug.Log(debugMessage);
     }
 
     // Called by Setup
@@ -165,7 +158,6 @@ public class ExecutionCore : MonoBehaviour
         //. display targets when appropriate
 
         // Get packet names
-
         Elemental allyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
         Elemental enemyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
 
@@ -182,11 +174,7 @@ public class ExecutionCore : MonoBehaviour
             ResetPackets();
 
             if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-            {
-                console.WriteSingleConsoleMessage("Both players have passed. Round will end", false);
-                //.ensure that consolebutton returns to the correct location
-
-            }
+                console.WriteConsoleMessage("Both players have passed. Round will end", null, SelectConsoleButton);
             // If both players pass at RoundStart/End, continue without writing to console
             else if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
             {
@@ -195,93 +183,60 @@ public class ExecutionCore : MonoBehaviour
             }
             //.else if roundend, continue without writing to console--but what happens next?
         }
+
         // If both players activated Gems
         else if (allyPacket.actionType == "gem" && enemyPacket.actionType == "gem")
-        {
-            console.WriteMultipleConsoleMessage("Your " + allyCaster.name + " will activate its Gem", 
-                "The enemy's " + enemyCaster.name + " will activate its Gem");
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("Your " + allyCaster.name + " will activate its Gem",
+                "The enemy's " + enemyCaster.name + " will activate its Gem", SelectConsoleButton);
+
         // If only one player activated a Gem
         else if (allyPacket.actionType == "gem")
-        {
-            console.WriteSingleConsoleMessage("Your " + allyCaster.name + "will activate its Gem", false);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("Your " + allyCaster.name + "will activate its Gem", null, SelectConsoleButton);
         else if (enemyPacket.actionType == "gem")
-        {
-            console.WriteSingleConsoleMessage("The enemy's " + enemyCaster.name + "will activate its Gem", false);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("The enemy's " + enemyCaster.name + "will activate its Gem", null, SelectConsoleButton);
+
         //.if traits, display action message immediately, no need for tiebreaker
+
         // If both players Retreated
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
-        {
-            console.WriteMultipleConsoleMessage("Your " + allyCaster.name + " will Retreat, Swapping with " + allyTargetNames[1],
-                "The enemy's " + enemyCaster.name + " will Retreat, Swapping with " + enemyTargetNames[1]);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("Your " + allyCaster.name + " will Retreat, Swapping with " + allyTargetNames[1],
+                "The enemy's " + enemyCaster.name + " will Retreat, Swapping with " + enemyTargetNames[1], SelectConsoleButton);
+
         // If only one player Retreated
         else if (allyPacket.actionType == "retreat")
-        {
-            console.WriteSingleConsoleMessage("Your " + allyCaster.name + " will Retreat, Swapping with " + allyTargetNames[1], false);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("Your " + allyCaster.name + " will Retreat, Swapping with " + allyTargetNames[1], null, SelectConsoleButton);
         else if (enemyPacket.actionType == "retreat")
-        {
-            console.WriteSingleConsoleMessage("The enemy's " + enemyCaster.name + " will Retreat, Swapping with " + enemyTargetNames[1], false);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("The enemy's " + enemyCaster.name + " will Retreat, Swapping with " + enemyTargetNames[1], null, SelectConsoleButton);
+
         // If only one player Passed
         else if (allyPacket.actionType == "pass")
-        {
-            console.WriteMultipleConsoleMessage("You have passed", 
-                "The enemy will act at " + enemyTimeScale);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("You have passed", "The enemy will act at " + enemyTimeScale, ActionMessage);
         else if (enemyPacket.actionType == "pass")
-        {
-            console.WriteMultipleConsoleMessage("You will act at " + allyTimeScale, 
-                "The enemy has passed");
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("You will act at " + allyTimeScale, "The enemy has passed", ActionMessage);
+
         // If one player declared a sooner Timescale
         else if (allyTimeScale > enemyTimeScale)
-        {
-            console.WriteMultipleConsoleMessage("You will act first at " + allyTimeScale, 
-                "The enemy planned to act at " + enemyTimeScale);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("You will act first at " + allyTimeScale, "The enemy planned to act at " + enemyTimeScale, SelectConsoleButton);
         else if (enemyTimeScale > allyTimeScale)
-        {
-            console.WriteMultipleConsoleMessage("You planned to act at " + allyTimeScale,
-                "The enemy will act first at " + enemyTimeScale);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("You planned to act at " + allyTimeScale, "The enemy will act first at " + enemyTimeScale, SelectConsoleButton);
+
         // If Timescales tied, use Elemental's MaxHealth to determine Elemental speed
         else if (allyCaster.MaxHealth < enemyCaster.MaxHealth)
-        {
-            console.WriteSingleConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
-                "Your " + allyCaster.name + " outsped the enemy's " + enemyCaster, false);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
+                "Your " + allyCaster.name + " outsped the enemy's " + enemyCaster, null, SelectConsoleButton);
         else if (allyCaster.MaxHealth > enemyCaster.MaxHealth)
-        {
-            console.WriteSingleConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
-                "The enemy's " + enemyCaster.name + " outsped the your " + allyCaster, false);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
+                "The enemy's " + enemyCaster.name + " outsped the your " + allyCaster, null, SelectConsoleButton);
+
         // Timescales and Elemental speeds tied
         else
-        {
-            console.WriteSingleConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
-                "Your " + allyCaster + " and the enemy's " + enemyCaster + " are the same speed, and will act simultaneously", false);
-            //.ensure that consolebutton returns to the correct location
-        }
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
+                "Your " + allyCaster + " and the enemy's " + enemyCaster + " are the same speed, and will act simultaneously", null, SelectConsoleButton);
+    }
 
-        //.figure out action messages
-
-        //.if I put code down here, I have to make sure everything above returns if it needs to!
+    public void ActionMessage()
+    {
+        Debug.Log("actionmessage");
     }
 
     private void SingleCounter()
@@ -354,11 +309,10 @@ public class ExecutionCore : MonoBehaviour
         return targetNames;
     }
 
-
-
-    public void SelectConsoleButton()
+    private void SelectConsoleButton()
     {
-        consoleReturn();
+        Debug.Log("ExecutionCore's SelectConsoleButton");
+        //.delete this method after all WriteConsoleButton calls have been given output methods
     }
 
     private void ResetPackets()
