@@ -22,6 +22,7 @@ public class DelegationCore : MonoBehaviour
     // SCENE REFERENCE:
     [SerializeField] private RelayCore relayCore;
     [SerializeField] private Console console;
+    [SerializeField] private SlotButtons slotButtons;
 
     [SerializeField] private GameObject passButton;
     [SerializeField] private GameObject cancelButton;
@@ -30,8 +31,6 @@ public class DelegationCore : MonoBehaviour
     [SerializeField] private List<GameObject> wildButtons = new();
     [SerializeField] private List<GameObject> rechargeButtons = new();
     [SerializeField] private List<GameObject> hexButtons = new();
-
-    [SerializeField] private List<GameObject> elementalTargetButtons = new();
 
     [SerializeField] private List<Button> potionButtons = new();
 
@@ -64,15 +63,10 @@ public class DelegationCore : MonoBehaviour
             console.WriteConsoleMessage("Choose a Benched Elemental to Swap into play");
 
             if (NetworkManager.Singleton.IsHost)
-            {
-                elementalTargetButtons[4].SetActive(true);
-                elementalTargetButtons[5].SetActive(true);
-            }
+                slotButtons.TurnOnSlotButtons(new List<int> { 4, 5 }, true);
             else
-            {
-                elementalTargetButtons[6].SetActive(true);
-                elementalTargetButtons[7].SetActive(true);
-            }
+                slotButtons.TurnOnSlotButtons(new List<int> { 6, 7 }, true);
+
 
             return;
         }
@@ -214,8 +208,7 @@ public class DelegationCore : MonoBehaviour
         }
 
         // Turn on target buttons
-        foreach (int availableTargetSlot in availableTargetSlots)
-            elementalTargetButtons[availableTargetSlot].SetActive(true);
+        slotButtons.TurnOnSlotButtons(availableTargetSlots, true);
 
         string message = action.MaxTargets == 1 ? "Choose a target" : "Choose target(s)";
 
@@ -259,8 +252,7 @@ public class DelegationCore : MonoBehaviour
 
         if (Clock.CurrentRoundState == Clock.RoundState.Repopulation)
         {
-            foreach (GameObject button in elementalTargetButtons)
-                button.SetActive(false);
+            slotButtons.ResetSlotButtons();
 
             console.ResetConsole();
 
@@ -294,18 +286,14 @@ public class DelegationCore : MonoBehaviour
         potionButtons[packet.casterSlot].interactable = PotionInteractable();
 
         // Turn off unavailable target buttons
-        elementalTargetButtons[targetSlot].SetActive(false);
+        slotButtons.TurnOffSlotButtons(new List<int> { targetSlot });
 
         if (packet.targetSlots.Length == currentAction.MaxTargets)
-            foreach (GameObject button in elementalTargetButtons)
-                button.SetActive(false);
+            slotButtons.ResetSlotButtons();
+
 
         // Remove console message if no more targets are available
-        bool moreTargetsAvailable = false;
-        foreach (GameObject button in elementalTargetButtons)
-            if (button.activeSelf)
-                moreTargetsAvailable = true;
-        if (!moreTargetsAvailable)
+        if (!slotButtons.AnyTargetsAvailable())
             console.ResetConsole();
 
         // Allow packet to be submitted
@@ -350,8 +338,8 @@ public class DelegationCore : MonoBehaviour
         packet.potion = true;
 
         // Turn off any remaining target buttons
-        foreach (GameObject button in elementalTargetButtons)
-            button.SetActive(false);
+        slotButtons.ResetSlotButtons();
+
         console.ResetConsole();
     }
 
@@ -389,8 +377,8 @@ public class DelegationCore : MonoBehaviour
         cancelButton.SetActive(false);
         submitButton.SetActive(false);
 
-        foreach (GameObject button in elementalTargetButtons)
-            button.SetActive(false);
+        slotButtons.ResetSlotButtons();
+
         foreach (GameObject button in wildButtons)
             button.SetActive(false);
         foreach (GameObject button in rechargeButtons)

@@ -14,8 +14,8 @@ public class Console : MonoBehaviour
     [SerializeField] private GameObject consoleButton;
 
     public delegate void OutputMethod();
-    public OutputMethod currentOutputMethod;
-    public void WriteConsoleMessage(string singleOrAllyMessage, string enemyMessage = null, OutputMethod outputMethod = null)
+    public OutputMethod CurrentOutputMethod { get; private set; }
+    public void WriteConsoleMessage(string singleOrAllyMessage, string enemyMessage = null, OutputMethod outputMethod = null, bool enemyColor = false)
     {
         // Reset all text
         ResetConsole();
@@ -23,7 +23,10 @@ public class Console : MonoBehaviour
         console.SetActive(true);
 
         if (enemyMessage == null)
+        {
+            middleConsoleText.color = enemyColor ? StaticLibrary.gameColors["enemyText"] : StaticLibrary.gameColors["allyText"];
             middleConsoleText.text = singleOrAllyMessage;
+        }
         else
         {
             allyConsoleText.text = singleOrAllyMessage;
@@ -32,7 +35,7 @@ public class Console : MonoBehaviour
 
         if (outputMethod != null)
         {
-            currentOutputMethod = outputMethod;
+            CurrentOutputMethod = outputMethod;
             consoleButton.SetActive(true);
         }
     }
@@ -41,8 +44,7 @@ public class Console : MonoBehaviour
     {
         ResetConsole();
 
-        currentOutputMethod();
-        currentOutputMethod = null;
+        CurrentOutputMethod();
     }
 
     public void ResetConsole()

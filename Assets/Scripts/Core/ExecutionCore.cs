@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using static UnityEditor.ShaderData;
+using static UnityEngine.GraphicsBuffer;
 
 public class ExecutionCore : MonoBehaviour
 {
@@ -15,6 +19,7 @@ public class ExecutionCore : MonoBehaviour
     [SerializeField] private DelegationCore delegationCore;
     [SerializeField] private Clock clock;
     [SerializeField] private Console console;
+    [SerializeField] private SlotButtons slotButtons;
 
     // DYNAMIC:
     private bool expectingSinglePacket;
@@ -86,10 +91,10 @@ public class ExecutionCore : MonoBehaviour
         if (packet.hexType != string.Empty)
             debugMessage += "[" + packet.hexType + "]";
 
-        if (packet.potion == true)
+        if (packet.potion)
             debugMessage += ", potion";
 
-        if (packet.frenzy == true)
+        if (packet.frenzy)
             debugMessage += ", frenzy";
 
         Debug.Log(debugMessage);
@@ -155,8 +160,6 @@ public class ExecutionCore : MonoBehaviour
 
     private void TieBreaker()
     {
-        //. display targets when appropriate
-
         // Get packet names
         Elemental allyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
         Elemental enemyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
@@ -165,8 +168,8 @@ public class ExecutionCore : MonoBehaviour
         List<string> enemyTargetNames = GetTargetNamesFromPacket(enemyPacket);
 
         //. figure out how to get timescales. (i.e. 7:00)
-        int allyTimeScale = 0;
-        int enemyTimeScale = 0;
+        int allyTimeScale = GetTimeScale(allyPacket);
+        int enemyTimeScale = GetTimeScale(enemyPacket);
 
         // If both players passed
         if (allyPacket.actionType == "pass" && enemyPacket.actionType == "pass")
@@ -191,11 +194,31 @@ public class ExecutionCore : MonoBehaviour
 
         // If only one player activated a Gem
         else if (allyPacket.actionType == "gem")
+        {
+            IsolateFasterPacket(allyPacket);
             console.WriteConsoleMessage("Your " + allyCaster.name + "will activate its Gem", null, SelectConsoleButton);
+        }
         else if (enemyPacket.actionType == "gem")
+        {
+            IsolateFasterPacket(enemyPacket);
             console.WriteConsoleMessage("The enemy's " + enemyCaster.name + "will activate its Gem", null, SelectConsoleButton);
+        }
 
-        //.if traits, display action message immediately, no need for tiebreaker
+        // If both players cast a Trait
+        else if (allyPacket.actionType == "trait" && enemyPacket.actionType == "trait")
+            WriteActionMessage();
+
+        // If only one player cast a Trait
+        else if (allyPacket.actionType == "trait")
+        {
+            IsolateFasterPacket(allyPacket);
+            WriteActionMessage();
+        }
+        else if (enemyPacket.actionType == "trait")
+        {
+            IsolateFasterPacket(enemyPacket);
+            WriteActionMessage();
+        }
 
         // If both players Retreated
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
@@ -204,40 +227,168 @@ public class ExecutionCore : MonoBehaviour
 
         // If only one player Retreated
         else if (allyPacket.actionType == "retreat")
+        {
+            IsolateFasterPacket(allyPacket);
             console.WriteConsoleMessage("Your " + allyCaster.name + " will Retreat, Swapping with " + allyTargetNames[1], null, SelectConsoleButton);
+        }
         else if (enemyPacket.actionType == "retreat")
+        {
+            IsolateFasterPacket(enemyPacket);
             console.WriteConsoleMessage("The enemy's " + enemyCaster.name + " will Retreat, Swapping with " + enemyTargetNames[1], null, SelectConsoleButton);
+        }
 
         // If only one player Passed
         else if (allyPacket.actionType == "pass")
-            console.WriteConsoleMessage("You have passed", "The enemy will act at " + enemyTimeScale, ActionMessage);
+        {
+            IsolateFasterPacket(enemyPacket);
+            console.WriteConsoleMessage("You have passed", "The enemy will act at " + enemyTimeScale + ":00", WriteActionMessage);
+        }
         else if (enemyPacket.actionType == "pass")
-            console.WriteConsoleMessage("You will act at " + allyTimeScale, "The enemy has passed", ActionMessage);
+        {
+            IsolateFasterPacket(allyPacket);
+            console.WriteConsoleMessage("You will act at " + allyTimeScale + ":00", "The enemy has passed", WriteActionMessage);
+        }
 
-        // If one player declared a sooner Timescale
+        // If one player declared a sooner timescale
         else if (allyTimeScale > enemyTimeScale)
-            console.WriteConsoleMessage("You will act first at " + allyTimeScale, "The enemy planned to act at " + enemyTimeScale, SelectConsoleButton);
+        {
+            IsolateFasterPacket(allyPacket);
+            console.WriteConsoleMessage("You will act first at " + allyTimeScale + ":00", "The enemy planned to act at " + enemyTimeScale + ":00", SelectConsoleButton);
+        }
         else if (enemyTimeScale > allyTimeScale)
-            console.WriteConsoleMessage("You planned to act at " + allyTimeScale, "The enemy will act first at " + enemyTimeScale, SelectConsoleButton);
+        {
+            IsolateFasterPacket(enemyPacket);
+            console.WriteConsoleMessage("You planned to act at " + allyTimeScale + ":00", "The enemy will act first at " + enemyTimeScale + ":00", SelectConsoleButton);
+        }
 
-        // If Timescales tied, use Elemental's MaxHealth to determine Elemental speed
+        // If timescales tied, use Elemental's MaxHealth to determine Elemental speed
         else if (allyCaster.MaxHealth < enemyCaster.MaxHealth)
-            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
+        {
+            IsolateFasterPacket(allyPacket);
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
                 "Your " + allyCaster.name + " outsped the enemy's " + enemyCaster, null, SelectConsoleButton);
+        }
         else if (allyCaster.MaxHealth > enemyCaster.MaxHealth)
-            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
+        {
+            IsolateFasterPacket(enemyPacket);
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
                 "The enemy's " + enemyCaster.name + " outsped the your " + allyCaster, null, SelectConsoleButton);
+        }
 
-        // Timescales and Elemental speeds tied
+        // If timescales and Elemental speeds tied
         else
-            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ". " +
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
                 "Your " + allyCaster + " and the enemy's " + enemyCaster + " are the same speed, and will act simultaneously", null, SelectConsoleButton);
     }
-
-    public void ActionMessage()
+    private int GetTimeScale(RelayPacket packet)
     {
-        Debug.Log("actionmessage");
+        if (packet.actionType != "spell")
+            return 0;
+
+        if (packet.wildTimeScale != 0)
+            return packet.wildTimeScale;
+
+        List<Spell> casterSpells = SlotAssignment.Elementals[packet.casterSlot].spells;
+        Spell castSpell = null;
+        foreach (Spell spell in casterSpells)
+            if (spell.Name == packet.name)
+            {
+                castSpell = spell;
+                break;
+            }
+        if (castSpell == null)
+            Debug.LogError("Caster's Spell not found");
+
+        return castSpell.TimeScale;
     }
+    private void IsolateFasterPacket(RelayPacket fasterPacket)
+    {
+        ResetPackets();
+        singlePacket = fasterPacket;
+    }
+
+    public void WriteActionMessage()
+    {
+        // If SinglePacket is not default
+        if (singlePacket.actionType != null)
+            console.WriteConsoleMessage(GenerateActionMessage(singlePacket), null, SelectConsoleButton);
+        else
+            console.WriteConsoleMessage(GenerateActionMessage(allyPacket), null, WriteEnemyMessage);
+    }
+    public void WriteEnemyMessage()
+    {
+        console.WriteConsoleMessage(GenerateActionMessage(enemyPacket), null, SelectConsoleButton, true);
+    }
+
+    private string GenerateActionMessage(RelayPacket packet)
+    {
+        if (packet.name == "Landslide")
+        {
+            // Get non-caster slots in play
+            List<int> targets = new() { 0, 1, 2, 3 };
+            targets.Remove(packet.casterSlot);
+
+            // Remove unavailable targets
+            foreach (int target in targets)
+            {
+                Elemental targetElemental = SlotAssignment.Elementals[target];
+                if (targetElemental == null || targetElemental.isDisengaged)
+                    targets.Remove(target);
+            }
+
+            slotButtons.TurnOnSlotButtons(targets, false);
+        }
+        else
+            slotButtons.TurnOnSlotButtons(packet.targetSlots.ToList(), false);
+
+
+        string message;
+
+        Elemental casterElemental = SlotAssignment.Elementals[packet.casterSlot];
+
+        string owner = packet.player == 0 == NetworkManager.Singleton.IsHost ? "Your" : "The enemy's";
+        string caster = owner + " " + casterElemental.name;
+
+        List<string> targetNames = GetTargetNamesFromPacket(packet);
+        // If any targets are the caster, write "itself" instead
+        for (int i = 0; i < targetNames.Count; i++)
+            if (packet.targetSlots[i] == packet.casterSlot)
+                targetNames[i] = "itself";
+
+        string spellOrTraitName = packet.actionType == "spell" ? packet.name : casterElemental.trait.Name;
+
+        if (packet.name == "Recharge")
+        {
+            string rechargeEffect = packet.rechargeType == "heal" ? "heal " + targetNames[1] + " 1" : "give " + targetNames[1] + " a Spark";
+            message = caster + " will cast Recharge on " + targetNames[0] + ", and will " + rechargeEffect;
+        }
+        else if (packet.name == "Hex")
+        {
+            string hexEffect = "Slowing";
+            if (packet.hexType == "poison")
+                hexEffect = "Poisoning";
+            else if (packet.hexType == "weaken")
+                hexEffect = "Weakening";
+
+            message = caster + " will cast Hex on " + targetNames[0] + ", " + hexEffect + " them";
+        }
+        else if (packet.potion)
+            message = caster + " will drink its Potion, then cast " + packet.name + " on " + targetNames[0];
+        else
+        {
+            message = caster + " will cast " + spellOrTraitName;
+
+            if (packet.targetSlots.Length == 1)
+                message += " on " + targetNames[0];
+            else if (packet.targetSlots.Length == 2)
+                message += " on " + targetNames[0] + " and " + targetNames[1];
+            else if (packet.targetSlots.Length == 3)
+                message += " on " + targetNames[0] + ", " + targetNames[1] + ", and " + targetNames[2];
+        }
+
+        return message;
+    }
+
 
     private void SingleCounter()
     {
@@ -309,7 +460,7 @@ public class ExecutionCore : MonoBehaviour
         return targetNames;
     }
 
-    private void SelectConsoleButton()
+    public void SelectConsoleButton()
     {
         Debug.Log("ExecutionCore's SelectConsoleButton");
         //.delete this method after all WriteConsoleButton calls have been given output methods

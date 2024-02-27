@@ -18,8 +18,9 @@ public class Elemental : MonoBehaviour
     [SerializeField] private GameObject targetButton;
     [SerializeField] private Image retreatButton;
 
-    // SCENE REFERENCE:
-    [SerializeField] private Trait trait;
+        // Read by ExecutionCore
+    public Trait trait;
+    public List<Spell> spells = new();
 
     // DYNAMIC:
         // Set by Setup, read by Trait/Spell, true if this Elemental is on the local player's team
