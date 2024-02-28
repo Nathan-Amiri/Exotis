@@ -44,8 +44,7 @@ public class Spell : MonoBehaviour, IDelegationAction
         DelegationCore.NewAction -= OnNewActionNeeded;
     }
 
-    // Called by Teambuilder (temporarily, will eventually be called by setup)
-    public void Setup(string spellName)
+    public void Setup(string spellName) 
     {
         // Name in inspector
         name = spellName;

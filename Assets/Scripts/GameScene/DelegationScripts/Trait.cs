@@ -42,8 +42,7 @@ public class Trait : MonoBehaviour, IDelegationAction
         DelegationCore.NewAction -= OnNewActionNeeded;
     }
 
-    // Called by Elemental
-    public void SetElementalInfoFields(ElementalInfo info)
+    public void SetElementalInfoFields(ElementalInfo info) // Called by Elemental
     {
         ActionType = "trait";
         ParentElemental = parentReference;

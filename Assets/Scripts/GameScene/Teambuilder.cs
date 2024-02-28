@@ -13,7 +13,7 @@ public class Teambuilder : MonoBehaviour
     [SerializeField] private List<TMP_InputField> elementalInputFields = new();
     [SerializeField] private List<TMP_InputField> spellInputFields = new();
 
-    // Read by setup:
+    // Read by Setup:
     [NonSerialized] public List<string> teamElementalNames = new();
     [NonSerialized] public List<string> teamSpellNames = new();
 

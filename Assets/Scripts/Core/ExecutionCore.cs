@@ -28,6 +28,11 @@ public class ExecutionCore : MonoBehaviour
     private RelayPacket allyPacket;
     private RelayPacket enemyPacket;
 
+    private readonly List<RelayPacket> enemyPacketQueue = new();
+
+    private RelayPacket allyCounterPacket;
+    private RelayPacket enemyCounterPacket;
+
     /*
         Todo:
 
@@ -47,11 +52,6 @@ public class ExecutionCore : MonoBehaviour
     
     checkforavailableactions
     checkforgameover
-
-
-        Reminders:
-    
-    Need enemyPacket queue?
 
     */
 
@@ -103,8 +103,7 @@ public class ExecutionCore : MonoBehaviour
         Debug.Log(debugMessage);
     }
 
-    // Called by Setup
-    public void RoundStart()
+    public void RoundStart() // Called by Setup
     {
         //.delayed effects occur simultaneously and silently
         //.cycle text messages using preset order (see bible)
@@ -118,26 +117,100 @@ public class ExecutionCore : MonoBehaviour
         //.if no actions available, autopass and "You have no available actions"
 
         // Request roundstart/end/timescale delegation
-
-        expectingSinglePacket = false;
-        delegationCore.RequestDelegation();
+        NeedDelegation(true, true);
     }
 
-    public void ReceivePacket(RelayPacket packet) // Called by RelayCore
+    private void NeedDelegation(bool needAllyDelegation, bool needEnemyDelegation)
+    {
+        expectingSinglePacket = !(needAllyDelegation && needEnemyDelegation);
+
+        if (needAllyDelegation)
+            delegationCore.RequestDelegation();
+        else if (enemyPacketQueue.Count > 0)
+            ReceiveDelegation(GetNextEnemyPacketFromQueue());
+    }
+
+    private RelayPacket GetNextEnemyPacketFromQueue()
+    {
+        RelayPacket savedEnemyPacket = enemyPacketQueue[0];
+        enemyPacketQueue.RemoveAt(0);
+        return savedEnemyPacket;
+    }
+
+    public void ReceiveDelegation(RelayPacket packet) // Called by RelayCore
     {
         DebugPacket(packet);
 
-        // Cache packets
-        if (expectingSinglePacket)
-            singlePacket = packet;
-        else if (packet.player == 0 == NetworkManager.Singleton.IsHost)
-            allyPacket = packet;
-        else
-            enemyPacket = packet;
 
-        // Return if expecting multiple packets, but only one has been received
-        if (!expectingSinglePacket && (allyPacket.actionType == null || enemyPacket.actionType == null))
-            return;
+
+
+
+        bool isAllyPacket = packet.player == 0 == NetworkManager.Singleton.IsHost;
+
+        // If expecting single
+        if (expectingSinglePacket)
+        {
+            singlePacket = packet;
+            //.logic path
+        }
+        else if (isAllyPacket) // If expecting multiple and isAllyPacket
+        {
+            allyPacket = packet;
+
+            // If enemy packet in queue
+            if (enemyPacketQueue.Count > 0)
+            {
+                enemyPacket = GetNextEnemyPacketFromQueue();
+                //.logic path
+            }
+            else // Wait for enemy packet
+            {
+                //.waiting for enemy message
+                return;
+            }
+        }
+        else // If expecting multiple and isEnemyPacket
+        {
+            // If ally packet exists
+            if (allyPacket.actionType != null)
+            {
+                enemyPacket = packet;
+                //.logic path
+            }
+            else // Wait for ally packet
+            {
+                enemyPacketQueue.Add(packet);
+                return;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+        //// If enemy and enemy packet already exists, save to queue
+        //if (packet.player == 0 != NetworkManager.Singleton.IsHost && enemyPacket.actionType == null)
+        //{
+        //    enemyPacketQueue.Add(packet);
+        //    return;
+        //}
+
+        //// Cache packets
+        //if (expectingSinglePacket)
+        //    singlePacket = packet;
+        //else if (packet.player == 0 == NetworkManager.Singleton.IsHost)
+        //    allyPacket = packet;
+        //else
+        //    enemyPacket = packet;
+
+        //// Return if expecting multiple packets, but only one has been received
+        //if (!expectingSinglePacket && (allyPacket.actionType == null || enemyPacket.actionType == null))
+        //    return;
 
         // Proceed down the corrent logic path
         if (Clock.CurrentRoundState == Clock.RoundState.Immediate)
@@ -147,12 +220,23 @@ public class ExecutionCore : MonoBehaviour
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
         {
             if (expectingSinglePacket)
-                SingleCounter();
+                WriteCounterActionMessage(packet);
             else
-                CounterTieBreaker();
+                CounterTiebreaker(allyCounterPacket, enemyCounterPacket);
         }
         else
             TieBreaker();
+    }
+
+    private void AutoPass()
+    {
+        RelayPacket passPacket = new()
+        {
+            player = NetworkManager.Singleton.IsHost ? 0 : 1,
+            actionType = "pass"
+        };
+
+        ReceiveDelegation(passPacket);
     }
 
     // Logic paths:
@@ -419,16 +503,19 @@ public class ExecutionCore : MonoBehaviour
         //    console.WriteConsoleMessage("")
         //}
 
-
+        //.no need for delegation if enemy can't act since teams are open
     }
 
-
-    private void SingleCounter()
+    private void CounterTiebreaker(RelayPacket allyCounterPacket, RelayPacket enemyCounterPacket)
     {
 
     }
 
-    private void CounterTieBreaker()
+    private void WriteCounterActionMessage(RelayPacket counterPacket)
+    {
+
+    }
+    public void WriteEnemyCounterActionMessage()
     {
 
     }

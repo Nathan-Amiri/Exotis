@@ -11,6 +11,8 @@ public class GameManager : NetworkBehaviour
 
     //HIGHLIGHT AVAILABLE ACTIONS
 
+    //REMOVE SPELLGRAYS IN SCENE IF I DECIDE TO KEEP THEM ALL VISIBLE
+
 
     //.temp code for faster connection
     bool alreadyConnected;

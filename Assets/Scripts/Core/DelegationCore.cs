@@ -38,8 +38,7 @@ public class DelegationCore : MonoBehaviour
     private RelayPacket packet;
     private IDelegationAction currentAction;
 
-    // Called by ECore. ECore never passes in 'Reset'; Reset is only used by DCore to reset action buttons
-    public void RequestDelegation(IDelegationAction immediateAction = null)
+    public void RequestDelegation(IDelegationAction immediateAction = null) // Called by ECore
     {
         if (Clock.CurrentRoundState == Clock.RoundState.Immediate)
         {

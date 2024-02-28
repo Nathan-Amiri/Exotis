@@ -35,8 +35,7 @@ public class Elemental : MonoBehaviour
     [NonSerialized] public bool isDisengaged;
     [NonSerialized] public bool isTrapped;
 
-    // Called by Setup
-    public void Setup(string elementalName)
+    public void Setup(string elementalName) // Called by Setup
     {
         name = elementalName;
         nameText.text = elementalName;
