@@ -40,6 +40,12 @@ public class Console : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && consoleButton.activeSelf)
+            SelectConsoleButton();
+    }
+
     public void SelectConsoleButton()
     {
         ResetConsole();

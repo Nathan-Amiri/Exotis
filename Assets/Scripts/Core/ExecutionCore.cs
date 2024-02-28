@@ -31,8 +31,6 @@ public class ExecutionCore : MonoBehaviour
     /*
         Todo:
 
-    tiebreaker
-
     singlecounter
     countertiebreaker
     immediate (and immediate tiebreaker?)
@@ -49,6 +47,11 @@ public class ExecutionCore : MonoBehaviour
     
     checkforavailableactions
     checkforgameover
+
+
+        Reminders:
+    
+    Need enemyPacket queue?
 
     */
 
@@ -181,7 +184,7 @@ public class ExecutionCore : MonoBehaviour
             ResetPackets();
 
             if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-                console.WriteConsoleMessage("Both players have passed. Round will end", null, SelectConsoleButton);
+                console.WriteConsoleMessage("Both players have passed. Round will end", null, RoundEnd);
             // If both players pass at RoundStart/End, continue without writing to console
             else if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
             {
@@ -193,18 +196,23 @@ public class ExecutionCore : MonoBehaviour
 
         // If both players activated Gems
         else if (allyPacket.actionType == "gem" && enemyPacket.actionType == "gem")
-            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will activate their Gems", null, SelectConsoleButton);
+        {
+            slotButtons.TurnOnSlotButtons(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, false);
+            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will activate their Gems", null, GemEffect);
+        }
 
         // If only one player activated a Gem
         else if (allyPacket.actionType == "gem")
         {
+            slotButtons.TurnOnSlotButtons(new List<int> { allyPacket.casterSlot }, false);
             IsolateFasterPacket(allyPacket);
-            console.WriteConsoleMessage("Your " + allyCaster.name + "will activate its Gem", null, SelectConsoleButton);
+            console.WriteConsoleMessage("Your " + allyCaster.name + "will activate its Gem", null, GemEffect);
         }
         else if (enemyPacket.actionType == "gem")
         {
+            slotButtons.TurnOnSlotButtons(new List<int> { enemyPacket.casterSlot }, false);
             IsolateFasterPacket(enemyPacket);
-            console.WriteConsoleMessage("The enemy's " + enemyCaster.name + "will activate its Gem", null, SelectConsoleButton);
+            console.WriteConsoleMessage("The enemy's " + enemyCaster.name + "will activate its Gem", null, GemEffect);
         }
 
         // If both players cast a Trait
@@ -227,21 +235,21 @@ public class ExecutionCore : MonoBehaviour
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
         {
             slotButtons.TurnOnSlotButtons(new List<int> { allyPacket.targetSlots[0], enemyPacket.targetSlots[0] }, false);
-            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will Retreat", null, SelectConsoleButton);
+            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will Retreat", null, RetreatEffect);
         }
 
         // If only one player Retreated
         else if (allyPacket.actionType == "retreat")
         {
-            IsolateFasterPacket(allyPacket);
             slotButtons.TurnOnSlotButtons(new List<int> { allyPacket.targetSlots[0] }, false);
-            console.WriteConsoleMessage("Your " + allyCaster.name + " will Retreat", null, SelectConsoleButton);
+            IsolateFasterPacket(allyPacket);
+            console.WriteConsoleMessage("Your " + allyCaster.name + " will Retreat", null, RetreatEffect);
         }
         else if (enemyPacket.actionType == "retreat")
         {
-            IsolateFasterPacket(enemyPacket);
             slotButtons.TurnOnSlotButtons(new List<int> { enemyPacket.targetSlots[0] }, false);
-            console.WriteConsoleMessage("The enemy's " + enemyCaster.name + " will Retreat", null, SelectConsoleButton);
+            IsolateFasterPacket(enemyPacket);
+            console.WriteConsoleMessage("The enemy's " + enemyCaster.name + " will Retreat", null, RetreatEffect);
         }
 
         // If only one player Passed
@@ -260,12 +268,12 @@ public class ExecutionCore : MonoBehaviour
         else if (allyTimeScale > enemyTimeScale)
         {
             IsolateFasterPacket(allyPacket);
-            console.WriteConsoleMessage("You will act first at " + allyTimeScale + ":00", "The enemy planned to act at " + enemyTimeScale + ":00", SelectConsoleButton);
+            console.WriteConsoleMessage("You will act first at " + allyTimeScale + ":00", "The enemy planned to act at " + enemyTimeScale + ":00", WriteActionMessage);
         }
         else if (enemyTimeScale > allyTimeScale)
         {
             IsolateFasterPacket(enemyPacket);
-            console.WriteConsoleMessage("You planned to act at " + allyTimeScale + ":00", "The enemy will act first at " + enemyTimeScale + ":00", SelectConsoleButton);
+            console.WriteConsoleMessage("You planned to act at " + allyTimeScale + ":00", "The enemy will act first at " + enemyTimeScale + ":00", WriteActionMessage);
         }
 
         // If timescales tied, use Elemental's MaxHealth to determine Elemental speed
@@ -273,19 +281,19 @@ public class ExecutionCore : MonoBehaviour
         {
             IsolateFasterPacket(allyPacket);
             console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
-                "Your " + allyCaster.name + " outsped the enemy's " + enemyCaster.name, null, SelectConsoleButton);
+                "Your " + allyCaster.name + " outsped the enemy's " + enemyCaster.name, null, WriteActionMessage);
         }
         else if (allyCaster.MaxHealth > enemyCaster.MaxHealth)
         {
             IsolateFasterPacket(enemyPacket);
             console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
-                "The enemy's " + enemyCaster.name + " outsped your " + allyCaster.name, null, SelectConsoleButton);
+                "The enemy's " + enemyCaster.name + " outsped your " + allyCaster.name, null, WriteActionMessage);
         }
 
         // If timescales and Elemental speeds tied
         else
             console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
-                "Your " + allyCaster.name + " tied with the enemy's " + enemyCaster.name, null, SelectConsoleButton);
+                "Your " + allyCaster.name + " tied with the enemy's " + enemyCaster.name, null, WriteActionMessage);
     }
     private int GetTimeScale(RelayPacket packet)
     {
@@ -316,15 +324,21 @@ public class ExecutionCore : MonoBehaviour
 
     public void WriteActionMessage()
     {
-        // If SinglePacket is not default
-        if (singlePacket.actionType != null)
-            console.WriteConsoleMessage(GenerateActionMessage(singlePacket), null, SelectConsoleButton);
-        else
+        // If two packets must be written, write ally and prepare to write enemy
+        if (singlePacket.actionType == null)
             console.WriteConsoleMessage(GenerateActionMessage(allyPacket), null, WriteEnemyMessage);
+        // If a single packet must be written, write it and prepare TraitEffect/CheckForCounter depending on actionType
+        else
+        {
+            Console.OutputMethod outputMethod = singlePacket.actionType == "trait" ? TraitEffect : CheckForCounter;
+            console.WriteConsoleMessage(GenerateActionMessage(singlePacket), null, outputMethod);
+        }
     }
     public void WriteEnemyMessage()
     {
-        console.WriteConsoleMessage(GenerateActionMessage(enemyPacket), null, SelectConsoleButton, true);
+        // Write enemy packet and prepare TraitEffect/CheckForCounter depending on actionType
+        Console.OutputMethod outputMethod = enemyPacket.actionType == "trait" ? TraitEffect : CheckForCounter;
+        console.WriteConsoleMessage(GenerateActionMessage(enemyPacket), null, outputMethod, true);
     }
 
     private string GenerateActionMessage(RelayPacket packet)
@@ -396,6 +410,18 @@ public class ExecutionCore : MonoBehaviour
         return message;
     }
 
+    public void CheckForCounter()
+    {
+        //.if recasting, SpellEffect() and return
+
+        //if (!CheckForAvailableActions(singlePacket.player))
+        //{
+        //    console.WriteConsoleMessage("")
+        //}
+
+
+    }
+
 
     private void SingleCounter()
     {
@@ -410,41 +436,41 @@ public class ExecutionCore : MonoBehaviour
     // Effect methods:
     private void GemEffect()
     {
-
+        Debug.Log("GemEffect");
     }
 
     private void RetreatEffect()
     {
-
+        Debug.Log("RetreatEffect");
     }
 
     private void TraitEffect()
     {
-
+        Debug.Log("TraitEffect");
     }
 
     private void SpellEffect()
     {
-
+        Debug.Log("SpellEffect");
     }
 
     private void SparkEffect()
     {
-
+        Debug.Log("SparkEffect");
     }
 
     private void RoundEnd()
     {
-
+        Debug.Log("RoundEnd");
     }
 
     private void Repopulation()
     {
-
+        Debug.Log("Repopulation");
     }
 
     // Misc methods:
-    private bool CheckForAvailableActions()
+    private bool CheckForAvailableActions(int player)
     {
         return true;
     }
@@ -465,12 +491,6 @@ public class ExecutionCore : MonoBehaviour
             targetNames.Add(SlotAssignment.Elementals[targetSlot].name);
 
         return targetNames;
-    }
-
-    public void SelectConsoleButton()
-    {
-        Debug.Log("ExecutionCore's SelectConsoleButton");
-        //.delete this method after all WriteConsoleButton calls have been given output methods
     }
 
     private void ResetPackets()
