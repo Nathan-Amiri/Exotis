@@ -24,7 +24,6 @@ public class RelayCore : NetworkBehaviour
         packet.actionType ??= string.Empty;
         packet.targetSlots ??= new int[0];
         packet.name ??= string.Empty;
-        packet.rechargeType ??= string.Empty;
         packet.hexType ??= string.Empty;
 
         RelayToServerRpc(packet);
@@ -58,7 +57,7 @@ public struct RelayPacket : INetworkSerializable
     // Below variables only used for Spells
     public string name; // Spell names are capitalized
     public int wildTimeScale; // Possible values: 1, 5
-    public string rechargeType; // Possible values: heal, spark
+        // *Hex
     public string hexType; // Possible values: slow, poison, weaken
     public bool potion;
     public bool frenzy;
@@ -72,7 +71,6 @@ public struct RelayPacket : INetworkSerializable
         serializer.SerializeValue(ref targetSlots);
         serializer.SerializeValue(ref name);
         serializer.SerializeValue(ref wildTimeScale);
-        serializer.SerializeValue(ref rechargeType);
         serializer.SerializeValue(ref hexType);
         serializer.SerializeValue(ref potion);
         serializer.SerializeValue(ref frenzy);

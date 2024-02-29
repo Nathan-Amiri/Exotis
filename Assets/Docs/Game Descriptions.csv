@@ -31,14 +31,14 @@
 22 Freeze 6 "I target an enemy. The target and I are Disengaged until the end of next round. I can't cast this Spell again until I Swap."
 23 Numbing Cold 6 "I target an Elemental that is slower than me. This round, the target’s Spells deal 0 damage. I'm Wearied next round."
 
-24 Enchain: 3 "I deal 2 to an Elemental and Trap it until the end of next round."
+24 Enchain 3 "I deal 2 to an Elemental and Trap it until the end of next round."
 25 Animate 5 "My ally gains an action. This round, I'm Armored and my ally is Trapped. I can’t cast this Spell again until I Swap."
 26 Nightmare ? "I target an Elemental. Next round, it's Stunned and I'm Wearied."
 27 Hex 5 "I heal myself 1. Then, I Slow, Poison, or Weaken an Elemental this round. The first time I cast this Spell, I heal 2 instead."
 
 28 Fanged Bite 3 "I deal 2 to an Elemental. It's Poisoned next round."
 29 Infect ? "I Poison an Elemental for the rest of the game."
-30 Poison Cloud 5 "This round, when I'm targeted by an enemy Spell, I Poison the Spell's caster this round. At the end of this round, I can deal 2 to an Elemental."
+30 Poison Cloud 5 "This round, when I'm damaged by an enemy Spell, I Poison the Spell's caster this round. At the end of this round, I can deal 2 to an Elemental."
 31 Bile C "I deal 1 to an Elemental."
 
 32 Sparkle 3 "I deal 2 to an Elemental. It's Weakened next round."

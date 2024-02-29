@@ -29,7 +29,6 @@ public class DelegationCore : MonoBehaviour
     [SerializeField] private GameObject submitButton;
 
     [SerializeField] private List<GameObject> wildButtons = new();
-    [SerializeField] private List<GameObject> rechargeButtons = new();
     [SerializeField] private List<GameObject> hexButtons = new();
 
     [SerializeField] private List<Button> potionButtons = new();
@@ -62,9 +61,9 @@ public class DelegationCore : MonoBehaviour
             console.WriteConsoleMessage("Choose a Benched Elemental to Swap into play");
 
             if (NetworkManager.Singleton.IsHost)
-                targetManager.TurnOnSlotButtons(new List<int> { 4, 5 }, true);
+                targetManager.DisplayTargets(new List<int> { }, new List<int> { 4, 5 }, true);
             else
-                targetManager.TurnOnSlotButtons(new List<int> { 6, 7 }, true);
+                targetManager.DisplayTargets(new List<int> { }, new List<int> { 6, 7 }, true);
 
 
             return;
@@ -132,7 +131,7 @@ public class DelegationCore : MonoBehaviour
 
                 return;
             }
-            else if (spell.name == "Hex" && packet.hexType == null)
+            else if (spell.name == "Hex" && packet.hexType == null) // *Hex
             {
                 ResetScene();
 
@@ -207,13 +206,9 @@ public class DelegationCore : MonoBehaviour
         }
 
         // Turn on target buttons
-        targetManager.TurnOnSlotButtons(availableTargetSlots, true);
+        targetManager.DisplayTargets(new List<int> { packet.casterSlot }, availableTargetSlots, true);
 
         string message = action.MaxTargets == 1 ? "Choose a target" : "Choose target(s)";
-
-        if (spell != null && spell.name == "Recharge")
-            message = "Choose an ally to heal 1 and gain a Spark";
-
         console.WriteConsoleMessage(message);
         cancelButton.SetActive(true);
     }
@@ -224,7 +219,7 @@ public class DelegationCore : MonoBehaviour
 
         SelectAction(currentAction);
     }
-    public void SelectHexButton(string hexType)
+    public void SelectHexButton(string hexType) // *Hex
     {
         packet.hexType = hexType;
 
@@ -251,7 +246,7 @@ public class DelegationCore : MonoBehaviour
 
         if (Clock.CurrentRoundState == Clock.RoundState.Repopulation)
         {
-            targetManager.ResetSlotButtons();
+            targetManager.ResetAllTargets();
 
             console.ResetConsole();
 
@@ -259,36 +254,14 @@ public class DelegationCore : MonoBehaviour
             cancelButton.SetActive(true);
         }
 
-        if (currentAction is Spell spell && spell.name == "Recharge" && packet.rechargeType == null)
-        {
-            ResetScene();
-
-            int targetAllySlot = SlotAssignment.GetSlotDesignations(targetSlot)["allySlot"];
-            if (!CheckTargetAvailable(targetAllySlot))
-            {
-                cancelButton.SetActive(true);
-                submitButton.SetActive(true);
-
-                return;
-            }
-
-            console.WriteConsoleMessage("Will " + SlotAssignment.Elementals[targetAllySlot].name + " heal 1 or gain a Spark?");
-
-            cancelButton.SetActive(true);
-            foreach (GameObject button in rechargeButtons)
-                button.SetActive(true);
-
-            return;
-        }
-
         // Make Potion interactable if currentAction is a single-target damaging Spell
         potionButtons[packet.casterSlot].interactable = PotionInteractable();
 
         // Turn off unavailable target buttons
-        targetManager.TurnOffSlotButtons(new List<int> { targetSlot });
+        targetManager.ResetCertainTargets(new List<int> { targetSlot });
 
         if (packet.targetSlots.Length == currentAction.MaxTargets)
-            targetManager.ResetSlotButtons();
+            targetManager.ResetAllTargets();
 
 
         // Remove console message if no more targets are available
@@ -298,17 +271,6 @@ public class DelegationCore : MonoBehaviour
         // Allow packet to be submitted
         submitButton.SetActive(true);
         cancelButton.SetActive(true);
-    }
-
-    public void SelectRechargeButton(string rechargeType)
-    {
-        packet.rechargeType = rechargeType;
-
-        console.ResetConsole();
-        foreach (GameObject button in rechargeButtons)
-            button.SetActive(false);
-
-        submitButton.SetActive(true);
     }
 
     private bool PotionInteractable()
@@ -337,7 +299,7 @@ public class DelegationCore : MonoBehaviour
         packet.potion = true;
 
         // Turn off any remaining target buttons
-        targetManager.ResetSlotButtons();
+        targetManager.ResetAllTargets();
 
         console.ResetConsole();
     }
@@ -376,13 +338,11 @@ public class DelegationCore : MonoBehaviour
         cancelButton.SetActive(false);
         submitButton.SetActive(false);
 
-        targetManager.ResetSlotButtons();
+        targetManager.ResetAllTargets();
 
         foreach (GameObject button in wildButtons)
             button.SetActive(false);
-        foreach (GameObject button in rechargeButtons)
-            button.SetActive(false);
-        foreach (GameObject button in hexButtons)
+        foreach (GameObject button in hexButtons) // *Hex
             button.SetActive(false);
 
         console.ResetConsole();

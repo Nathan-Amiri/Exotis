@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Numbing Cold
   m_EditorClassIdentifier: 
   elementColor: 5
-  timeScale: 53
+  timeScale: 54
   maxTargets: 1
   canTargetSelf: 0
   canTargetAlly: 1
   canTargetEnemy: 1
   canTargetBenchedAlly: 0
+  isDamaging: 0
