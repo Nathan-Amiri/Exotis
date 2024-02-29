@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using static Unity.Networking.Transport.Utilities.ReliableUtility;
 using static UnityEditor.ShaderData;
 using static UnityEngine.GraphicsBuffer;
 
@@ -20,7 +21,7 @@ public class ExecutionCore : MonoBehaviour
     [SerializeField] private DelegationCore delegationCore;
     [SerializeField] private Clock clock;
     [SerializeField] private Console console;
-    [SerializeField] private SlotButtons slotButtons;
+    [SerializeField] private TargetManager targetManager;
 
     // DYNAMIC:
         // 0 = not waiting for any packets (e.g. while waiting on console button),
@@ -254,20 +255,20 @@ public class ExecutionCore : MonoBehaviour
         // If both players activated Gems
         else if (allyPacket.actionType == "gem" && enemyPacket.actionType == "gem")
         {
-            slotButtons.TurnOnSlotButtons(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, false);
+            targetManager.TurnOnSlotButtons(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, false);
             console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will activate their Gems", null, GemEffect);
         }
 
         // If only one player activated a Gem
         else if (allyPacket.actionType == "gem")
         {
-            slotButtons.TurnOnSlotButtons(new List<int> { allyPacket.casterSlot }, false);
+            targetManager.TurnOnSlotButtons(new List<int> { allyPacket.casterSlot }, false);
             IsolateFasterPacket(allyPacket);
             console.WriteConsoleMessage("Your " + allyCaster.name + "will activate its Gem", null, GemEffect);
         }
         else if (enemyPacket.actionType == "gem")
         {
-            slotButtons.TurnOnSlotButtons(new List<int> { enemyPacket.casterSlot }, false);
+            targetManager.TurnOnSlotButtons(new List<int> { enemyPacket.casterSlot }, false);
             IsolateFasterPacket(enemyPacket);
             console.WriteConsoleMessage("The enemy's " + enemyCaster.name + "will activate its Gem", null, GemEffect);
         }
@@ -291,20 +292,20 @@ public class ExecutionCore : MonoBehaviour
         // If both players Retreated
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
         {
-            slotButtons.TurnOnSlotButtons(new List<int> { allyPacket.targetSlots[0], enemyPacket.targetSlots[0] }, false);
+            targetManager.TurnOnSlotButtons(new List<int> { allyPacket.targetSlots[0], enemyPacket.targetSlots[0] }, false);
             console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will Retreat", null, RetreatEffect);
         }
 
         // If only one player Retreated
         else if (allyPacket.actionType == "retreat")
         {
-            slotButtons.TurnOnSlotButtons(new List<int> { allyPacket.targetSlots[0] }, false);
+            targetManager.TurnOnSlotButtons(new List<int> { allyPacket.targetSlots[0] }, false);
             IsolateFasterPacket(allyPacket);
             console.WriteConsoleMessage("Your " + allyCaster.name + " will Retreat", null, RetreatEffect);
         }
         else if (enemyPacket.actionType == "retreat")
         {
-            slotButtons.TurnOnSlotButtons(new List<int> { enemyPacket.targetSlots[0] }, false);
+            targetManager.TurnOnSlotButtons(new List<int> { enemyPacket.targetSlots[0] }, false);
             IsolateFasterPacket(enemyPacket);
             console.WriteConsoleMessage("The enemy's " + enemyCaster.name + " will Retreat", null, RetreatEffect);
         }
@@ -414,18 +415,18 @@ public class ExecutionCore : MonoBehaviour
                     targets.Remove(target);
             }
 
-            slotButtons.TurnOnSlotButtons(targets, false);
+            targetManager.TurnOnSlotButtons(targets, false);
         }
         else
-            slotButtons.TurnOnSlotButtons(packet.targetSlots.ToList(), false);
+            targetManager.TurnOnSlotButtons(packet.targetSlots.ToList(), false);
 
 
         string message;
 
         Elemental casterElemental = SlotAssignment.Elementals[packet.casterSlot];
 
-        string owner = packet.player == 0 == NetworkManager.Singleton.IsHost ? "Your" : "The enemy's";
-        string caster = owner + " " + casterElemental.name;
+        string packetOwner = packet.player == 0 == NetworkManager.Singleton.IsHost ? "Your" : "The enemy's";
+        string caster = packetOwner + " " + casterElemental.name;
 
         List<string> targetNames = GetTargetNamesFromPacket(packet);
         // If any targets are the caster, write "itself" instead
@@ -469,6 +470,8 @@ public class ExecutionCore : MonoBehaviour
 
     public void CheckForCounter()
     {
+        targetManager.ResetSlotButtons();
+
         //.if recasting, SpellEffect() and return
 
         // Switch to counter roundstate before calling CheckForAvailableActions
@@ -478,7 +481,8 @@ public class ExecutionCore : MonoBehaviour
         {
             if (!CheckForAvailableActions(singlePacket.player))
             {
-
+                string packetOwner = singlePacket.player == 0 == NetworkManager.Singleton.IsHost ? "You have" : "The enemy has";
+                console.WriteConsoleMessage(packetOwner + " no available counter actions");
             }
         }
         else

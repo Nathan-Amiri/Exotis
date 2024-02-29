@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SlotButtons : MonoBehaviour
+public class TargetManager : MonoBehaviour
 {
     [SerializeField] private List<Button> elementalTargetButtons = new();
 

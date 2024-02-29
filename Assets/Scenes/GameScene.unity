@@ -12160,7 +12160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   relayCore: {fileID: 1386828395}
   console: {fileID: 1265245692}
-  slotButtons: {fileID: 1265245694}
+  targetManager: {fileID: 1265245694}
   passButton: {fileID: 1466363740}
   cancelButton: {fileID: 531067111}
   submitButton: {fileID: 1079674393}
@@ -12198,7 +12198,7 @@ MonoBehaviour:
   delegationCore: {fileID: 1386828396}
   clock: {fileID: 1265245687}
   console: {fileID: 1265245692}
-  slotButtons: {fileID: 1265245694}
+  targetManager: {fileID: 1265245694}
 --- !u!1 &1420317835
 GameObject:
   m_ObjectHideFlags: 0
