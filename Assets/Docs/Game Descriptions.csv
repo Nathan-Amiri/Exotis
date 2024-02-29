@@ -125,9 +125,9 @@
 
 	ITEMS:
 
-Gem "At any time, I can heal 2."
-Potion "If I’m casting a damaging Spell that has one target, that Spell deals +1 damage."
-Spark "At counter speed, I can target an Elemental. After the enemy Spell I am countering has occurred, I deal 1 to the target even if I am Eliminated or no longer in play."
+Gem "At any time, I can activate my Gem to heal 2."
+Potion "If I’m casting a damaging Spell that has one target, I can drink my Potion to deal +1 damage with that Spell."
+Spark "At counter speed, I can send my Spark at an Elemental. After the enemy Spell I am countering has occurred, I deal 1 to the target even if I am Eliminated or no longer in play."
 
 
 	STATUS:

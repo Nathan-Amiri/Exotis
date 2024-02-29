@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using static UnityEditor.ShaderData;
 using static UnityEngine.GraphicsBuffer;
@@ -22,7 +23,9 @@ public class ExecutionCore : MonoBehaviour
     [SerializeField] private SlotButtons slotButtons;
 
     // DYNAMIC:
-    private bool expectingSinglePacket;
+        // 0 = not waiting for any packets (e.g. while waiting on console button),
+        // 1/2 = packets needed before proceeding down a logic path
+    private int expectedPackets;
 
     private RelayPacket singlePacket;
     private RelayPacket allyPacket;
@@ -52,6 +55,13 @@ public class ExecutionCore : MonoBehaviour
     
     checkforavailableactions
     checkforgameover
+
+
+    dim all but user, consider removing target names from console message. Maybe that means text can be bigger?
+    do the same for delegation core when targeting
+
+    is Freeze disengaging at counter speed okay? Is counter speed disengaging gonna cause problems?
+    reword Freeze. Cancels Spell, Spell can be recast at the end of next round
 
     */
 
@@ -122,7 +132,7 @@ public class ExecutionCore : MonoBehaviour
 
     private void NeedDelegation(bool needAllyDelegation, bool needEnemyDelegation)
     {
-        expectingSinglePacket = !(needAllyDelegation && needEnemyDelegation);
+        expectedPackets = needAllyDelegation && needEnemyDelegation ? 2 : 1;
 
         if (needAllyDelegation)
             delegationCore.RequestDelegation();
@@ -141,41 +151,40 @@ public class ExecutionCore : MonoBehaviour
     {
         DebugPacket(packet);
 
-
-
-
-
         bool isAllyPacket = packet.player == 0 == NetworkManager.Singleton.IsHost;
 
-        // If expecting single
-        if (expectingSinglePacket)
+        // If expecting 0 (must be enemy packet)
+        if (expectedPackets == 0)
+        {
+            // Wait until packet is needed
+            enemyPacketQueue.Add(packet);
+            return;
+        }
+        else if (expectedPackets == 1) // If expecting 1
         {
             singlePacket = packet;
-            //.logic path
+            // Proceed down the correct logic path below
         }
-        else if (isAllyPacket) // If expecting multiple and isAllyPacket
+        else if (isAllyPacket) // If expecting 2 and allyPacket
         {
             allyPacket = packet;
 
-            // If enemy packet in queue
+            // If there's an enemy packet in queue
             if (enemyPacketQueue.Count > 0)
             {
                 enemyPacket = GetNextEnemyPacketFromQueue();
-                //.logic path
+                // Proceed down the correct logic path below
             }
             else // Wait for enemy packet
-            {
-                //.waiting for enemy message
                 return;
-            }
         }
-        else // If expecting multiple and isEnemyPacket
+        else // If expecting 2 and enemyPacket
         {
             // If ally packet exists
             if (allyPacket.actionType != null)
             {
                 enemyPacket = packet;
-                //.logic path
+                // Proceed down the correct logic path below
             }
             else // Wait for ally packet
             {
@@ -184,33 +193,8 @@ public class ExecutionCore : MonoBehaviour
             }
         }
 
-
-
-
-
-
-
-
-
-
-        //// If enemy and enemy packet already exists, save to queue
-        //if (packet.player == 0 != NetworkManager.Singleton.IsHost && enemyPacket.actionType == null)
-        //{
-        //    enemyPacketQueue.Add(packet);
-        //    return;
-        //}
-
-        //// Cache packets
-        //if (expectingSinglePacket)
-        //    singlePacket = packet;
-        //else if (packet.player == 0 == NetworkManager.Singleton.IsHost)
-        //    allyPacket = packet;
-        //else
-        //    enemyPacket = packet;
-
-        //// Return if expecting multiple packets, but only one has been received
-        //if (!expectingSinglePacket && (allyPacket.actionType == null || enemyPacket.actionType == null))
-        //    return;
+        // Reset expectedPackets in case enemy delegations arrive before they're needed
+        expectedPackets = 0;
 
         // Proceed down the corrent logic path
         if (Clock.CurrentRoundState == Clock.RoundState.Immediate)
@@ -219,24 +203,13 @@ public class ExecutionCore : MonoBehaviour
             Repopulation();
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
         {
-            if (expectingSinglePacket)
-                WriteCounterActionMessage(packet);
+            if (singlePacket.actionType != null)
+                WriteCounterActionMessage(singlePacket);
             else
                 CounterTiebreaker(allyCounterPacket, enemyCounterPacket);
         }
         else
             TieBreaker();
-    }
-
-    private void AutoPass()
-    {
-        RelayPacket passPacket = new()
-        {
-            player = NetworkManager.Singleton.IsHost ? 0 : 1,
-            actionType = "pass"
-        };
-
-        ReceiveDelegation(passPacket);
     }
 
     // Logic paths:
@@ -498,12 +471,20 @@ public class ExecutionCore : MonoBehaviour
     {
         //.if recasting, SpellEffect() and return
 
-        //if (!CheckForAvailableActions(singlePacket.player))
-        //{
-        //    console.WriteConsoleMessage("")
-        //}
+        // Switch to counter roundstate before calling CheckForAvailableActions
+        clock.NewRoundState(Clock.RoundState.Counter);
 
-        //.no need for delegation if enemy can't act since teams are open
+        if (singlePacket.actionType != null)
+        {
+            if (!CheckForAvailableActions(singlePacket.player))
+            {
+
+            }
+        }
+        else
+        {
+
+        }
     }
 
     private void CounterTiebreaker(RelayPacket allyCounterPacket, RelayPacket enemyCounterPacket)
@@ -557,6 +538,19 @@ public class ExecutionCore : MonoBehaviour
     }
 
     // Misc methods:
+
+    private void AutoPass(bool passAlly)
+    {
+        // Use the player number of the passing player
+        RelayPacket passPacket = new()
+        {
+            player = passAlly == NetworkManager.Singleton.IsHost ? 0 : 1,
+            actionType = "pass"
+        };
+
+        ReceiveDelegation(passPacket);
+    }
+
     private bool CheckForAvailableActions(int player)
     {
         return true;
