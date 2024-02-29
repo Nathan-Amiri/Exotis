@@ -128,10 +128,10 @@ public class ExecutionCore : MonoBehaviour
         //.if no actions available, autopass and "You have no available actions"
 
         // Request roundstart/end/timescale delegation
-        NeedDelegation(true, true);
+        RequestDelegation(true, true);
     }
 
-    private void NeedDelegation(bool needAllyDelegation, bool needEnemyDelegation)
+    private void RequestDelegation(bool needAllyDelegation, bool needEnemyDelegation)
     {
         expectedPackets = needAllyDelegation && needEnemyDelegation ? 2 : 1;
 
@@ -139,6 +139,8 @@ public class ExecutionCore : MonoBehaviour
             delegationCore.RequestDelegation();
         else if (enemyPacketQueue.Count > 0)
             ReceiveDelegation(GetNextEnemyPacketFromQueue());
+        else
+            console.WriteConsoleMessage("Waiting for enemy");
     }
 
     private RelayPacket GetNextEnemyPacketFromQueue()
@@ -477,12 +479,20 @@ public class ExecutionCore : MonoBehaviour
         // Switch to counter roundstate before calling CheckForAvailableActions
         clock.NewRoundState(Clock.RoundState.Counter);
 
+        // If single counter
         if (singlePacket.actionType != null)
         {
+            bool isAllyPacket = singlePacket.player == 0 == NetworkManager.Singleton.IsHost;
+
+            // If countering player has no available actions, write to console and prepare SpellEffect
             if (!CheckForAvailableActions(singlePacket.player))
             {
-                string packetOwner = singlePacket.player == 0 == NetworkManager.Singleton.IsHost ? "You have" : "The enemy has";
-                console.WriteConsoleMessage(packetOwner + " no available counter actions");
+                string packetOwner = isAllyPacket ? "You have" : "The enemy has";
+                console.WriteConsoleMessage(packetOwner + " no available counter actions", null, SpellEffect);
+            }
+            else // If counter action is available, request counter delegation
+            {
+                RequestDelegation(isAllyPacket, !isAllyPacket);
             }
         }
         else
