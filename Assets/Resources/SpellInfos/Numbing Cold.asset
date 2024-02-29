@@ -20,3 +20,4 @@ MonoBehaviour:
   canTargetEnemy: 1
   canTargetBenchedAlly: 0
   isDamaging: 0
+  isWearying: 1

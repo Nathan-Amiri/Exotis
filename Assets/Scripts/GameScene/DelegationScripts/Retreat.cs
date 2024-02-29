@@ -72,5 +72,4 @@ public class Retreat : MonoBehaviour, IDelegationAction
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked
         button.interactable = false;
     }
-
 }

@@ -21,7 +21,7 @@ public class TargetManager : MonoBehaviour
         // Dim all non-casters
         for (int i = 0; i < elementalIcons.Count; i++)
             if (!casterSlots.Contains(i))
-                elementalIcons[i].color = new Color32(130, 130, 130, 255);
+                elementalIcons[i].color = Color.black; //new Color32(130, 130, 130, 255);
     }
 
     public void ResetCertainTargets(List<int> targetSlots)

@@ -34,6 +34,7 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public bool isDisengaged;
     [NonSerialized] public bool isTrapped;
+    [NonSerialized] public bool isWearied;
 
     public void Setup(string elementalName) // Called by Setup
     {
@@ -59,10 +60,6 @@ public class Elemental : MonoBehaviour
             healthText.text = "7";
         }
 
-        // If in slot 4 5 6 or 7, is benched
-        if (SlotAssignment.GetSlot(this) > 3)
-            ToggleBenched(true);
-
         foreach (Image outline in colorOutlines)
             outline.color = isAlly ? StaticLibrary.gameColors["allyOutline"] : StaticLibrary.gameColors["enemyOutline"];
 
@@ -73,8 +70,8 @@ public class Elemental : MonoBehaviour
         trait.SetElementalInfoFields(info);
     }
 
-    public void ToggleBenched(bool benched)
-    {
-        extra.SetActive(!benched);
-    }
+    //public void ToggleBenched(bool benched)
+    //{
+    //    extra.SetActive(!benched);
+    //}
 }

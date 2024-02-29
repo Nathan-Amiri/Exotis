@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -24,6 +25,7 @@ public class Spell : MonoBehaviour, IDelegationAction
 
     public bool IsWild { get; private set; }
     public bool IsDamaging { get; private set; }
+    public bool IsWearying { get; private set; }
 
     // IDelegationAction fields
     public string ActionType { get; private set; }
@@ -67,6 +69,7 @@ public class Spell : MonoBehaviour, IDelegationAction
             TimeScale = (int)char.GetNumericValue(info.timeScale);
 
         IsDamaging = info.isDamaging;
+        IsWearying = info.isWearying;
 
         ActionType = "spell";
         ParentElemental = parentReference;
@@ -82,13 +85,14 @@ public class Spell : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
-        //.handle nightmare & numbing cold interactable
-
         if (reset)
         {
             button.interactable = false;
             return;
         }
+
+        if (IsWearying && ParentElemental.isWearied)
+            return;
 
         switch (Clock.CurrentRoundState)
         {

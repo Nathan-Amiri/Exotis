@@ -15,4 +15,5 @@ public class SpellInfo : ScriptableObject
     public bool canTargetBenchedAlly;
 
     public bool isDamaging;
+    public bool isWearying;
 }

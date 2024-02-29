@@ -70,7 +70,7 @@ public class DelegationCore : MonoBehaviour
         }
 
         if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-            console.WriteConsoleMessage("Choose an action");
+            console.WriteConsoleMessage("Choose an action to use at " + Clock.CurrentTimeScale + ":00 or later");
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
             console.WriteConsoleMessage("Choose a counter action");
         else
@@ -204,6 +204,8 @@ public class DelegationCore : MonoBehaviour
 
             return;
         }
+
+        // *Singe check if targets can swap. If not, "No available targets that can Swap. Choose a different action"
 
         // Turn on target buttons
         targetManager.DisplayTargets(new List<int> { packet.casterSlot }, availableTargetSlots, true);
@@ -348,5 +350,18 @@ public class DelegationCore : MonoBehaviour
         console.ResetConsole();
 
         NewAction?.Invoke(true);
+    }
+
+    private void Update() //.add customizable shortcuts eventually, don't allow cancel and submit to have the same key press
+    {
+        // Else if ensures priority order, so that the shortcut button doesn't call select pass and submit/cancel with a single press
+
+        if (Input.GetKeyDown(KeyCode.Space) && passButton.activeSelf)
+            SelectPass();
+        else if (Input.GetKeyDown(KeyCode.X) && cancelButton.activeSelf)
+            SelectCancel();
+        else if (Input.GetKeyDown(KeyCode.Space) && submitButton.activeSelf)
+            SelectSubmit();
+
     }
 }

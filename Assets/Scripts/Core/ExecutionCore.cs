@@ -52,13 +52,6 @@ public class ExecutionCore : MonoBehaviour
     checkforavailableactions
     checkforgameover
 
-
-    dim all but user, consider removing target names from console message. Maybe that means text can be bigger?
-    do the same for delegation core when targeting
-
-    is Freeze disengaging at counter speed okay? Is counter speed disengaging gonna cause problems?
-    reword Freeze. Cancels Spell, Spell can be recast at the end of next round
-
     */
 
     private void DebugPacket(RelayPacket packet)
@@ -144,8 +137,6 @@ public class ExecutionCore : MonoBehaviour
 
     public void ReceiveDelegation(RelayPacket packet) // Called by RelayCore
     {
-        DebugPacket(packet);
-
         bool isAllyPacket = packet.player == 0 == NetworkManager.Singleton.IsHost;
 
         // If expecting 0 (must be enemy packet)
@@ -187,6 +178,8 @@ public class ExecutionCore : MonoBehaviour
                 return;
             }
         }
+
+        DebugPacket(packet);
 
         // Reset expectedPackets in case enemy delegations arrive before they're needed
         expectedPackets = 0;
@@ -438,11 +431,11 @@ public class ExecutionCore : MonoBehaviour
                 // Switch back from counter roundState
                 clock.NewRoundState(Clock.RoundState.TimeScale);
 
-                string packetOwner = isAllyPacket ? "You have" : "The enemy has";
-                console.WriteConsoleMessage(packetOwner + " no available counter actions", null, SpellEffect);
+                string counteringPlayer = isAllyPacket ? "The enemy has" : "You have";
+                console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, SpellEffect);
             }
             else // If counter action is available, request counter delegation
-                RequestDelegation(isAllyPacket, !isAllyPacket);
+                RequestDelegation(!isAllyPacket, isAllyPacket);
         }
         else // If multiple counter
         {
