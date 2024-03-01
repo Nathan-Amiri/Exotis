@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using static Unity.Networking.Transport.Utilities.ReliableUtility;
 
 public class ExecutionCore : MonoBehaviour
 {
@@ -23,19 +24,20 @@ public class ExecutionCore : MonoBehaviour
         // 1/2 = packets needed before proceeding down a logic path
     private int expectedPackets;
 
+    private readonly List<RelayPacket> enemyPacketQueue = new();
+
     private RelayPacket singlePacket;
     private RelayPacket allyPacket;
     private RelayPacket enemyPacket;
 
-    private readonly List<RelayPacket> enemyPacketQueue = new();
-
-    private RelayPacket allyCounterPacket;
-    private RelayPacket enemyCounterPacket;
+        // Spells and Traits save packets before occurring in case additional delegations are needed (such as counters)
+    private RelayPacket savedSinglePacket;
+    private RelayPacket savedAllyPacket;
+    private RelayPacket savedEnemyPacket;
 
     /*
         Todo:
 
-    singlecounter
     countertiebreaker
     immediate (and immediate tiebreaker?)
     
@@ -116,7 +118,7 @@ public class ExecutionCore : MonoBehaviour
         RequestDelegation(true, true);
     }
 
-    private void RequestDelegation(bool needAllyDelegation, bool needEnemyDelegation)
+    private void RequestDelegation(bool needAllyDelegation, bool needEnemyDelegation, bool counterUnavailableMessage = false)
     {
         expectedPackets = needAllyDelegation && needEnemyDelegation ? 2 : 1;
 
@@ -124,6 +126,8 @@ public class ExecutionCore : MonoBehaviour
             delegationCore.RequestDelegation();
         else if (enemyPacketQueue.Count > 0)
             ReceiveDelegation(GetNextEnemyPacketFromQueue());
+        else if (counterUnavailableMessage)
+            console.WriteConsoleMessage("You have no available counter actions. Waiting for enemy");
         else
             console.WriteConsoleMessage("Waiting for enemy");
     }
@@ -192,9 +196,9 @@ public class ExecutionCore : MonoBehaviour
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
         {
             if (singlePacket.actionType != null)
-                WriteCounterActionMessage(singlePacket);
+                SingleCounter();
             else
-                CounterTiebreaker(allyCounterPacket, enemyCounterPacket);
+                CounterTiebreaker();
         }
         else
             TieBreaker();
@@ -367,21 +371,29 @@ public class ExecutionCore : MonoBehaviour
 
     public void WriteActionMessage()
     {
+        // Save packets before proceeding with the Spell(s)/Trait(s), as other delegations might be necessary
+        // Packets are saved here since all Spell/Trait logic passes here. Packets can't be saved in CheckForCounter
+        // because it's called again in each counter cycle
+        savedSinglePacket = singlePacket;
+        savedAllyPacket = allyPacket;
+        savedEnemyPacket = enemyPacket;
+        ResetPackets();
+
         // If two packets must be written, write ally and prepare to write enemy
-        if (singlePacket.actionType == null)
-            console.WriteConsoleMessage(GenerateActionMessage(allyPacket), null, WriteEnemyMessage);
+        if (savedSinglePacket.actionType == null)
+            console.WriteConsoleMessage(GenerateActionMessage(savedAllyPacket), null, WriteEnemyMessage);
         // If a single packet must be written, write it and prepare TraitEffect/CheckForCounter depending on actionType
         else
         {
-            Console.OutputMethod outputMethod = singlePacket.actionType == "trait" ? TraitEffect : CheckForCounter;
-            console.WriteConsoleMessage(GenerateActionMessage(singlePacket), null, outputMethod);
+            Console.OutputMethod outputMethod = savedSinglePacket.actionType == "trait" ? TraitEffect : CheckForCounter;
+            console.WriteConsoleMessage(GenerateActionMessage(savedSinglePacket), null, outputMethod);
         }
     }
     public void WriteEnemyMessage()
     {
         // Write enemy packet and prepare TraitEffect/CheckForCounter depending on actionType
-        Console.OutputMethod outputMethod = enemyPacket.actionType == "trait" ? TraitEffect : CheckForCounter;
-        console.WriteConsoleMessage(GenerateActionMessage(enemyPacket), null, outputMethod, true);
+        Console.OutputMethod outputMethod = savedEnemyPacket.actionType == "trait" ? TraitEffect : CheckForCounter;
+        console.WriteConsoleMessage(GenerateActionMessage(savedEnemyPacket), null, outputMethod, true);
     }
 
     private string GenerateActionMessage(RelayPacket packet)
@@ -421,51 +433,102 @@ public class ExecutionCore : MonoBehaviour
         clock.NewRoundState(Clock.RoundState.Counter);
 
         // If single counter
-        if (singlePacket.actionType != null)
+        if (savedSinglePacket.actionType != null)
         {
-            bool isAllyPacket = singlePacket.player == 0 == NetworkManager.Singleton.IsHost;
+            bool isCounteringPlayer = savedSinglePacket.player == 0 != NetworkManager.Singleton.IsHost;
 
             // If countering player has no available actions, write to console and prepare SpellEffect
-            if (!CheckForAvailableActions(singlePacket.player))
+            if (!CheckForAvailableActions(savedSinglePacket.player))
             {
                 // Switch back from counter roundState
                 clock.NewRoundState(Clock.RoundState.TimeScale);
 
-                string counteringPlayer = isAllyPacket ? "The enemy has" : "You have";
-                console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, SpellEffect);
+                string counteringPlayer = isCounteringPlayer ? "You have" : "The enemy has";
+                console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, WriteSpellMessage);
             }
-            else // If counter action is available, request counter delegation
-                RequestDelegation(!isAllyPacket, isAllyPacket);
+            else // If counter action is available, save packet and request counter delegation
+                RequestDelegation(isCounteringPlayer, !isCounteringPlayer);
         }
         else // If multiple counter
         {
-            bool allyCounterAvailable = CheckForAvailableActions(allyPacket.player);
-            bool enemyCounterAvailable = CheckForAvailableActions(enemyPacket.player);
+            bool allyCounterAvailable = CheckForAvailableActions(savedAllyPacket.player);
+            bool enemyCounterAvailable = CheckForAvailableActions(savedEnemyPacket.player);
 
             if (!allyCounterAvailable && !enemyCounterAvailable)
             {
                 // Switch back from counter roundState
                 clock.NewRoundState(Clock.RoundState.TimeScale);
 
-                console.WriteConsoleMessage("Neither player has available counter actions", null, SpellEffect);
+                console.WriteConsoleMessage("Neither player has available counter actions", null, WriteSpellMessage);
             }
-            else
-                RequestDelegation(allyCounterAvailable, enemyCounterAvailable);
+            else if (allyCounterAvailable)
+                RequestDelegation(true, enemyCounterAvailable);
+            else // If only enemy counter available
+                RequestDelegation(false, true, true);
         }
     }
 
-    private void CounterTiebreaker(RelayPacket allyCounterPacket, RelayPacket enemyCounterPacket)
+    private void SingleCounter()
     {
+        bool isCounteringPlayer = singlePacket.player == 0 == NetworkManager.Singleton.IsHost;
 
+        // If you pass, immediately write spell message. If enemy passes, first tell player that enemy has passed
+        if (singlePacket.actionType == "pass")
+        {
+            if (isCounteringPlayer)
+                WriteSpellMessage();
+            else
+                console.WriteConsoleMessage("The enemy has passed", null, WriteSpellMessage);
+
+            return;
+        }
+
+        targetManager.DisplayTargets(new List<int> { singlePacket.casterSlot }, singlePacket.targetSlots.ToList(), false);
+
+        Elemental casterElemental = SlotAssignment.Elementals[singlePacket.casterSlot];
+
+        string packetOwner = isCounteringPlayer ? "Your" : "The enemy's";
+        string caster = packetOwner + " " + casterElemental.name;
+
+
+        if (singlePacket.actionType == "gem")
+            console.WriteConsoleMessage(caster + " will activate its Gem", null, GemEffect);
+        else if (singlePacket.actionType == "retreat")
+            console.WriteConsoleMessage(caster + " will Retreat", null, RetreatEffect);
+        else if (singlePacket.actionType == "spark")
+            console.WriteConsoleMessage(caster + " will send its Spark at the target", null, SparkEffect);
+        else // If Trait or Spell
+        {
+            string spellOrTraitName = singlePacket.actionType == "spell" ? singlePacket.name : casterElemental.trait.Name;
+
+            if (singlePacket.potion)
+                console.WriteConsoleMessage(caster + " will drink its Potion, then cast " + spellOrTraitName, null, SpellEffect);
+            else
+                console.WriteConsoleMessage(caster + " will cast " + spellOrTraitName, null, SpellEffect);
+        }
     }
 
-    private void WriteCounterActionMessage(RelayPacket counterPacket)
+    private void CounterTiebreaker()
     {
+        if (allyPacket.actionType == "pass" && enemyPacket.actionType == "pass")
+            console.WriteConsoleMessage("Both players have passed", null, WriteSpellMessage);
 
-    }
-    public void WriteEnemyCounterActionMessage()
-    {
+        //.tiebreaker has identical code for most of this. Figure out how to consolidate them? Ideally I'd have one method for single packets and one for double packets,
+        //.but I'm not sure how to do this. Also, the existing trait tie in tiebreaker isn't logged clearly. Better to say that they'll occur simultaneously before displaying
+        //.messages one at a time.
 
+        // If only you pass, immediately write enemy's counter message
+        else if (allyPacket.actionType == "pass")
+        {
+            IsolateFasterPacket(enemyPacket);
+            SingleCounter();
+        }
+        // If only enemy passes, tell player that enemy has passed before writing your counter message
+        else if (enemyPacket.actionType == "pass")
+        {
+            IsolateFasterPacket(allyPacket);
+            console.WriteConsoleMessage("The enemy has passed", null, SingleCounter);
+        }
     }
 
     // Effect methods:
@@ -484,9 +547,15 @@ public class ExecutionCore : MonoBehaviour
         Debug.Log("TraitEffect");
     }
 
-    private void SpellEffect()
+    public void WriteSpellMessage()
+    {
+        Debug.Log("SpellMessage");
+        //."caster's spell will occur" output method is spelleffect NOT USED FOR COUNTER, COUNTER JUMPS RIGHT TO SPELLEFFECT
+    }
+    public void SpellEffect()
     {
         Debug.Log("SpellEffect");
+        //.IF COUNTER, RETURN TO CHECKFORCOUNTER SO THAT OTHER COUNTERS CAN OCCUR BEFORE THE SAVED SPELL DOES
     }
 
     private void SparkEffect()

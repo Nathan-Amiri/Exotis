@@ -352,16 +352,20 @@ public class DelegationCore : MonoBehaviour
         NewAction?.Invoke(true);
     }
 
+
+
+    public GameObject consoleButton; //.temp for shortcut
     private void Update() //.add customizable shortcuts eventually, don't allow cancel and submit to have the same key press
     {
-        // Else if ensures priority order, so that the shortcut button doesn't call select pass and submit/cancel with a single press
+        // Else if ensures priority order, so that the shortcut button doesn't trigger multiple things at once
 
-        if (Input.GetKeyDown(KeyCode.Space) && passButton.activeSelf)
+        if (Input.GetKeyDown(KeyCode.Space) && consoleButton.activeSelf)
+            console.SelectConsoleButton();
+        else if (Input.GetKeyDown(KeyCode.Space) && passButton.activeSelf)
             SelectPass();
         else if (Input.GetKeyDown(KeyCode.X) && cancelButton.activeSelf)
             SelectCancel();
         else if (Input.GetKeyDown(KeyCode.Space) && submitButton.activeSelf)
             SelectSubmit();
-
     }
 }
