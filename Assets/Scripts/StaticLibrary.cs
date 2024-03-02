@@ -109,7 +109,7 @@ public static class StaticLibrary
         { "Fanged Bite" },
         { "Infect" },
         { "Poison Cloud" },
-        { "Bile" },
+        { "Cripple" },
         { "Sparkle" },
         { "Allure" },
         { "Fairy Dust" },

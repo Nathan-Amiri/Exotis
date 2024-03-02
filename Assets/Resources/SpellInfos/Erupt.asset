@@ -15,8 +15,9 @@ MonoBehaviour:
   elementColor: 1
   timeScale: 51
   maxTargets: 1
-  canTargetSelf: 0
+  canTargetSelf: 1
   canTargetAlly: 1
   canTargetEnemy: 1
   canTargetBenchedAlly: 0
   isDamaging: 1
+  isWearying: 0

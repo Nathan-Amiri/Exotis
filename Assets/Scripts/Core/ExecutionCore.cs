@@ -118,7 +118,7 @@ public class ExecutionCore : MonoBehaviour
         RequestDelegation(true, true);
     }
 
-    private void RequestDelegation(bool needAllyDelegation, bool needEnemyDelegation, bool counterUnavailableMessage = false)
+    private void RequestDelegation(bool needAllyDelegation, bool needEnemyDelegation)
     {
         expectedPackets = needAllyDelegation && needEnemyDelegation ? 2 : 1;
 
@@ -126,8 +126,6 @@ public class ExecutionCore : MonoBehaviour
             delegationCore.RequestDelegation();
         else if (enemyPacketQueue.Count > 0)
             ReceiveDelegation(GetNextEnemyPacketFromQueue());
-        else if (counterUnavailableMessage)
-            console.WriteConsoleMessage("You have no available counter actions. Waiting for enemy");
         else
             console.WriteConsoleMessage("Waiting for enemy");
     }
@@ -461,11 +459,22 @@ public class ExecutionCore : MonoBehaviour
 
                 console.WriteConsoleMessage("Neither player has available counter actions", null, WriteSpellMessage);
             }
-            else if (allyCounterAvailable)
-                RequestDelegation(true, enemyCounterAvailable);
+            else if (allyCounterAvailable && enemyCounterAvailable)
+                RequestDelegation(true, true);
+            else if (allyCounterAvailable && !enemyCounterAvailable)
+                // Inform the player that the enemy cannot counter before requesting ally delegation
+                console.WriteConsoleMessage("The enemy has no available counter actions", null, EnemyCannotCounter);
             else // If only enemy counter available
-                RequestDelegation(false, true, true);
+                console.WriteConsoleMessage("You have no available counter actions", null, AllyCannotCounter);
         }
+    }
+    public void EnemyCannotCounter()
+    {
+        RequestDelegation(true, false);
+    }
+    public void AllyCannotCounter()
+    {
+        RequestDelegation(false, true);
     }
 
     private void SingleCounter()
@@ -575,17 +584,17 @@ public class ExecutionCore : MonoBehaviour
 
     // Misc methods:
 
-    private void AutoPass(bool passAlly)
-    {
-        // Use the player number of the passing player
-        RelayPacket passPacket = new()
-        {
-            player = passAlly == NetworkManager.Singleton.IsHost ? 0 : 1,
-            actionType = "pass"
-        };
+    //private void AutoPass(bool passAlly) //.do I need this method?
+    //{
+    //    // Use the player number of the passing player
+    //    RelayPacket passPacket = new()
+    //    {
+    //        player = passAlly == NetworkManager.Singleton.IsHost ? 0 : 1,
+    //        actionType = "pass"
+    //    };
 
-        ReceiveDelegation(passPacket);
-    }
+    //    ReceiveDelegation(passPacket);
+    //}
 
     private bool CheckForAvailableActions(int player)
     {

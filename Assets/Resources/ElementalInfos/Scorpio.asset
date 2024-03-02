@@ -16,7 +16,7 @@ MonoBehaviour:
   traitName: Paralyze
   traitMaxTargets: 1
   traitCanTargetSelf: 0
-  traitCanTargetAlly: 1
+  traitCanTargetAlly: 0
   traitCanTargetEnemy: 1
   traitCanTargetBenchedAlly: 0
   usableRoundStart: 1
