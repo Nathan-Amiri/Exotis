@@ -32,7 +32,7 @@
 23 Numbing Cold 6 "I target an Elemental in play that is slower than me. This round, the target’s Spells deal 0 damage. I'm Wearied next round"
 
 24 Enchain 3 "I deal 2 to a target in play and Trap it until the end of next round"
-25 Animate 5 "My ally gains an action. This round, I'm Armored and my ally is Trapped. I can’t cast this Spell again until I Swap"
+25 Animate 5 "My ally gains an action. (if they already have one, they gain a second) This round, I'm Armored and my ally is Trapped. I can’t cast this Spell again until I Swap"
 26 Nightmare ? "I target an Elemental in play. Next round, it's Stunned and I'm Wearied"
 27 Hex 5 "I Slow, Poison, or Weaken a target in play this round. I heal myself 1. The first time I cast this Spell, I heal 2 instead"
 
@@ -58,7 +58,7 @@
 3 Kraken 5f Water/Lightning
 	Reservoir "Once per game, at any time, I can gain a Gem"
 4 Leviathan 6m Frost/Water
-	Majestic "The first time I’m in play, I can immediately cast a Spell, regardless of its timescale. The Spell deals 0 damage. Then, if I'm still in play, I gain an action"
+	Majestic "The first time I’m in play, I can immediately cast a Spell, regardless of its timescale. The Spell does not consume an action. The Spell deals 0 damage"
 5 Hydra 7s Water/Shadow
 	Eclipse "Once per game, at the end of a round, I can Enrage all Elementals next round, even ones not in play"
 6 Siren 7s Water/Venom
@@ -78,7 +78,7 @@
 13 Chimera 5f Flame/Venom
 	Sizzle "If I’m casting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell. I can’t use this effect next round"
 14 Genie 6m Jewel/Flame
-	Best Wishes "Once per game, immediately after casting a non-damaging Spell, I can cast a different non-damaging Spell, regardless of its timescale"
+	Best Wishes "Once per game, immediately after casting a non-damaging Spell, I can cast a different non-damaging Spell, regardless of its timescale. The Spell does not consume an action"
 15 Roc 6m Wind/Earth
 	Screech "Once per game, at any time except counter speed, I can deal 1 to all other Elementals, even ones not in play"
 16 Golem 6m Lightning/Earth
@@ -96,7 +96,7 @@
 22 Ghost 6m Wind/Frost
 	Icy Touch "Slows I inflict last forever"
 23 Wraith 5f Shadow/Wind
-	Silence "Immediately after I’m Eliminated, I can Eliminate the enemy in play with the lowest Health. If they're tied, I can choose one to Eliminate"
+	Silence "I can't target myself. Immediately after I’m Eliminated, I can Eliminate the enemy in play with the lowest Health. If they're tied, I can choose one to Eliminate"
 24 Strix 5f Wind/Venom
 	Frenzy "Once per game, if I’m casting a damaging Spell that has one target, I can deal +1 damage with that Spell. I can’t cast a different Spell until I Swap"
 25 Fairy 6m Wind/Jewel
@@ -132,7 +132,7 @@ Spark "At counter speed, I can send my Spark at a target in play. After the enem
 
 	STATUS:
 
-Wearied "I can't cast any Spells that contain the word *Wearied*
+Wearied "I can't cast any Spells that contain the word "Wearied"
 	(Spells that could be used to infinitely stall the game will make the caster *Wearied* next round, preventing them from casting any of those Spells next round)"
 Enraged "I'm immune to damage"
 Armored "If I would take damage from an enemy spell, I take -1 damage and am no longer Armored"
