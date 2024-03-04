@@ -7,19 +7,19 @@
 3 Tidal Wave 2 "I deal 3 to a target in play. Then, I'm Weakened until the end of next round"
 
 4 Erupt 3 "I deal 3 to a target in play. I deal 1 to myself"
-5 Singe 6 "I force an enemy in play to Swap, if it can. If the enemy has an action, it transfers to its replacement. At the end of this round, I can deal 2 to a target in play"
+5 Singe 6 "I force an enemy in play to Swap if it can. If the enemy has an action, it transfers to its replacement. At the end of this round, I can recast this Spell to deal 2 to a target in play"
 6 Heat Up 5 "I gain a Potion. I'm Enraged this round. I can't cast this Spell again until I Swap"
 7 Hellfire 3 "I deal 4 to a target in play. Then, I'm Eliminated"
 
 8 Empower 2 "I deal 2 to a target in play. If I took damage this round, I deal 3 instead"
 9 Fortify 7 "This round, I'm Disengaged and my ally is Armored. I'm Wearied next round"
-10 Block C "I'm Armored this round. At the end of this round, I can deal 1 to any targets in play"
+10 Block C "I'm Armored this round. At the end of this round, I can recast this Spell to deal 1 to any targets in play"
 11 Landslide 3 "I deal 2 to all other Elementals in play"
 
 12 Swoop 4 "I deal 2 to a target in play"
 13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap if I can"
 14 Whirlwind 3 "I deal 2 to a target in play. I'm Enraged and Weakened next round"
-15 Ascend 7 "I'm Disengaged this round. I'm Stunned and Trapped next round. At the beginning of next round, I can deal 2 to a target in play"
+15 Ascend 7 "I'm Disengaged this round. I'm Stunned and Trapped next round. At the beginning of next round, I can recast this Spell to deal 2 to a target in play"
 
 16 Surge 3 "I deal 2 to a target in play. The first time I cast this Spell, I gain a Spark"
 17 Blink C "I gain a Spark. I'm Enraged until the Spell I'm countering has occurred. I can’t cast this Spell again until I Swap"
@@ -38,7 +38,7 @@
 
 28 Fanged Bite 3 "I deal 2 to a target in play. It's Poisoned next round"
 29 Infect ? "I Poison a target in play for the rest of the game"
-30 Poison Cloud 5 "This round, when I'm damaged by an enemy Spell, I Poison the Spell's caster this round. At the end of this round, I can deal 2 to a target in play"
+30 Poison Cloud 5 "This round, when I'm damaged by an enemy Spell, I Poison the Spell's caster this round. At the end of this round, I can recast this Spell to deal 2 to a target in play"
 31 Cripple 5 "I Slow all Poisoned enemies this round, even ones not in play. I gain an action. I can't cast this Spell again until I Swap"
 
 32 Sparkle 3 "I deal 2 to a target in play. It's Weakened next round"
@@ -58,7 +58,7 @@
 3 Kraken 5f Water/Lightning
 	Reservoir "Once per game, at any time, I can gain a Gem"
 4 Leviathan 6m Frost/Water
-	Majestic "The first time I’m in play, I can immediately cast a Spell, regardless of its timescale. The Spell does not consume an action. The Spell deals 0 damage"
+	Majestic "The first time I’m in play, I can immediately cast a Spell, regardless of its timescale. The Spell does not consume an action. The Spell deals 0 damage and can't be countered"
 5 Hydra 7s Water/Shadow
 	Eclipse "Once per game, at the end of a round, I can Enrage all Elementals next round, even ones not in play"
 6 Siren 7s Water/Venom
@@ -136,8 +136,8 @@ Wearied "I can't cast any Spells that contain the word "Wearied"
 	(Spells that could be used to infinitely stall the game will make the caster *Wearied* next round, preventing them from casting any of those Spells next round)"
 Enraged "I'm immune to damage"
 Armored "If I would take damage from an enemy spell, I take -1 damage and am no longer Armored"
-Disengaged "I'm immune to damage, I can't be targeted or affected by anything, and I can't act (I can't cast Spells, use Items, cast my Trait, or Retreat)"
-Stunned "I can't cast Spells"
+Disengaged "I'm immune to damage, I can't be targeted or affected by anything, and I can't act (I can't cast or recast Spells, use Items, cast my Trait, or Retreat)"
+Stunned "I can't cast or recast Spells"
 Slowed "I'm slower than non-Slowed Elementals"
 Trapped "I can't Swap"
 Poisoned "At the end of each round, if I'm in play, I deal 1 to myself"
