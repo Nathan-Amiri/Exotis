@@ -7,13 +7,13 @@
 3 Tidal Wave 2 "I deal 3 to a target in play. Then, I'm Weakened until the end of next round"
 
 4 Erupt 3 "I deal 3 to a target in play. I deal 1 to myself"
-5 Singe 6 "I force an enemy in play to Swap if it can. If the enemy has an action, it transfers to its replacement. At the end of this round, I can recast this Spell to deal 2 to a target in play"
+5 Singe 6 "I force an enemy in play to Swap if it can. If the enemy has an action, it transfers to its replacement. I can recast this Spell at 2:00 to deal 2 to a target in play"
 6 Heat Up 5 "I gain a Potion. I'm Enraged this round. I can't cast this Spell again until I Swap"
 7 Hellfire 3 "I deal 4 to a target in play. Then, I'm Eliminated"
 
 8 Empower 2 "I deal 2 to a target in play. If I took damage this round, I deal 3 instead"
 9 Fortify 7 "This round, I'm Disengaged and my ally is Armored. I'm Wearied next round"
-10 Block C "I'm Armored this round. At the end of this round, I can recast this Spell to deal 1 to any targets in play"
+10 Block C "I'm Armored this round. Immediately after the Spell I'm countering has occurred, I can recast this Spell to deal 1 to any targets in play."
 11 Landslide 3 "I deal 2 to all other Elementals in play"
 
 12 Swoop 4 "I deal 2 to a target in play"
@@ -38,7 +38,7 @@
 
 28 Fanged Bite 3 "I deal 2 to a target in play. It's Poisoned next round"
 29 Infect ? "I Poison a target in play for the rest of the game"
-30 Poison Cloud 5 "This round, when I'm damaged by an enemy Spell, I Poison the Spell's caster this round. At the end of this round, I can recast this Spell to deal 2 to a target in play"
+30 Poison Cloud 5 "This round, when I'm damaged by an enemy Spell, I Poison the Spell's caster this round. I can recast this Spell at 2:00 to deal 2 to a target in play"
 31 Cripple 5 "I Slow all Poisoned enemies this round, even ones not in play. I gain an action. I can't cast this Spell again until I Swap"
 
 32 Sparkle 3 "I deal 2 to a target in play. It's Weakened next round"
