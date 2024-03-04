@@ -7,19 +7,19 @@
 3 Tidal Wave 2 "I deal 3 to a target in play. Then, I'm Weakened until the end of next round"
 
 4 Erupt 3 "I deal 3 to a target in play. I deal 1 to myself"
-5 Singe 6 "I force an enemy in play to Swap if it can. If the enemy has an action, it transfers to its replacement. I can recast this Spell at 2:00 to deal 2 to a target in play"
+5 Singe 6 "I force an enemy in play to Swap if it can. I can recast this Spell at 2:00 to deal 2 to a target in play"
 6 Heat Up 5 "I gain a Potion. I'm Enraged this round. I can't cast this Spell again until I Swap"
 7 Hellfire 3 "I deal 4 to a target in play. Then, I'm Eliminated"
 
 8 Empower 2 "I deal 2 to a target in play. If I took damage this round, I deal 3 instead"
 9 Fortify 7 "This round, I'm Disengaged and my ally is Armored. I'm Wearied next round"
-10 Block C "I'm Armored this round. Immediately after the Spell I'm countering has occurred, I can recast this Spell to deal 1 to any targets in play."
+10 Block C "I'm Armored this round. I can recast this Spell at 2:00 to deal 1 to any targets in play. This Spell can't counter a non-damaging Spell."
 11 Landslide 3 "I deal 2 to all other Elementals in play"
 
 12 Swoop 4 "I deal 2 to a target in play"
 13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap if I can"
 14 Whirlwind 3 "I deal 2 to a target in play. I'm Enraged and Weakened next round"
-15 Ascend 7 "I'm Disengaged this round. I'm Stunned and Trapped next round. At the beginning of next round, I can recast this Spell to deal 2 to a target in play"
+15 Flurry C "My Ally Swaps if it can"
 
 16 Surge 3 "I deal 2 to a target in play. The first time I cast this Spell, I gain a Spark"
 17 Blink C "I gain a Spark. I'm Enraged until the Spell I'm countering has occurred. I can’t cast this Spell again until I Swap"
@@ -32,7 +32,7 @@
 23 Numbing Cold 6 "I target an Elemental in play that is slower than me. This round, the target’s Spells deal 0 damage. I'm Wearied next round"
 
 24 Enchain 3 "I deal 2 to a target in play and Trap it until the end of next round"
-25 Animate 5 "My ally gains an action. (if they already have one, they gain a second) This round, I'm Armored and my ally is Trapped. I can’t cast this Spell again until I Swap"
+25 Animate 5 "My ally gains an action. (If they already have one, they gain a second) I'm Armored this round. I can’t cast this Spell again until I Swap"
 26 Nightmare ? "I target an Elemental in play. Next round, it's Stunned and I'm Wearied"
 27 Hex 5 "I Slow, Poison, or Weaken a target in play this round. I heal myself 1. The first time I cast this Spell, I heal 2 instead"
 
@@ -66,7 +66,7 @@
 7 Mermaid 7s Water/Jewel
 	Slippery "I can cast non-damaging Spells at counter speed"
 8 Salamander 5f Flame/Earth
-	Burrow "At any time except counter speed, I can Swap. If I have an action, it transfers to my replacement"
+	Burrow "At any time except counter speed, I can Swap."
 9 Phoenix 5f Wind/Flame
 	Rebirth "The first time I take lethal damage, I retain 1 health and am Weakened for the rest of the game"
 10 Dragon 6m Flame/Lightning
@@ -106,7 +106,7 @@
 27 Gargoyle 6m Shadow/Lightning
 	Scavenger "When I Eliminate an enemy, I gain a Potion"
 28 Abomination 6m Lightning/Venom
-	Freak "When I enter play due to a Swap, my ally can immediately Swap. If it has an action, it transfers to its replacement"
+	Freak "When I enter play due to a Swap, my ally can immediately Swap."
 29 Angel 7s Lightning/Jewel
 	Smite "Each round, the first time I take damage from a Spell, I gain a Spark"
 30 Werewolf 5f Shadow/Frost
