@@ -3,11 +3,11 @@
 
 0 Flow 3 "I deal 2 to a target in play. I heal 1"
 1 Cleanse ? "I heal myself or my ally 2. I'm Wearied next round"
-2 Mirage 7 "I Swap if I can. My replacement gains an action. When it's dealt damage this round, the damage redirects to me if I'm alive. It and its ally are Trapped this round"
+2 Mirage 7 "I gain an action, then Swap. When my replacement is dealt damage this round, the damage redirects to me if I'm alive. It and its ally are Trapped this round"
 3 Tidal Wave 2 "I deal 3 to a target in play. Then, I'm Weakened until the end of next round"
 
 4 Erupt 3 "I deal 3 to a target in play. I deal 1 to myself"
-5 Singe 6 "I force an enemy in play to Swap if it can. I can recast this Spell at 2:00 to deal 2 to a target in play"
+5 Singe 6 "I force an enemy in play to Swap. I can recast this Spell at 2:00 to deal 2 to a target in play"
 6 Heat Up 5 "I gain a Potion. I'm Enraged this round. I can't cast this Spell again until I Swap"
 7 Hellfire 3 "I deal 4 to a target in play. Then, I'm Eliminated"
 
@@ -17,9 +17,9 @@
 11 Landslide 3 "I deal 2 to all other Elementals in play"
 
 12 Swoop 4 "I deal 2 to a target in play"
-13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap if I can"
+13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap"
 14 Whirlwind 3 "I deal 2 to a target in play. I'm Enraged and Weakened next round"
-15 Flurry C "My Ally Swaps if it can"
+15 Flurry C "My Ally Swaps"
 
 16 Surge 3 "I deal 2 to a target in play. The first time I cast this Spell, I gain a Spark"
 17 Blink C "I gain a Spark. I'm Enraged until the Spell I'm countering has occurred. I can’t cast this Spell again until I Swap"
@@ -56,9 +56,9 @@
 2 Nymph 6m Water/Wind
 	Dive "Once per game, at counter speed, I can heal 1 and become Enraged until the Spell I'm countering has occurred"
 3 Kraken 5f Water/Lightning
-	Reservoir "Once per game, at any time, I can gain a Gem"
+	Reservoir "At the beginning of the game, I gain a Gem"
 4 Leviathan 6m Frost/Water
-	Majestic "The first time I’m in play, I can immediately cast a Spell, regardless of its timescale. The Spell does not consume an action. The Spell deals 0 damage and can't be countered"
+	Majestic "The first time I'm in play, I can immediately cast a Spell without using an action. The Spell deals 0 damage and can't be countered"
 5 Hydra 7s Water/Shadow
 	Eclipse "Once per game, at the end of a round, I can Enrage all Elementals next round, even ones not in play"
 6 Siren 7s Water/Venom
@@ -76,9 +76,9 @@
 12 Hellhound 6m Shadow/Flame
 	Berserk "At the beginning of each round, I can deal 1 to my ally and gain a Potion"
 13 Chimera 5f Flame/Venom
-	Sizzle "If I’m casting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell. I can’t use this effect next round"
+	Sizzle "If I’m casting or recasting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell. I can’t use this effect next round"
 14 Genie 6m Jewel/Flame
-	Best Wishes "Once per game, immediately after casting a non-damaging Spell, I can cast a different non-damaging Spell, regardless of its timescale. The Spell does not consume an action"
+	Best Wishes "Once per game, at any time, I can gain an action. (If I already have one, I gain a second) I can't cast damaging Spells this round"
 15 Roc 6m Wind/Earth
 	Screech "Once per game, at any time except counter speed, I can deal 1 to all other Elementals, even ones not in play"
 16 Golem 6m Lightning/Earth
@@ -96,9 +96,9 @@
 22 Ghost 6m Wind/Frost
 	Icy Touch "Slows I inflict last forever"
 23 Wraith 5f Shadow/Wind
-	Silence "I can't target myself. Immediately after I’m Eliminated, I can Eliminate the enemy in play with the lowest Health. If they're tied, I can choose one to Eliminate"
+	Silence "I can't target myself. Immediately after I’m Eliminated, I can Eliminate the enemy in play with the lowest Health. If they're tied, I choose which to Eliminate"
 24 Strix 5f Wind/Venom
-	Frenzy "Once per game, if I’m casting a damaging Spell that has one target, I can deal +1 damage with that Spell. I can’t cast a different Spell until I Swap"
+	Frenzy "Once per game, if I’m casting or recasting a damaging Spell, I can deal +1 damage with that Spell. I can’t cast a different Spell until I Swap"
 25 Fairy 6m Wind/Jewel
 	Serenade "At the end of each round, if I have not healed this round, I heal 1"
 26 Thunderbird 6m Frost/Lightning
@@ -118,7 +118,7 @@
 33 Witch 6m Shadow/Venom
 	Deceive "At counter speed, I can target any ally, even one not in play. If the Spell I'm countering would deal damage to me, the damage redirects to the target"
 34 Shaman 6m Jewel/Shadow
-	Mystic Arts "At any time except counter speed, I can become Disengaged until the end of next round. Despite being Disengaged, I can end this effect early at any time"
+	Mystic Arts "At any time except counter speed, I can become Disengaged until the end of next round. Despite being Disengaged, I can recast this Trait at any time to end this effect early"
 35 Basilisk 6m Venom/Jewel
 	Stony Gaze "Once per game, at the beginning of a round, I can Stun and Trap myself and an enemy in play this round"
 
@@ -133,7 +133,7 @@ Spark "At counter speed, I can send my Spark at a target in play. After the enem
 	STATUS:
 
 Wearied "I can't cast any Spells that contain the word "Wearied"
-	(Spells that could be used to infinitely stall the game will make the caster *Wearied* next round, preventing them from casting any of those Spells next round)"
+	(Spells that could be used to infinitely stall the game will make the caster "Wearied" next round, preventing them from casting any of those Spells next round)"
 Enraged "I'm immune to damage"
 Armored "If I would take damage from an enemy spell, I take -1 damage and am no longer Armored"
 Disengaged "I'm immune to damage, I can't be targeted or affected by anything, and I can't act (I can't cast or recast Spells, use Items, cast my Trait, or Retreat)"
