@@ -10,6 +10,7 @@ public class TargetManager : MonoBehaviour
 
     public void DisplayTargets(List<int> casterSlots, List<int> targetSlots, bool interactable)
     {
+        // Reset targets and dims
         ResetAllTargets();
 
         foreach (int targetSlot in targetSlots)

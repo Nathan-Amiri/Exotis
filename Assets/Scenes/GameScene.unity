@@ -12146,6 +12146,7 @@ MonoBehaviour:
   clock: {fileID: 1265245687}
   console: {fileID: 1265245692}
   targetManager: {fileID: 1265245694}
+  canCounter: 1
 --- !u!1 &1420317835
 GameObject:
   m_ObjectHideFlags: 0
@@ -17867,6 +17868,10 @@ PrefabInstance:
     - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: m_Name
       value: Elemental0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1013153464596698819, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1894539201454206837, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}
       propertyPath: delegationCore

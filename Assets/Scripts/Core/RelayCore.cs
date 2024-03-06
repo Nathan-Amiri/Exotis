@@ -38,7 +38,7 @@ public class RelayCore : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     private void RelayToClientRpc(RelayPacket packet)
     {
-        executionCore.ReceiveDelegation(packet);
+        executionCore.ReceivePacket(packet);
     }
 }
 

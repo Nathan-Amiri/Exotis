@@ -14,7 +14,7 @@
 8 Empower 2 "I deal 2 to a target in play. If I took damage this round, I deal 3 instead"
 9 Fortify 7 "This round, I'm Disengaged and my ally is Armored. I'm Wearied next round"
 10 Block C "I'm Armored this round. I can recast this Spell at 2:00 to deal 1 to any targets in play. This Spell can't counter a non-damaging Spell."
-11 Landslide 3 "I deal 2 to all other Elementals in play"
+11 Landslide 3 "I target all other Elementals in play. I deal 2 to each of the targets"
 
 12 Swoop 4 "I deal 2 to a target in play"
 13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap"
@@ -74,7 +74,7 @@
 11 Wizard 5f Frost/Flame
 	Astonish "The first time I’m in play at the beginning of a round, I'm Enraged that round"
 12 Hellhound 6m Shadow/Flame
-	Berserk "At the beginning of each round, I can deal 1 to my ally and gain a Potion"
+	Berserk "At the beginning of each round, I can deal 1 to my ally and gain a Potion. I can't use this effect next round"
 13 Chimera 5f Flame/Venom
 	Sizzle "If I’m casting or recasting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell. I can’t use this effect next round"
 14 Genie 6m Jewel/Flame
@@ -127,7 +127,7 @@
 
 Gem "At any time, I can activate my Gem to heal 2"
 Potion "If I'm casting a damaging Spell that has one target, I can drink my Potion to deal +1 damage with that Spell"
-Spark "At counter speed, I can send my Spark at a target in play. After the enemy Spell I'm countering has occurred, I deal 1 to the target even if I'm Eliminated or no longer in play"
+Spark "At counter speed, I can fling my Spark at a target in play. After the enemy Spell I'm countering has occurred, I deal 1 to the target even if I'm Eliminated or no longer in play"
 
 
 	STATUS:

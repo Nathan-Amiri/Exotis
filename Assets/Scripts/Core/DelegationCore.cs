@@ -142,6 +142,27 @@ public class DelegationCore : MonoBehaviour
 
                 return;
             }
+            else if (spell.name == "Landslide") // *Landslide
+            {
+                ResetScene(); //.consider making all similarly targeted traits use this code, making a separate method
+
+                // Target all available targets in play
+                List<int> landslideSlots = new();
+
+                Dictionary<string, int> targetSlots = SlotAssignment.GetSlotDesignations(packet.casterSlot);
+
+                if (CheckTargetAvailable(targetSlots["allySlot"]))
+                    landslideSlots.Add(targetSlots["allySlot"]);
+                if (CheckTargetAvailable(targetSlots["enemy1Slot"]))
+                    landslideSlots.Add(targetSlots["enemy1Slot"]);
+                if (CheckTargetAvailable(targetSlots["enemy2Slot"]))
+                    landslideSlots.Add(targetSlots["enemy2Slot"]);
+
+                packet.targetSlots = landslideSlots.ToArray();
+
+                cancelButton.SetActive(true);
+                submitButton.SetActive(true);
+            }
         }
         else
             spell = null;
@@ -309,8 +330,6 @@ public class DelegationCore : MonoBehaviour
     public void SelectSubmit()
     {
         ResetScene();
-
-        console.WriteConsoleMessage("Waiting for enemy");
 
         packet.player = NetworkManager.Singleton.IsHost ? 0 : 1;
         relayCore.PrepareToRelayPacket(packet);

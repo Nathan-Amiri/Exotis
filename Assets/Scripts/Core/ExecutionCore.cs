@@ -20,7 +20,7 @@ public class ExecutionCore : MonoBehaviour
 
     // DYNAMIC:
         // 0 = not waiting for any packets (e.g. while waiting on console button),
-        // 1/2 = packets needed before proceeding down a logic path
+        // 1 or 2 = number of packets needed before executing packets
     private int expectedPackets;
 
     private readonly List<RelayPacket> enemyPacketQueue = new();
@@ -29,7 +29,7 @@ public class ExecutionCore : MonoBehaviour
     private RelayPacket allyPacket;
     private RelayPacket enemyPacket;
 
-        // Spells and Traits save packets before occurring in case additional delegations are needed (such as counters)
+        // Spells cache their packets here before requesting new counter packets
     private RelayPacket savedSinglePacket;
     private RelayPacket savedAllyPacket;
     private RelayPacket savedEnemyPacket;
@@ -97,35 +97,15 @@ public class ExecutionCore : MonoBehaviour
         Debug.Log(debugMessage);
     }
 
-
-    //.not sure what to call these methods yet:
-    public void RoundStart() // Called by Setup
-    {
-        //.delayed effects occur simultaneously and silently
-        //.cycle text messages using preset order (see bible)
-
-        NewCycle();
-    }
-
-    private void NewCycle()
-    {
-        //.if immediate available, do immediate things
-        //.if no actions available, autopass and "You have no available actions"
-
-        // Request roundstart/end/timescale delegation
-        RequestDelegation(true, true);
-    }
-
-
     // Packet methods:
-    private void RequestDelegation(bool needAllyDelegation, bool needEnemyDelegation)
+    private void RequestPacket(bool needAllyPacket, bool needEnemyPacket)
     {
-        expectedPackets = needAllyDelegation && needEnemyDelegation ? 2 : 1;
+        expectedPackets = needAllyPacket && needEnemyPacket ? 2 : 1;
 
-        if (needAllyDelegation)
+        if (needAllyPacket)
             delegationCore.RequestDelegation();
         else if (enemyPacketQueue.Count > 0)
-            ReceiveDelegation(GetNextEnemyPacketFromQueue());
+            ReceivePacket(GetNextEnemyPacketFromQueue());
         else
             console.WriteConsoleMessage("Waiting for enemy");
     }
@@ -137,11 +117,13 @@ public class ExecutionCore : MonoBehaviour
         return savedEnemyPacket;
     }
 
-    public void ReceiveDelegation(RelayPacket packet) // Called by RelayCore
+    public void ReceivePacket(RelayPacket packet) // Called by RelayCore
     {
-        bool isAllyPacket = packet.player == 0 == NetworkManager.Singleton.IsHost;
+        DebugPacket(packet);
 
-        // If expecting 0 (must be enemy packet)
+        bool isAllyPacket = IsAllyPacket(packet);
+
+        // If expecting 0 (if the enemy sent the packet before ally player is ready for it)
         if (expectedPackets == 0)
         {
             // Wait until packet is needed
@@ -151,9 +133,9 @@ public class ExecutionCore : MonoBehaviour
         else if (expectedPackets == 1) // If expecting 1
         {
             singlePacket = packet;
-            // Proceed down the correct logic path below
+            // Execute packets below
         }
-        else if (isAllyPacket) // If expecting 2 and allyPacket
+        else if (isAllyPacket) // If expecting 2 and packet is ally
         {
             allyPacket = packet;
 
@@ -161,18 +143,22 @@ public class ExecutionCore : MonoBehaviour
             if (enemyPacketQueue.Count > 0)
             {
                 enemyPacket = GetNextEnemyPacketFromQueue();
-                // Proceed down the correct logic path below
+                // Execute packets below
             }
-            else // Wait for enemy packet
+            else
+            {
+                // Wait for enemy packet
+                console.WriteConsoleMessage("Waiting for enemy");
                 return;
+            }
         }
-        else // If expecting 2 and enemyPacket
+        else // If expecting 2 and packet is enemy
         {
             // If ally packet exists
             if (allyPacket.actionType != null)
             {
                 enemyPacket = packet;
-                // Proceed down the correct logic path below
+                // Execute packets below
             }
             else // Wait for ally packet
             {
@@ -181,11 +167,10 @@ public class ExecutionCore : MonoBehaviour
             }
         }
 
-        DebugPacket(packet);
-
-        // Reset expectedPackets before proceeding in case enemy delegations arrive before they're needed
+        // Reset expectedPackets before executing packet(s) in case enemy packets arrive before they're needed
         expectedPackets = 0;
 
+        // Execute packet
         if (singlePacket.actionType == null)
             TieBreaker();
         else
@@ -197,14 +182,28 @@ public class ExecutionCore : MonoBehaviour
     private void TieBreaker()
     {
         Elemental allyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
-        Elemental enemyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
+        Elemental enemyCaster = SlotAssignment.Elementals[enemyPacket.casterSlot];
 
         int allyTimeScale = GetTimeScale(allyPacket);
         int enemyTimeScale = GetTimeScale(enemyPacket);
 
         // If both players passed
         if (allyPacket.actionType == "pass" && enemyPacket.actionType == "pass")
-            DoublePass();
+        {
+            ResetPackets();
+
+            if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+                console.WriteConsoleMessage("Both players have passed", null, WriteSpellMessage);
+            else if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
+                console.WriteConsoleMessage("Both players have passed. Round will end", null, RoundEnd);
+            // If both players pass at RoundStart/End, continue without writing to console
+            else if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
+            {
+                clock.NewRoundState(Clock.RoundState.TimeScale);
+                NewCycle();
+            }
+            //.else if roundend, continue without writing to console--but what happens next?
+        }
 
         // If both players Retreated
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
@@ -214,7 +213,7 @@ public class ExecutionCore : MonoBehaviour
         }
 
         // Check if either player Retreated. If so, isolate that player's packet and write action message
-        if (CheckForActionType("retreat"))
+        else if (CheckForActionType("retreat"))
             return;
 
         // If both players activated Gems
@@ -230,7 +229,10 @@ public class ExecutionCore : MonoBehaviour
 
         // If both players sent a Spark
         else if (allyPacket.actionType == "spark" && enemyPacket.actionType == "spark")
-            WriteActionMessage();
+        {
+            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
+            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will fling their Sparks", null, WriteActionMessage);
+        }
 
         // Check if either player sent a Spark. If so, isolate that player's packet and write action message
         else if (CheckForActionType("spark"))
@@ -238,54 +240,99 @@ public class ExecutionCore : MonoBehaviour
 
         // If both players cast a Trait
         else if (allyPacket.actionType == "trait" && enemyPacket.actionType == "trait")
+        {
+            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
             console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will cast their Traits", null, WriteActionMessage);
+        }
 
         // Check if either player cast a Trait. If so, isolate that player's packet and write action message
         else if (CheckForActionType("trait"))
             return;
 
+        // If counter time
+        else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+        {
+            // If you passed, WriteSpellMessage without writing a message
+            if (allyPacket.actionType == "pass")
+            {
+                IsolatePacket(enemyPacket);
+                WriteActionMessage();
+            }
+            else if (enemyPacket.actionType == "pass")
+            {
+                IsolatePacket(allyPacket);
+                console.WriteConsoleMessage("The enemy has passed", null, WriteActionMessage);
+            }
+
+            // Use Elemental's MaxHealth to determine Elemental speed
+            else if (allyCaster.MaxHealth < enemyCaster.MaxHealth)
+            {
+                targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
+                IsolatePacket(allyPacket);
+                console.WriteConsoleMessage("Your " + allyCaster.name + " outsped the enemy's " + enemyCaster.name, null, WriteActionMessage);
+            }
+            else if (allyCaster.MaxHealth > enemyCaster.MaxHealth)
+            {
+                targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
+                IsolatePacket(enemyPacket);
+                console.WriteConsoleMessage("The enemy's " + enemyCaster.name + " outsped your " + allyCaster.name, null, WriteActionMessage);
+            }
+
+            // If Elemental speeds tied
+            else
+            {
+                targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
+                console.WriteConsoleMessage("Your " + allyCaster.name + " tied with the enemy's " + enemyCaster.name, null, WriteActionMessage);
+            }
+        }
+
         // If only one player Passed
         else if (allyPacket.actionType == "pass")
         {
-            IsolateFasterPacket(enemyPacket);
+            IsolatePacket(enemyPacket);
             console.WriteConsoleMessage("You have passed", "The enemy will act at " + enemyTimeScale + ":00", WriteActionMessage);
         }
         else if (enemyPacket.actionType == "pass")
         {
-            IsolateFasterPacket(allyPacket);
+            IsolatePacket(allyPacket);
             console.WriteConsoleMessage("You will act at " + allyTimeScale + ":00", "The enemy has passed", WriteActionMessage);
         }
 
         // If one player declared a sooner timescale
         else if (allyTimeScale > enemyTimeScale)
         {
-            IsolateFasterPacket(allyPacket);
+            IsolatePacket(allyPacket);
             console.WriteConsoleMessage("You will act first at " + allyTimeScale + ":00", "The enemy planned to act at " + enemyTimeScale + ":00", WriteActionMessage);
         }
         else if (enemyTimeScale > allyTimeScale)
         {
-            IsolateFasterPacket(enemyPacket);
+            IsolatePacket(enemyPacket);
             console.WriteConsoleMessage("You planned to act at " + allyTimeScale + ":00", "The enemy will act first at " + enemyTimeScale + ":00", WriteActionMessage);
         }
 
         // If timescales tied, use Elemental's MaxHealth to determine Elemental speed
         else if (allyCaster.MaxHealth < enemyCaster.MaxHealth)
         {
-            IsolateFasterPacket(allyPacket);
+            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
+            IsolatePacket(allyPacket);
             console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
                 "Your " + allyCaster.name + " outsped the enemy's " + enemyCaster.name, null, WriteActionMessage);
         }
         else if (allyCaster.MaxHealth > enemyCaster.MaxHealth)
         {
-            IsolateFasterPacket(enemyPacket);
+            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
+            IsolatePacket(enemyPacket);
             console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
                 "The enemy's " + enemyCaster.name + " outsped your " + allyCaster.name, null, WriteActionMessage);
         }
 
         // If timescales and Elemental speeds tied
         else
+        {
+            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
             console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
-                "Your " + allyCaster.name + " tied with the enemy's " + enemyCaster.name, null, WriteActionMessage);
+                    "Your " + allyCaster.name + " tied with the enemy's " + enemyCaster.name, null, WriteActionMessage);
+        }
     }
     private int GetTimeScale(RelayPacket packet)
     {
@@ -308,28 +355,6 @@ public class ExecutionCore : MonoBehaviour
 
         return castSpell.TimeScale;
     }
-    private void DoublePass()
-    {
-        //// If both players passed
-
-        //ResetPackets();
-
-        //if (Clock.CurrentRoundState == Clock.RoundState.Counter)
-        //{
-        //    //.what do I do here?
-        //}
-        //else if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-        //    console.WriteConsoleMessage("Both players have passed. Round will end", null, RoundEnd);
-
-        //// If both players pass at RoundStart/End, continue without writing to console
-        //else if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
-        //{
-        //    clock.NewRoundState(Clock.RoundState.TimeScale);
-        //    NewCycle();
-        //}
-        ////.else if roundend, continue without writing to console--but what happens next?
-
-    }
     private bool CheckForActionType(string actionType)
     {
         // Check if either single packet is of actionType. If so, write the action message for it
@@ -337,20 +362,20 @@ public class ExecutionCore : MonoBehaviour
 
         if (allyPacket.actionType == actionType)
         {
-            IsolateFasterPacket(enemyPacket);
+            IsolatePacket(allyPacket);
             WriteActionMessage();
             return true;
         }
         else if (enemyPacket.actionType == actionType)
         {
-            IsolateFasterPacket(enemyPacket);
+            IsolatePacket(enemyPacket);
             WriteActionMessage();
             return true;
         }
 
         return false;
     }
-    private void IsolateFasterPacket(RelayPacket newSinglePacket)
+    private void IsolatePacket(RelayPacket newSinglePacket)
     {
         ResetPackets();
         singlePacket = newSinglePacket;
@@ -360,13 +385,27 @@ public class ExecutionCore : MonoBehaviour
     // ActionMessage methods:
     public void WriteActionMessage()
     {
-        // If one packet must be written, write it and prepare the correct output method
+        // If there's one packet to write, write it and prepare the correct output method
         if (singlePacket.actionType != null)
         {
+            // If the acting player passed
+            //.at the moment, this is only possible during counter time. In the future, I might need to update this code or make a new method for this situation
+            //.I think this is messy anyway. It works, but it'd be nice to tidy this path up a bit
+            if (singlePacket.actionType == "pass")
+            {
+                // If counter time and you passed, WriteSpellMessage without writing a message
+                if (IsAllyPacket(singlePacket))
+                    WriteSpellMessage();
+                else
+                    console.WriteConsoleMessage("The enemy has passed", null, WriteSpellMessage);
+
+                return;
+            }
+
             (string, Console.OutputMethod) messageAndOutput = GenerateActionMessage(singlePacket);
             console.WriteConsoleMessage(messageAndOutput.Item1, null, messageAndOutput.Item2);
         }
-        // If two packets must be written, write ally message and prepare to write enemy message
+        // If there's two packets to write, write ally message and prepare to write enemy message
         else
         {
             string message = GenerateActionMessage(allyPacket).Item1;
@@ -386,26 +425,8 @@ public class ExecutionCore : MonoBehaviour
 
         Elemental casterElemental = SlotAssignment.Elementals[packet.casterSlot];
 
-        string packetOwner = packet.player == 0 == NetworkManager.Singleton.IsHost ? "Your" : "The enemy's";
+        string packetOwner = IsAllyPacket(packet) ? "Your" : "The enemy's";
         string caster = packetOwner + " " + casterElemental.name;
-
-
-        if (packet.actionType == "pass")
-        {
-            //.figure out where all it might need to go next (if only one player passed and it's double action message, this code won't run, so don't worry about that!
-
-            //.from original singlecounter:
-            //// If you pass, immediately write spell message. If enemy passes, first tell player that enemy has passed
-            //if (singlePacket.actionType == "pass")
-            //{
-            //    if (isCounteringPlayer)
-            //        WriteSpellMessage();
-            //    else
-            //        console.WriteConsoleMessage("The enemy has passed", null, WriteSpellMessage);
-
-            //    return;
-            //}
-        }
 
         if (packet.actionType == "retreat")
             return (caster + " will Retreat", RetreatEffect);
@@ -414,10 +435,12 @@ public class ExecutionCore : MonoBehaviour
             return (caster + " will activate its Gem", GemEffect);
 
         if (packet.actionType == "spark")
-            return (caster + " will send its Spark at the target", SparkEffect);
+            return (caster + " will fling its Spark at the target", SparkEffect);
 
         if (packet.actionType == "trait")
             return (caster + " will cast " + casterElemental.trait.Name, TraitEffect);
+
+        // Below code only reached if packet is a Spell:
 
         if (packet.name == "Hex") // *Hex
         {
@@ -430,10 +453,21 @@ public class ExecutionCore : MonoBehaviour
             return (caster + " will cast Hex, " + hexEffect + " the target", CheckForCounter);
         }
 
-        if (packet.potion)
-            return (caster + " will drink its Potion, then cast " + packet.name, CheckForCounter);
+        // If counter, counter spell will occur before checking for counter again
+        Console.OutputMethod spellOutputMethod = Clock.CurrentRoundState == Clock.RoundState.TimeScale ? CheckForCounter : WriteSpellMessage;
 
-        return (caster + " will cast " + packet.name, CheckForCounter);
+        if (packet.frenzy) // *Frenzy
+        {
+            if (packet.potion)
+                return (caster + " will activate Frenzy and drink its Potion, then cast " + packet.name, spellOutputMethod);
+
+            return (caster + " will activate Frenzy, then cast " + packet.name, spellOutputMethod);
+        }
+
+        if (packet.potion)
+            return (caster + " will drink its Potion, then cast " + packet.name, spellOutputMethod);
+
+        return (caster + " will cast " + packet.name, spellOutputMethod);
     }
 
 
@@ -443,24 +477,31 @@ public class ExecutionCore : MonoBehaviour
         targetManager.ResetAllTargets();
 
         // If it's already counter time, packets are already saved
-        if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+        if (Clock.CurrentRoundState != Clock.RoundState.Counter)
         {
             // Save packets before requesting new ones
             savedSinglePacket = singlePacket;
             savedAllyPacket = allyPacket;
             savedEnemyPacket = enemyPacket;
             ResetPackets();
-        }
-        else // Switch to counter roundState before calling CheckForAvailableActions
+
+            // Switch to counter roundState before calling CheckForAvailableActions
             clock.NewRoundState(Clock.RoundState.Counter);
+        }
+
+        bool isHost = NetworkManager.Singleton.IsHost;
+        int allyPlayerNumber = isHost ? 0 : 1;
+        int enemyPlayerNumber = isHost ? 1 : 0;
 
         // If single counter
         if (savedSinglePacket.actionType != null)
         {
-            bool isCounteringPlayer = savedSinglePacket.player == 0 != NetworkManager.Singleton.IsHost;
+            bool isCounteringPlayer = !IsAllyPacket(savedSinglePacket);
 
-            // If countering player has no available actions, write to console and prepare SpellEffect
-            if (!CheckForAvailableActions(savedSinglePacket.player))
+            // If countering player has no available actions, write to console and prepare WriteSpellMessage
+            int counteringPlayerNumber = isCounteringPlayer ? allyPlayerNumber : enemyPlayerNumber;
+
+            if (!CheckForAvailableActions(counteringPlayerNumber))
             {
                 // Switch back from counter roundState
                 clock.NewRoundState(Clock.RoundState.TimeScale);
@@ -468,13 +509,13 @@ public class ExecutionCore : MonoBehaviour
                 string counteringPlayer = isCounteringPlayer ? "You have" : "The enemy has";
                 console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, WriteSpellMessage);
             }
-            else // If counter action is available, save packet and request counter delegation
-                RequestDelegation(isCounteringPlayer, !isCounteringPlayer);
+            else // If counter action is available, request counter packet
+                RequestPacket(isCounteringPlayer, !isCounteringPlayer);
         }
         else // If multiple counter
         {
-            bool allyCounterAvailable = CheckForAvailableActions(savedAllyPacket.player);
-            bool enemyCounterAvailable = CheckForAvailableActions(savedEnemyPacket.player);
+            bool allyCounterAvailable = CheckForAvailableActions(allyPlayerNumber);
+            bool enemyCounterAvailable = CheckForAvailableActions(enemyPlayerNumber);
 
             if (!allyCounterAvailable && !enemyCounterAvailable)
             {
@@ -484,21 +525,22 @@ public class ExecutionCore : MonoBehaviour
                 console.WriteConsoleMessage("Neither player has available counter actions", null, WriteSpellMessage);
             }
             else if (allyCounterAvailable && enemyCounterAvailable)
-                RequestDelegation(true, true);
+                RequestPacket(true, true);
             else if (allyCounterAvailable && !enemyCounterAvailable)
-                // Inform the player that the enemy cannot counter before requesting ally delegation
+                // Inform the player that the enemy cannot counter before requesting ally packet
                 console.WriteConsoleMessage("The enemy has no available counter actions", null, EnemyCannotCounter);
             else // If only enemy counter available
+                 // Inform the player that they cannot counter before requesting enemy packet
                 console.WriteConsoleMessage("You have no available counter actions", null, AllyCannotCounter);
         }
     }
     public void EnemyCannotCounter()
     {
-        RequestDelegation(true, false);
+        RequestPacket(true, false);
     }
     public void AllyCannotCounter()
     {
-        RequestDelegation(false, true);
+        RequestPacket(false, true);
     }
 
 
@@ -541,24 +583,23 @@ public class ExecutionCore : MonoBehaviour
         Debug.Log("RoundEnd");
     }
 
-    //private void Repopulation()
-    //{
-    //    Debug.Log("Repopulation");
-    //}
+    public void RoundStart() // Called by Setup
+    {
+        //.delayed effects occur simultaneously and silently
+        //.cycle text messages using preset order (see bible)
 
-    // Misc methods:
+        NewCycle();
+    }
 
-    //private void AutoPass(bool passAlly) //.do I need this method?
-    //{
-    //    // Use the player number of the passing player
-    //    RelayPacket passPacket = new()
-    //    {
-    //        player = passAlly == NetworkManager.Singleton.IsHost ? 0 : 1,
-    //        actionType = "pass"
-    //    };
+    private void NewCycle()
+    {
+        //.if immediate available, do immediate things
+        //.if no actions available, autopass and "You have no available actions"
+        //.if only one player has an action available, do it similarly to counter stuff. No autopassing!!
 
-    //    ReceiveDelegation(passPacket);
-    //}
+        // Request roundstart/end/timescale packets
+        RequestPacket(true, true);
+    }
 
 
 
@@ -575,10 +616,21 @@ public class ExecutionCore : MonoBehaviour
         return false;
     }
 
+    private bool IsAllyPacket(RelayPacket packet)
+    {
+        return packet.player == 0 == NetworkManager.Singleton.IsHost;
+    }
+
     private void ResetPackets()
     {
         singlePacket = default;
         allyPacket = default;
         enemyPacket = default;
+    }
+    private void ResetSavedPackets()
+    {
+        savedSinglePacket = default;
+        savedAllyPacket = default;
+        savedEnemyPacket = default;
     }
 }

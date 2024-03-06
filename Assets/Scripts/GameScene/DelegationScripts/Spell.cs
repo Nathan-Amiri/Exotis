@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,7 +20,7 @@ public class Spell : MonoBehaviour, IDelegationAction
     // DYNAMIC:
         // SpellInfo fields
     private bool isCounter;
-    public int TimeScale { get; private set; }
+    public int TimeScale { get; private set; } // 0 if counter or wild
 
     public bool IsWild { get; private set; }
     public bool IsDamaging { get; private set; }

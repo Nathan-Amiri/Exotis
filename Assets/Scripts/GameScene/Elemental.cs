@@ -47,18 +47,21 @@ public class Elemental : MonoBehaviour
         if (info.speed == ElementalInfo.Speed.fast)
         {
             speedColorBackground.color = StaticLibrary.gameColors["fastHealthBack"];
-            healthText.text = "5";
+            MaxHealth = 5;
         }
         else if (info.speed == ElementalInfo.Speed.medium)
         {
             speedColorBackground.color = StaticLibrary.gameColors["mediumHealthBack"];
-            healthText.text = "6";
+            MaxHealth = 6;
         }
         else // If slow
         {
             speedColorBackground.color = StaticLibrary.gameColors["slowHealthBack"];
-            healthText.text = "7";
+            MaxHealth = 7;
         }
+
+        Health = MaxHealth;
+        healthText.text = Health.ToString();
 
         foreach (Image outline in colorOutlines)
             outline.color = isAlly ? StaticLibrary.gameColors["allyOutline"] : StaticLibrary.gameColors["enemyOutline"];
