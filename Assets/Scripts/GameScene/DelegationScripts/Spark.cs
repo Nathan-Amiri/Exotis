@@ -38,8 +38,8 @@ public class Spark : MonoBehaviour, IDelegationAction
         ActionType = "spark";
         ParentElemental = parentReference;
         MaxTargets = 1;
-        CanTargetSelf = false;
-        CanTargetAlly = false;
+        CanTargetSelf = true;
+        CanTargetAlly = true;
         CanTargetEnemy = true;
         CanTargetBenchedAlly = false;
         // IDelegationAction Name is unnecessary, as it is used only for Spell/Trait

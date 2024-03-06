@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using static Unity.Networking.Transport.Utilities.ReliableUtility;
 
 public class ExecutionCore : MonoBehaviour
 {
@@ -37,9 +36,6 @@ public class ExecutionCore : MonoBehaviour
 
     /*
         Todo:
-
-    countertiebreaker
-    immediate (and immediate tiebreaker?)
     
     gemeffect
     retreateffect
@@ -48,7 +44,7 @@ public class ExecutionCore : MonoBehaviour
     sparkeffect
 
     roundend
-    repopulation (and repopulation tiebreaker?)
+    repopulation
     roundstart
     
     checkforavailableactions
@@ -101,6 +97,8 @@ public class ExecutionCore : MonoBehaviour
         Debug.Log(debugMessage);
     }
 
+
+    //.not sure what to call these methods yet:
     public void RoundStart() // Called by Setup
     {
         //.delayed effects occur simultaneously and silently
@@ -118,6 +116,8 @@ public class ExecutionCore : MonoBehaviour
         RequestDelegation(true, true);
     }
 
+
+    // Packet methods:
     private void RequestDelegation(bool needAllyDelegation, bool needEnemyDelegation)
     {
         expectedPackets = needAllyDelegation && needEnemyDelegation ? 2 : 1;
@@ -183,98 +183,28 @@ public class ExecutionCore : MonoBehaviour
 
         DebugPacket(packet);
 
-        // Reset expectedPackets in case enemy delegations arrive before they're needed
+        // Reset expectedPackets before proceeding in case enemy delegations arrive before they're needed
         expectedPackets = 0;
 
-        // Proceed down the corrent logic path
-        if (Clock.CurrentRoundState == Clock.RoundState.Immediate)
-            Immediate();
-        if (Clock.CurrentRoundState == Clock.RoundState.Repopulation)
-            Repopulation();
-        else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
-        {
-            if (singlePacket.actionType != null)
-                SingleCounter();
-            else
-                CounterTiebreaker();
-        }
-        else
+        if (singlePacket.actionType == null)
             TieBreaker();
+        else
+            WriteActionMessage();
     }
 
-    // Logic paths:
-    private void Immediate()
-    {
 
-    }
-
+    // Tiebreaker methods:
     private void TieBreaker()
     {
-        // Console rules:
-        // *Pre-action message comparisons will use upper and lower text
-        // *Post-comparison action messages and trait action messages will display action messages one at a time
-        // *All other messages will be on one line
-
-        // Get packet names
         Elemental allyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
         Elemental enemyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
 
-        //. figure out how to get timescales. (i.e. 7:00)
         int allyTimeScale = GetTimeScale(allyPacket);
         int enemyTimeScale = GetTimeScale(enemyPacket);
 
         // If both players passed
         if (allyPacket.actionType == "pass" && enemyPacket.actionType == "pass")
-        {
-            ResetPackets();
-
-            if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-                console.WriteConsoleMessage("Both players have passed. Round will end", null, RoundEnd);
-            // If both players pass at RoundStart/End, continue without writing to console
-            else if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
-            {
-                clock.NewRoundState(Clock.RoundState.TimeScale);
-                NewCycle();
-            }
-            //.else if roundend, continue without writing to console--but what happens next?
-        }
-
-        // If both players activated Gems
-        else if (allyPacket.actionType == "gem" && enemyPacket.actionType == "gem")
-        {
-            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
-            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will activate their Gems", null, GemEffect);
-        }
-
-        // If only one player activated a Gem
-        else if (allyPacket.actionType == "gem")
-        {
-            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot }, new List<int> { }, false);
-            IsolateFasterPacket(allyPacket);
-            console.WriteConsoleMessage("Your " + allyCaster.name + "will activate its Gem", null, GemEffect);
-        }
-        else if (enemyPacket.actionType == "gem")
-        {
-            targetManager.DisplayTargets(new List<int> { enemyPacket.casterSlot }, new List<int> { }, false);
-            IsolateFasterPacket(enemyPacket);
-            console.WriteConsoleMessage("The enemy's " + enemyCaster.name + "will activate its Gem", null, GemEffect);
-        }
-
-        // If both players cast a Trait
-        else if (allyPacket.actionType == "trait" && enemyPacket.actionType == "trait")
-            WriteActionMessage();
-
-        // If only one player cast a Trait
-        else if (allyPacket.actionType == "trait")
-        {
-            IsolateFasterPacket(allyPacket);
-            WriteActionMessage();
-        }
-        else if (enemyPacket.actionType == "trait")
-        {
-            IsolateFasterPacket(enemyPacket);
-            WriteActionMessage();
-        }
+            DoublePass();
 
         // If both players Retreated
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
@@ -283,19 +213,36 @@ public class ExecutionCore : MonoBehaviour
             console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will Retreat", null, RetreatEffect);
         }
 
-        // If only one player Retreated
-        else if (allyPacket.actionType == "retreat")
+        // Check if either player Retreated. If so, isolate that player's packet and write action message
+        if (CheckForActionType("retreat"))
+            return;
+
+        // If both players activated Gems
+        else if (allyPacket.actionType == "gem" && enemyPacket.actionType == "gem")
         {
-            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot }, new List<int> { allyPacket.targetSlots[0] }, false);
-            IsolateFasterPacket(allyPacket);
-            console.WriteConsoleMessage("Your " + allyCaster.name + " will Retreat", null, RetreatEffect);
+            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
+            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will activate their Gems", null, GemEffect);
         }
-        else if (enemyPacket.actionType == "retreat")
-        {
-            targetManager.DisplayTargets(new List<int> { enemyPacket.casterSlot }, new List<int> { enemyPacket.targetSlots[0] }, false);
-            IsolateFasterPacket(enemyPacket);
-            console.WriteConsoleMessage("The enemy's " + enemyCaster.name + " will Retreat", null, RetreatEffect);
-        }
+
+        // Check if either player activated a Gem. If so, isolate that player's packet and write action message
+        else if (CheckForActionType("gem"))
+            return;
+
+        // If both players sent a Spark
+        else if (allyPacket.actionType == "spark" && enemyPacket.actionType == "spark")
+            WriteActionMessage();
+
+        // Check if either player sent a Spark. If so, isolate that player's packet and write action message
+        else if (CheckForActionType("spark"))
+            return;
+
+        // If both players cast a Trait
+        else if (allyPacket.actionType == "trait" && enemyPacket.actionType == "trait")
+            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will cast their Traits", null, WriteActionMessage);
+
+        // Check if either player cast a Trait. If so, isolate that player's packet and write action message
+        else if (CheckForActionType("trait"))
+            return;
 
         // If only one player Passed
         else if (allyPacket.actionType == "pass")
@@ -361,40 +308,79 @@ public class ExecutionCore : MonoBehaviour
 
         return castSpell.TimeScale;
     }
-    private void IsolateFasterPacket(RelayPacket fasterPacket)
+    private void DoublePass()
+    {
+        //// If both players passed
+
+        //ResetPackets();
+
+        //if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+        //{
+        //    //.what do I do here?
+        //}
+        //else if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
+        //    console.WriteConsoleMessage("Both players have passed. Round will end", null, RoundEnd);
+
+        //// If both players pass at RoundStart/End, continue without writing to console
+        //else if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
+        //{
+        //    clock.NewRoundState(Clock.RoundState.TimeScale);
+        //    NewCycle();
+        //}
+        ////.else if roundend, continue without writing to console--but what happens next?
+
+    }
+    private bool CheckForActionType(string actionType)
+    {
+        // Check if either single packet is of actionType. If so, write the action message for it
+        // If both packets are of actionType, this method won't be called
+
+        if (allyPacket.actionType == actionType)
+        {
+            IsolateFasterPacket(enemyPacket);
+            WriteActionMessage();
+            return true;
+        }
+        else if (enemyPacket.actionType == actionType)
+        {
+            IsolateFasterPacket(enemyPacket);
+            WriteActionMessage();
+            return true;
+        }
+
+        return false;
+    }
+    private void IsolateFasterPacket(RelayPacket newSinglePacket)
     {
         ResetPackets();
-        singlePacket = fasterPacket;
+        singlePacket = newSinglePacket;
     }
 
+
+    // ActionMessage methods:
     public void WriteActionMessage()
     {
-        // Save packets before proceeding with the Spell(s)/Trait(s), as other delegations might be necessary
-        // Packets are saved here since all Spell/Trait logic passes here. Packets can't be saved in CheckForCounter
-        // because it's called again in each counter cycle
-        savedSinglePacket = singlePacket;
-        savedAllyPacket = allyPacket;
-        savedEnemyPacket = enemyPacket;
-        ResetPackets();
-
-        // If two packets must be written, write ally and prepare to write enemy
-        if (savedSinglePacket.actionType == null)
-            console.WriteConsoleMessage(GenerateActionMessage(savedAllyPacket), null, WriteEnemyMessage);
-        // If a single packet must be written, write it and prepare TraitEffect/CheckForCounter depending on actionType
+        // If one packet must be written, write it and prepare the correct output method
+        if (singlePacket.actionType != null)
+        {
+            (string, Console.OutputMethod) messageAndOutput = GenerateActionMessage(singlePacket);
+            console.WriteConsoleMessage(messageAndOutput.Item1, null, messageAndOutput.Item2);
+        }
+        // If two packets must be written, write ally message and prepare to write enemy message
         else
         {
-            Console.OutputMethod outputMethod = savedSinglePacket.actionType == "trait" ? TraitEffect : CheckForCounter;
-            console.WriteConsoleMessage(GenerateActionMessage(savedSinglePacket), null, outputMethod);
+            string message = GenerateActionMessage(allyPacket).Item1;
+            console.WriteConsoleMessage(message, null, WriteEnemyActionMessage);
         }
     }
-    public void WriteEnemyMessage()
+    public void WriteEnemyActionMessage()
     {
-        // Write enemy packet and prepare TraitEffect/CheckForCounter depending on actionType
-        Console.OutputMethod outputMethod = savedEnemyPacket.actionType == "trait" ? TraitEffect : CheckForCounter;
-        console.WriteConsoleMessage(GenerateActionMessage(savedEnemyPacket), null, outputMethod, true);
+        // Write enemy message and prepare the correct output method
+        (string, Console.OutputMethod) messageAndOutput = GenerateActionMessage(enemyPacket);
+        console.WriteConsoleMessage(messageAndOutput.Item1, null, messageAndOutput.Item2);
     }
 
-    private string GenerateActionMessage(RelayPacket packet)
+    private (string, Console.OutputMethod) GenerateActionMessage(RelayPacket packet)
     {
         targetManager.DisplayTargets(new List<int> { packet.casterSlot }, packet.targetSlots.ToList(), false);
 
@@ -403,7 +389,35 @@ public class ExecutionCore : MonoBehaviour
         string packetOwner = packet.player == 0 == NetworkManager.Singleton.IsHost ? "Your" : "The enemy's";
         string caster = packetOwner + " " + casterElemental.name;
 
-        string spellOrTraitName = packet.actionType == "spell" ? packet.name : casterElemental.trait.Name;
+
+        if (packet.actionType == "pass")
+        {
+            //.figure out where all it might need to go next (if only one player passed and it's double action message, this code won't run, so don't worry about that!
+
+            //.from original singlecounter:
+            //// If you pass, immediately write spell message. If enemy passes, first tell player that enemy has passed
+            //if (singlePacket.actionType == "pass")
+            //{
+            //    if (isCounteringPlayer)
+            //        WriteSpellMessage();
+            //    else
+            //        console.WriteConsoleMessage("The enemy has passed", null, WriteSpellMessage);
+
+            //    return;
+            //}
+        }
+
+        if (packet.actionType == "retreat")
+            return (caster + " will Retreat", RetreatEffect);
+
+        if (packet.actionType == "gem")
+            return (caster + " will activate its Gem", GemEffect);
+
+        if (packet.actionType == "spark")
+            return (caster + " will send its Spark at the target", SparkEffect);
+
+        if (packet.actionType == "trait")
+            return (caster + " will cast " + casterElemental.trait.Name, TraitEffect);
 
         if (packet.name == "Hex") // *Hex
         {
@@ -413,22 +427,32 @@ public class ExecutionCore : MonoBehaviour
             else if (packet.hexType == "weaken")
                 hexEffect = "Weakening";
 
-            return caster + " will cast Hex, " + hexEffect + " the target";
+            return (caster + " will cast Hex, " + hexEffect + " the target", CheckForCounter);
         }
-        else if (packet.potion)
-            return caster + " will drink its Potion, then cast " + packet.name;
-        else
-            return caster + " will cast " + spellOrTraitName;
+
+        if (packet.potion)
+            return (caster + " will drink its Potion, then cast " + packet.name, CheckForCounter);
+
+        return (caster + " will cast " + packet.name, CheckForCounter);
     }
 
+
+    // CheckForCounter methods:
     public void CheckForCounter()
     {
         targetManager.ResetAllTargets();
 
-        //.if recasting, SpellEffect() and return
-
-        // Switch to counter roundState before calling CheckForAvailableActions
-        clock.NewRoundState(Clock.RoundState.Counter);
+        // If it's already counter time, packets are already saved
+        if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+        {
+            // Save packets before requesting new ones
+            savedSinglePacket = singlePacket;
+            savedAllyPacket = allyPacket;
+            savedEnemyPacket = enemyPacket;
+            ResetPackets();
+        }
+        else // Switch to counter roundState before calling CheckForAvailableActions
+            clock.NewRoundState(Clock.RoundState.Counter);
 
         // If single counter
         if (savedSinglePacket.actionType != null)
@@ -477,78 +501,21 @@ public class ExecutionCore : MonoBehaviour
         RequestDelegation(false, true);
     }
 
-    private void SingleCounter()
-    {
-        bool isCounteringPlayer = singlePacket.player == 0 == NetworkManager.Singleton.IsHost;
-
-        // If you pass, immediately write spell message. If enemy passes, first tell player that enemy has passed
-        if (singlePacket.actionType == "pass")
-        {
-            if (isCounteringPlayer)
-                WriteSpellMessage();
-            else
-                console.WriteConsoleMessage("The enemy has passed", null, WriteSpellMessage);
-
-            return;
-        }
-
-        targetManager.DisplayTargets(new List<int> { singlePacket.casterSlot }, singlePacket.targetSlots.ToList(), false);
-
-        Elemental casterElemental = SlotAssignment.Elementals[singlePacket.casterSlot];
-
-        string packetOwner = isCounteringPlayer ? "Your" : "The enemy's";
-        string caster = packetOwner + " " + casterElemental.name;
-
-
-        if (singlePacket.actionType == "gem")
-            console.WriteConsoleMessage(caster + " will activate its Gem", null, GemEffect);
-        else if (singlePacket.actionType == "retreat")
-            console.WriteConsoleMessage(caster + " will Retreat", null, RetreatEffect);
-        else if (singlePacket.actionType == "spark")
-            console.WriteConsoleMessage(caster + " will send its Spark at the target", null, SparkEffect);
-        else // If Trait or Spell
-        {
-            string spellOrTraitName = singlePacket.actionType == "spell" ? singlePacket.name : casterElemental.trait.Name;
-
-            if (singlePacket.potion)
-                console.WriteConsoleMessage(caster + " will drink its Potion, then cast " + spellOrTraitName, null, SpellEffect);
-            else
-                console.WriteConsoleMessage(caster + " will cast " + spellOrTraitName, null, SpellEffect);
-        }
-    }
-
-    private void CounterTiebreaker()
-    {
-        if (allyPacket.actionType == "pass" && enemyPacket.actionType == "pass")
-            console.WriteConsoleMessage("Both players have passed", null, WriteSpellMessage);
-
-        //.tiebreaker has identical code for most of this. Figure out how to consolidate them? Ideally I'd have one method for single packets and one for double packets,
-        //.but I'm not sure how to do this. Also, the existing trait tie in tiebreaker isn't logged clearly. Better to say that they'll occur simultaneously before displaying
-        //.messages one at a time.
-
-        // If only you pass, immediately write enemy's counter message
-        else if (allyPacket.actionType == "pass")
-        {
-            IsolateFasterPacket(enemyPacket);
-            SingleCounter();
-        }
-        // If only enemy passes, tell player that enemy has passed before writing your counter message
-        else if (enemyPacket.actionType == "pass")
-        {
-            IsolateFasterPacket(allyPacket);
-            console.WriteConsoleMessage("The enemy has passed", null, SingleCounter);
-        }
-    }
 
     // Effect methods:
+    private void RetreatEffect()
+    {
+        Debug.Log("RetreatEffect");
+    }
+
     private void GemEffect()
     {
         Debug.Log("GemEffect");
     }
 
-    private void RetreatEffect()
+    private void SparkEffect()
     {
-        Debug.Log("RetreatEffect");
+        Debug.Log("SparkEffect");
     }
 
     private void TraitEffect()
@@ -567,20 +534,17 @@ public class ExecutionCore : MonoBehaviour
         //.IF COUNTER, RETURN TO CHECKFORCOUNTER SO THAT OTHER COUNTERS CAN OCCUR BEFORE THE SAVED SPELL DOES
     }
 
-    private void SparkEffect()
-    {
-        Debug.Log("SparkEffect");
-    }
 
+    //.not sure what to call these methods yet:
     private void RoundEnd()
     {
         Debug.Log("RoundEnd");
     }
 
-    private void Repopulation()
-    {
-        Debug.Log("Repopulation");
-    }
+    //private void Repopulation()
+    //{
+    //    Debug.Log("Repopulation");
+    //}
 
     // Misc methods:
 
@@ -596,6 +560,9 @@ public class ExecutionCore : MonoBehaviour
     //    ReceiveDelegation(passPacket);
     //}
 
+
+
+    //.not sure what to call these methods yet:
     private bool CheckForAvailableActions(int player)
     {
         return true;
