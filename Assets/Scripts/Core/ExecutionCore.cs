@@ -580,11 +580,15 @@ public class ExecutionCore : MonoBehaviour
     //.not sure what to call these methods yet:
     private void RoundEnd()
     {
+        //make clock say 0:00
+
         Debug.Log("RoundEnd");
     }
 
     public void RoundStart() // Called by Setup
     {
+        //.make clock say 7:00
+
         //.delayed effects occur simultaneously and silently
         //.cycle text messages using preset order (see bible)
 

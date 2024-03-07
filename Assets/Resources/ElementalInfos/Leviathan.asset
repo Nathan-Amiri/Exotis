@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   traitName: Majestic
+  traitMaxTargets: 1
+  traitCanTargetSelf: 1
+  traitCanTargetAlly: 1
+  traitCanTargetEnemy: 0
+  traitCanTargetBenchedAlly: 0
   usableRoundStart: 0
   usableRoundEnd: 0
   usableCounterSpeed: 0

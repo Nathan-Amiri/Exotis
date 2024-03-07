@@ -12146,7 +12146,6 @@ MonoBehaviour:
   clock: {fileID: 1265245687}
   console: {fileID: 1265245692}
   targetManager: {fileID: 1265245694}
-  canCounter: 1
 --- !u!1 &1420317835
 GameObject:
   m_ObjectHideFlags: 0

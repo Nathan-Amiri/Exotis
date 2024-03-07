@@ -3,7 +3,7 @@
 
 0 Flow 3 "I deal 2 to a target in play. I heal 1"
 1 Cleanse ? "I heal myself or my ally 2. I'm Wearied next round"
-2 Mirage 7 "I gain an action, then Swap. When my replacement is dealt damage this round, the damage redirects to me if I'm alive. It and its ally are Trapped this round"
+2 Mirage 7 "I deal 1 to myself and gain an action. I Swap. When my replacement is dealt damage this round, the damage redirects to me if I'm alive. I can't re-enter play this round"
 3 Tidal Wave 2 "I deal 3 to a target in play. Then, I'm Weakened until the end of next round"
 
 4 Erupt 3 "I deal 3 to a target in play. I deal 1 to myself"
@@ -58,7 +58,7 @@
 3 Kraken 5f Water/Lightning
 	Reservoir "At the beginning of the game, I gain a Gem"
 4 Leviathan 6m Frost/Water
-	Majestic "The first time I'm in play, I can immediately cast a Spell without using an action. The Spell deals 0 damage and can't be countered"
+	Majestic "Once per game, immediately after I enter play, I can heal myself or my ally 2"
 5 Hydra 7s Water/Shadow
 	Eclipse "Once per game, at the end of a round, I can Enrage all Elementals next round, even ones not in play"
 6 Siren 7s Water/Venom
