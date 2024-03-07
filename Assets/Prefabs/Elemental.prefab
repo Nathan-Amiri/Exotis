@@ -633,11 +633,22 @@ MonoBehaviour:
   icon: {fileID: 4617789464618039637}
   targetButton: {fileID: 4613092479266155252}
   retreatButton: {fileID: 6328369989342399561}
+  gemImage: {fileID: 3417817861089542179}
+  gemSprite: {fileID: 21300000, guid: 62e3104875264fb45b8fca588bc22638, type: 3}
+  gemGraySprite: {fileID: 21300000, guid: 07998abf34c37794b95eaa280359030d, type: 3}
+  sparkImage: {fileID: 5789197995900348661}
+  sparkSprite: {fileID: 21300000, guid: 1e8aea3387640c74c975267effd9a795, type: 3}
+  sparkGraySprite: {fileID: 21300000, guid: 6e1142026c5036343ad441ac8416d028, type: 3}
+  potionImage: {fileID: 5155456159478284811}
+  potionSprite: {fileID: 21300000, guid: 7e355ac39bb6e8442b73d041e765bc91, type: 3}
+  potionGraySprite: {fileID: 21300000, guid: 4a4a43b7abd34be4ebba2a9695a3f8ad, type: 3}
   trait: {fileID: 1894539201454206837}
   spells:
   - {fileID: 6134846885505851686}
   - {fileID: 746978815362249106}
   - {fileID: 5814517674153488385}
+  inPlayParent: {fileID: 0}
+  benchParent: {fileID: 0}
 --- !u!114 &4609456925127082438
 MonoBehaviour:
   m_ObjectHideFlags: 0

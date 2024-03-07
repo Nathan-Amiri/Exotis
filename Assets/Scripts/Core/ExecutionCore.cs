@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -18,9 +19,12 @@ public class ExecutionCore : MonoBehaviour
     [SerializeField] private Console console;
     [SerializeField] private TargetManager targetManager;
 
+    // CONSTANT:
+    private delegate void EffectDelegate(RelayPacket effectPacket);
+
     // DYNAMIC:
-        // 0 = not waiting for any packets (e.g. while waiting on console button),
-        // 1 or 2 = number of packets needed before executing packets
+    // 0 = not waiting for any packets (e.g. while waiting on console button),
+    // 1 or 2 = number of packets needed before executing packets
     private int expectedPackets;
 
     private readonly List<RelayPacket> enemyPacketQueue = new();
@@ -193,7 +197,7 @@ public class ExecutionCore : MonoBehaviour
             ResetPackets();
 
             if (Clock.CurrentRoundState == Clock.RoundState.Counter)
-                console.WriteConsoleMessage("Both players have passed", null, WriteSpellMessage);
+                console.WriteConsoleMessage("Both players have passed", null, CallEffectMethod);
             else if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
                 console.WriteConsoleMessage("Both players have passed. Round will end", null, RoundEnd);
             // If both players pass at RoundStart/End, continue without writing to console
@@ -209,7 +213,7 @@ public class ExecutionCore : MonoBehaviour
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
         {
             targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { allyPacket.targetSlots[0], enemyPacket.targetSlots[0] }, false);
-            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will Retreat", null, RetreatEffect);
+            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will Retreat", null, CallEffectMethod);
         }
 
         // Check if either player Retreated. If so, isolate that player's packet and write action message
@@ -220,7 +224,7 @@ public class ExecutionCore : MonoBehaviour
         else if (allyPacket.actionType == "gem" && enemyPacket.actionType == "gem")
         {
             targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
-            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will activate their Gems", null, GemEffect);
+            console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will activate their Gems", null, CallEffectMethod);
         }
 
         // Check if either player activated a Gem. If so, isolate that player's packet and write action message
@@ -252,7 +256,7 @@ public class ExecutionCore : MonoBehaviour
         // If counter time
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
         {
-            // If you passed, WriteSpellMessage without writing a message
+            // If you passed, CallEffectMethod without writing a message
             if (allyPacket.actionType == "pass")
             {
                 IsolatePacket(enemyPacket);
@@ -393,11 +397,11 @@ public class ExecutionCore : MonoBehaviour
             //.I think this is messy anyway. It works, but it'd be nice to tidy this path up a bit
             if (singlePacket.actionType == "pass")
             {
-                // If counter time and you passed, WriteSpellMessage without writing a message
+                // If counter time and you passed, CallEffectMethod without writing a message
                 if (IsAllyPacket(singlePacket))
-                    WriteSpellMessage();
+                    CallEffectMethod();
                 else
-                    console.WriteConsoleMessage("The enemy has passed", null, WriteSpellMessage);
+                    console.WriteConsoleMessage("The enemy has passed", null, CallEffectMethod);
 
                 return;
             }
@@ -429,16 +433,16 @@ public class ExecutionCore : MonoBehaviour
         string caster = packetOwner + " " + casterElemental.name;
 
         if (packet.actionType == "retreat")
-            return (caster + " will Retreat", RetreatEffect);
+            return (caster + " will Retreat", CallEffectMethod);
 
         if (packet.actionType == "gem")
-            return (caster + " will activate its Gem", GemEffect);
+            return (caster + " will activate its Gem", CallEffectMethod);
 
         if (packet.actionType == "spark")
-            return (caster + " will fling its Spark at the target", SparkEffect);
+            return (caster + " will fling its Spark at the target", CallEffectMethod);
 
         if (packet.actionType == "trait")
-            return (caster + " will cast " + casterElemental.trait.Name, TraitEffect);
+            return (caster + " will cast " + casterElemental.trait.Name, CallEffectMethod);
 
         // Below code only reached if packet is a Spell:
 
@@ -454,7 +458,7 @@ public class ExecutionCore : MonoBehaviour
         }
 
         // If counter, counter spell will occur before checking for counter again
-        Console.OutputMethod spellOutputMethod = Clock.CurrentRoundState == Clock.RoundState.TimeScale ? CheckForCounter : WriteSpellMessage;
+        Console.OutputMethod spellOutputMethod = Clock.CurrentRoundState == Clock.RoundState.TimeScale ? CheckForCounter : CallEffectMethod;
 
         if (packet.frenzy) // *Frenzy
         {
@@ -498,7 +502,7 @@ public class ExecutionCore : MonoBehaviour
         {
             bool isCounteringPlayer = !IsAllyPacket(savedSinglePacket);
 
-            // If countering player has no available actions, write to console and prepare WriteSpellMessage
+            // If countering player has no available actions, write to console and prepare CallEffectMethod
             int counteringPlayerNumber = isCounteringPlayer ? allyPlayerNumber : enemyPlayerNumber;
 
             if (!CheckForAvailableActions(counteringPlayerNumber))
@@ -507,7 +511,7 @@ public class ExecutionCore : MonoBehaviour
                 clock.NewRoundState(Clock.RoundState.TimeScale);
 
                 string counteringPlayer = isCounteringPlayer ? "You have" : "The enemy has";
-                console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, WriteSpellMessage);
+                console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, CallEffectMethod);
             }
             else // If counter action is available, request counter packet
                 RequestPacket(isCounteringPlayer, !isCounteringPlayer);
@@ -522,7 +526,7 @@ public class ExecutionCore : MonoBehaviour
                 // Switch back from counter roundState
                 clock.NewRoundState(Clock.RoundState.TimeScale);
 
-                console.WriteConsoleMessage("Neither player has available counter actions", null, WriteSpellMessage);
+                console.WriteConsoleMessage("Neither player has available counter actions", null, CallEffectMethod);
             }
             else if (allyCounterAvailable && enemyCounterAvailable)
                 RequestPacket(true, true);
@@ -545,32 +549,68 @@ public class ExecutionCore : MonoBehaviour
 
 
     // Effect methods:
-    private void RetreatEffect()
+    public void CallEffectMethod()
     {
-        Debug.Log("RetreatEffect");
+        targetManager.ResetAllTargets();
+
+        // Determine which effect method is correct
+        RelayPacket switchPacket = singlePacket.actionType != null ? singlePacket : allyPacket;
+
+        EffectDelegate effectDelegate = switchPacket.actionType switch
+        {
+            "retreat" => RetreatEffect,
+            "gem" => GemEffect,
+            "spark" => SparkEffect,
+            "trait" => TraitEffect,
+            _ => SpellEffect,
+        };
+
+        // Call the effect method
+        if (singlePacket.actionType != null)
+            effectDelegate(singlePacket);
+        else
+        {
+            effectDelegate(allyPacket);
+            effectDelegate(enemyPacket);
+        }
+
+        if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+            CheckForCounter();
+        else
+            NewCycle();
     }
 
-    private void GemEffect()
+    private void RetreatEffect(RelayPacket packet)
     {
-        Debug.Log("GemEffect");
+        // Remove action before swapping
+        SlotAssignment.Elementals[packet.casterSlot].currentActions -= 1;
+
+        SlotAssignment.Swap(packet.casterSlot, packet.targetSlots[0]);
     }
 
-    private void SparkEffect()
+    private void GemEffect(RelayPacket packet)
+    {
+        Elemental caster = SlotAssignment.Elementals[packet.casterSlot];
+        caster.HealthChange(2);
+        caster.ToggleGem(false);
+    }
+
+    private void SparkEffect(RelayPacket packet)
     {
         Debug.Log("SparkEffect");
     }
 
-    private void TraitEffect()
+    private void TraitEffect(RelayPacket packet)
     {
         Debug.Log("TraitEffect");
     }
 
-    public void WriteSpellMessage()
-    {
-        Debug.Log("SpellMessage");
-        //."caster's spell will occur" output method is spelleffect NOT USED FOR COUNTER, COUNTER JUMPS RIGHT TO SPELLEFFECT
-    }
-    public void SpellEffect()
+    //public void WriteSpellMessage()
+    //{
+    //    Debug.Log("SpellMessage");
+    //    //."caster's spell will occur" output method is spelleffect NOT USED FOR COUNTER, COUNTER JUMPS RIGHT TO SPELLEFFECT
+    //}
+    public void SpellEffect(RelayPacket packet)
     {
         Debug.Log("SpellEffect");
         //.IF COUNTER, RETURN TO CHECKFORCOUNTER SO THAT OTHER COUNTERS CAN OCCUR BEFORE THE SAVED SPELL DOES
@@ -589,6 +629,14 @@ public class ExecutionCore : MonoBehaviour
     {
         //.make clock say 7:00
 
+        // Reset actions
+        for (int i = 0; i < 8; i++)
+        {
+            Elemental elemental = SlotAssignment.Elementals[i];
+            if (elemental != null)
+                elemental.currentActions = i < 4 ? 1 : 0;
+        }
+
         //.delayed effects occur simultaneously and silently
         //.cycle text messages using preset order (see bible)
 
@@ -597,6 +645,9 @@ public class ExecutionCore : MonoBehaviour
 
     private void NewCycle()
     {
+        ResetPackets();
+        ResetSavedPackets();
+
         //.if immediate available, do immediate things
         //.if no actions available, autopass and "You have no available actions"
         //.if only one player has an action available, do it similarly to counter stuff. No autopassing!!
@@ -613,12 +664,12 @@ public class ExecutionCore : MonoBehaviour
         return true;
     }
 
-    private bool CheckForGameOver()
-    {
-        //.eliminate elementals below 0 health
+    //private bool CheckForGameOver()
+    //{
+    //    //.eliminate elementals below 0 health
 
-        return false;
-    }
+    //    return false;
+    //}
 
     private bool IsAllyPacket(RelayPacket packet)
     {

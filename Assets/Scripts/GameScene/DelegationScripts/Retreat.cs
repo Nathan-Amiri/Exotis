@@ -51,16 +51,11 @@ public class Retreat : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
-        if (ParentElemental.isTrapped)
+        if (ParentElemental.currentActions == 0)
             return;
 
-        // Check if any benched allies exist
-        int guestAdd = NetworkManager.Singleton.IsHost ? 0 : 2;
-        if (SlotAssignment.Elementals[4 + guestAdd] == null && SlotAssignment.Elementals[5 + guestAdd] == null)
-        {
-            button.interactable = false;
+        if (!ParentElemental.CanSwap())
             return;
-        }
 
         button.interactable = !reset;
     }

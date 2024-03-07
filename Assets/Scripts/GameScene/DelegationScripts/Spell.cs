@@ -90,6 +90,9 @@ public class Spell : MonoBehaviour, IDelegationAction
             return;
         }
 
+        if (ParentElemental.currentActions == 0)
+            return;
+
         if (IsWearying && ParentElemental.isWearied)
             return;
 

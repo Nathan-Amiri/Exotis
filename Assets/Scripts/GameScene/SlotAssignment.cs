@@ -43,4 +43,25 @@ public class SlotAssignment : MonoBehaviour
             { "benchedAlly2Slot", slotsToDesignate[4] },
         };
     }
+
+    public static void Swap(int inPlaySlot, int benchedSlot)
+    {
+        Elemental inPlayElemental = Elementals[inPlaySlot];
+        Elemental benchedElemental = Elementals[benchedSlot];
+
+        // Swap board position
+        (benchedElemental.transform.localPosition, inPlayElemental.transform.localPosition) = 
+            (inPlayElemental.transform.localPosition, benchedElemental.transform.localPosition);
+
+        // Hide Spells/Items/Statuses
+        inPlayElemental.ToggleBenched(true);
+        benchedElemental.ToggleBenched(false);
+
+        // Update SlotAssignment.Elementals
+        (Elementals[inPlaySlot], Elementals[benchedSlot]) = (Elementals[benchedSlot], Elementals[inPlaySlot]);
+
+        // Swap actions
+        (Elementals[inPlaySlot].currentActions, Elementals[benchedSlot].currentActions) = 
+            (Elementals[benchedSlot].currentActions, Elementals[inPlaySlot].currentActions);
+    }
 }

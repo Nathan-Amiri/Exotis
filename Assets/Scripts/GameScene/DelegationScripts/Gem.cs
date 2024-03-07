@@ -49,10 +49,10 @@ public class Gem : MonoBehaviour, IDelegationAction
         if (!ParentElemental.hasGem)
             return;
 
-        if (reset)
-            button.interactable = false;
-        else if (ParentElemental.Health != ParentElemental.MaxHealth)
-            button.interactable = true;
+        if (ParentElemental.Health == ParentElemental.MaxHealth)
+            return;
+
+        button.interactable = !reset;
     }
 
     public void OnClick()
