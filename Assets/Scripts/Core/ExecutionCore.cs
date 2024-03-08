@@ -582,10 +582,13 @@ public class ExecutionCore : MonoBehaviour
 
     private void RetreatEffect(RelayPacket packet)
     {
-        // Remove action before swapping
+        // Remove action/Add armor before swapping
         SlotAssignment.Elementals[packet.casterSlot].currentActions -= 1;
+        SlotAssignment.Elementals[packet.targetSlots[0]].ToggleArmored(true);
 
         SlotAssignment.Swap(packet.casterSlot, packet.targetSlots[0]);
+
+        //.add lateeffect to remove armor at end of round
     }
 
     private void GemEffect(RelayPacket packet)
@@ -629,7 +632,7 @@ public class ExecutionCore : MonoBehaviour
     {
         //.make clock say 7:00
 
-        // Reset actions
+        // Reset actions and Armored
         for (int i = 0; i < 8; i++)
         {
             Elemental elemental = SlotAssignment.Elementals[i];

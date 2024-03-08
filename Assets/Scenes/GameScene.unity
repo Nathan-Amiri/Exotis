@@ -11503,7 +11503,7 @@ MonoBehaviour:
     EnableNetworkLogs: 1
     OldPrefabList: []
   RunInBackground: 1
-  LogLevel: 0
+  LogLevel: 2
 --- !u!114 &1332081096 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5814517674153488385, guid: 92e8c7494b8a64341962e6becc3cf81a, type: 3}

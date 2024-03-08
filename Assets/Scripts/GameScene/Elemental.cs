@@ -47,13 +47,27 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public int currentActions;
 
-    [NonSerialized] public bool hasSpark;
-    [NonSerialized] public bool hasGem;
-    [NonSerialized] public bool hasPotion;
+        // Items
+    public bool HasSpark { get; private set; }
+    public bool HasGem { get; private set; }
+    public bool HasPotion { get; private set; }
 
-    [NonSerialized] public bool isDisengaged;
-    [NonSerialized] public bool isTrapped;
-    [NonSerialized] public bool isWearied;
+        // Status
+    [SerializeField] private List<StatusIcon> statusIcons = new();
+    private readonly List<int> currentStatuses = new();
+
+        // If wearyStrength > 0, isWearied. Strength is increased +1 when status is applied
+        // Strength ensures that multiple sources don't conflict when applying the status for different durations
+    public int WearyStrength { get; private set; }
+    public int EnrageStrength { get; private set; }
+    public int ArmorStrength { get; private set; }
+    public int DisengageStrength { get; private set; }
+    public int StunStrength { get; private set; }
+    public int SlowStrength { get; private set; }
+    public int TrapStrength { get; private set; }
+    public int PoisonStrength { get; private set; }
+    public int WeakenStrength { get; private set; }
+
 
     public void Setup(string elementalName) // Called by Setup
     {
@@ -116,7 +130,7 @@ public class Elemental : MonoBehaviour
 
     public bool CanSwap()
     {
-        if (isTrapped)
+        if (TrapStrength > 0)
             return false;
 
         // Check if any benched allies exist
@@ -127,22 +141,115 @@ public class Elemental : MonoBehaviour
         return true;
     }
 
+    // Item:
     public void ToggleGem(bool gainGem)
     {
-        hasGem = gainGem;
+        HasGem = gainGem;
 
         gemImage.sprite = gainGem ? gemSprite : gemGraySprite;
     }
     public void ToggleSpark(bool gainSpark)
     {
-        hasSpark = gainSpark;
+        HasSpark = gainSpark;
 
         sparkImage.sprite = gainSpark ? sparkSprite : sparkGraySprite;
     }
     public void TogglePotion(bool gainPotion)
     {
-        hasPotion = gainPotion;
+        HasPotion = gainPotion;
 
         potionImage.sprite = gainPotion ? potionSprite : potionGraySprite;
+    }
+
+    // Toggle Status:
+    public void ToggleWearied(bool becomeWearied)
+    {
+        UpdateStatusIcons(0, WearyStrength, becomeWearied);
+        WearyStrength += becomeWearied ? 1 : -1;
+    }
+    public void ToggleEnraged(bool becomeEnraged)
+    {
+        UpdateStatusIcons(1, EnrageStrength, becomeEnraged);
+        EnrageStrength += becomeEnraged ? 1 : -1;
+    }
+    public void ToggleArmored(bool becomeArmored)
+    {
+        UpdateStatusIcons(2, ArmorStrength, becomeArmored);
+        ArmorStrength += becomeArmored ? 1 : -1;
+    }
+    public void ToggleDisengaged(bool becomeDisengaged)
+    {
+        UpdateStatusIcons(3, DisengageStrength, becomeDisengaged);
+        DisengageStrength += becomeDisengaged ? 1 : -1;
+    }
+    public void ToggleStunned(bool becomeStunned)
+    {
+        UpdateStatusIcons(4, StunStrength, becomeStunned);
+        StunStrength += becomeStunned ? 1 : -1;
+    }
+    public void ToggleSlowed(bool becomeSlowed)
+    {
+        UpdateStatusIcons(5, SlowStrength, becomeSlowed);
+        SlowStrength += becomeSlowed ? 1 : -1;
+    }
+    public void ToggleTrapped(bool becomeTrapped)
+    {
+        UpdateStatusIcons(6, TrapStrength, becomeTrapped);
+        TrapStrength += becomeTrapped ? 1 : -1;
+    }
+    public void TogglePoisoned(bool becomePoisoned)
+    {
+        UpdateStatusIcons(7, PoisonStrength, becomePoisoned);
+        PoisonStrength += becomePoisoned ? 1 : -1;
+    }
+    public void ToggleWeakened(bool becomeWeakened)
+    {
+        UpdateStatusIcons(8, WeakenStrength, becomeWeakened);
+        WeakenStrength += becomeWeakened ? 1 : -1;
+    }
+
+    // Update Status Icons:
+    private void UpdateStatusIcons(int statusNumber, int oldStatusStrength, bool increaseStatusStrength)
+    {
+        // If status effect is being added
+        if (oldStatusStrength == 0 && increaseStatusStrength)
+        {
+            currentStatuses.Add(statusNumber);
+
+            StatusIcon newStatusIcon = GetStatusIcon(statusNumber);
+            if (newStatusIcon != null)
+                newStatusIcon.AddIcon(statusNumber);
+        }
+        // If status effect is being removed
+        else if (oldStatusStrength == 1 && !increaseStatusStrength)
+            RemoveStatusIcon(statusNumber);
+    }
+    private StatusIcon GetStatusIcon(int statusNumber)
+    {
+        // 7 is the maximum number of Status Icons that can be active at once
+        if (currentStatuses.Count > 7)
+            return null;
+
+        return statusIcons[currentStatuses.Count - 1];
+    }
+    private void RemoveStatusIcon(int statusNumber)
+    {
+        // Get the position that status's status number is in
+        if (!currentStatuses.Contains(statusNumber))
+            Debug.LogError("Status not found");
+
+        int statusIconPosition = currentStatuses.IndexOf(statusNumber);
+
+        // Remove status number
+        currentStatuses.RemoveAt(statusIconPosition);
+
+        // Update status icons
+        for (int i = 0; i < statusIcons.Count; i++)
+        {
+            if (currentStatuses.Count > i)
+                statusIcons[i].AddIcon(currentStatuses[i]);
+            else
+                statusIcons[i].RemoveIcon();
+        }
     }
 }

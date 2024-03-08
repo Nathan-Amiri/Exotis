@@ -93,7 +93,10 @@ public class Spell : MonoBehaviour, IDelegationAction
         if (ParentElemental.currentActions == 0)
             return;
 
-        if (IsWearying && ParentElemental.isWearied)
+        if (ParentElemental.StunStrength > 0)
+            return;
+
+        if (IsWearying && ParentElemental.WearyStrength > 0)
             return;
 
         switch (Clock.CurrentRoundState)

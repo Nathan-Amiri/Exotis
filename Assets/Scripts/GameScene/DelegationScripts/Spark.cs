@@ -50,7 +50,7 @@ public class Spark : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
-        if (!ParentElemental.hasSpark)
+        if (!ParentElemental.HasSpark)
             return;
 
         if (reset)

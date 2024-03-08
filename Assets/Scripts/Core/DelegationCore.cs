@@ -302,7 +302,7 @@ public class DelegationCore : MonoBehaviour
         if (currentAction == null)
             return false;
 
-        if (!currentAction.ParentElemental.hasPotion)
+        if (!currentAction.ParentElemental.HasPotion)
             return false;
 
         if (currentAction is not Spell currentSpell)
@@ -347,7 +347,7 @@ public class DelegationCore : MonoBehaviour
             return false;
 
         // Slot contains an Elemental that is Disengaged
-        if (target.isDisengaged)
+        if (target.DisengageStrength > 0)
             return false;
 
         return true;

@@ -46,7 +46,7 @@ public class Gem : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
-        if (!ParentElemental.hasGem)
+        if (!ParentElemental.HasGem)
             return;
 
         if (ParentElemental.Health == ParentElemental.MaxHealth)
