@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class SlotAssignment : MonoBehaviour
 {
+    // STATIC:
     public static List<Elemental> Elementals {  get; private set; }
 
-    [SerializeField] private List<Elemental> assignedElementals; //assigned in scene
+    // SCENE REFERENCE:
+    [SerializeField] private List<Elemental> assignedElementals;
 
     private void Awake()
     {

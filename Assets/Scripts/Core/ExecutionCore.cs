@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Netcode;
+using UnityEditor.VersionControl;
 using UnityEngine;
+using static Unity.Networking.Transport.Utilities.ReliableUtility;
 
 public class ExecutionCore : MonoBehaviour
 {
@@ -34,9 +36,13 @@ public class ExecutionCore : MonoBehaviour
     private RelayPacket enemyPacket;
 
         // Spells cache their packets here before requesting new counter packets
-    private RelayPacket savedSinglePacket;
-    private RelayPacket savedAllyPacket;
-    private RelayPacket savedEnemyPacket;
+        // Caster Elementals are cached in case casters Swap before their Spell occurs
+        // No need to store messages as SparkInfos do, since casters can't be Eliminated at counter speed
+    private (RelayPacket, Elemental) savedSinglePacket;
+    private (RelayPacket, Elemental) savedAllyPacket;
+    private (RelayPacket, Elemental) savedEnemyPacket;
+
+    private readonly List<SparkInfo> flungSparks = new();
 
     /*
         Todo:
@@ -197,7 +203,12 @@ public class ExecutionCore : MonoBehaviour
             ResetPackets();
 
             if (Clock.CurrentRoundState == Clock.RoundState.Counter)
-                console.WriteConsoleMessage("Both players have passed", null, CallEffectMethod);
+            {
+                // Switch back to TimeScale RoundState
+                clock.NewRoundState(Clock.RoundState.TimeScale);
+
+                console.WriteConsoleMessage("Both players have passed", null, WriteSpellEffectMessage);
+            }
             else if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
                 console.WriteConsoleMessage("Both players have passed. Round will end", null, RoundEnd);
             // If both players pass at RoundStart/End, continue without writing to console
@@ -397,11 +408,14 @@ public class ExecutionCore : MonoBehaviour
             //.I think this is messy anyway. It works, but it'd be nice to tidy this path up a bit
             if (singlePacket.actionType == "pass")
             {
-                // If counter time and you passed, CallEffectMethod without writing a message
+                // Switch back to TimeScale RoundState
+                clock.NewRoundState(Clock.RoundState.TimeScale);
+
+                // If counter time and you passed, WriteSpellEffectMessage without writing that you've passed
                 if (IsAllyPacket(singlePacket))
-                    CallEffectMethod();
+                    WriteSpellEffectMessage();
                 else
-                    console.WriteConsoleMessage("The enemy has passed", null, CallEffectMethod);
+                    console.WriteConsoleMessage("The enemy has passed", null, WriteSpellEffectMessage);
 
                 return;
             }
@@ -480,38 +494,38 @@ public class ExecutionCore : MonoBehaviour
     {
         targetManager.ResetAllTargets();
 
-        // If it's already counter time, packets are already saved
+        // If it isn't already counter time, save packets
         if (Clock.CurrentRoundState != Clock.RoundState.Counter)
         {
             // Save packets before requesting new ones
-            savedSinglePacket = singlePacket;
-            savedAllyPacket = allyPacket;
-            savedEnemyPacket = enemyPacket;
-            ResetPackets();
+            SavePackets();
 
             // Switch to counter roundState before calling CheckForAvailableActions
             clock.NewRoundState(Clock.RoundState.Counter);
         }
+        // If a counter effect has already occurred, reset packets before requesting new ones
+        else
+            ResetPackets();
 
         bool isHost = NetworkManager.Singleton.IsHost;
         int allyPlayerNumber = isHost ? 0 : 1;
         int enemyPlayerNumber = isHost ? 1 : 0;
 
         // If single counter
-        if (savedSinglePacket.actionType != null)
+        if (savedSinglePacket.Item1.actionType != null)
         {
-            bool isCounteringPlayer = !IsAllyPacket(savedSinglePacket);
+            bool isCounteringPlayer = !IsAllyPacket(savedSinglePacket.Item1);
 
             // If countering player has no available actions, write to console and prepare CallEffectMethod
             int counteringPlayerNumber = isCounteringPlayer ? allyPlayerNumber : enemyPlayerNumber;
 
             if (!CheckForAvailableActions(counteringPlayerNumber))
             {
-                // Switch back from counter roundState
+                // Switch back to TimeScale RoundState
                 clock.NewRoundState(Clock.RoundState.TimeScale);
 
                 string counteringPlayer = isCounteringPlayer ? "You have" : "The enemy has";
-                console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, CallEffectMethod);
+                console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, WriteSpellEffectMessage);
             }
             else // If counter action is available, request counter packet
                 RequestPacket(isCounteringPlayer, !isCounteringPlayer);
@@ -523,10 +537,10 @@ public class ExecutionCore : MonoBehaviour
 
             if (!allyCounterAvailable && !enemyCounterAvailable)
             {
-                // Switch back from counter roundState
+                // Switch back to TimeScale RoundState
                 clock.NewRoundState(Clock.RoundState.TimeScale);
 
-                console.WriteConsoleMessage("Neither player has available counter actions", null, CallEffectMethod);
+                console.WriteConsoleMessage("Neither player has available counter actions", null, WriteSpellEffectMessage);
             }
             else if (allyCounterAvailable && enemyCounterAvailable)
                 RequestPacket(true, true);
@@ -538,6 +552,22 @@ public class ExecutionCore : MonoBehaviour
                 console.WriteConsoleMessage("You have no available counter actions", null, AllyCannotCounter);
         }
     }
+    private void SavePackets()
+    {
+        // Caster Elementals are cached in case casters Swap before their Spell occurs
+        // No need to store messages as SparkInfos do, since casters can't be Eliminated at counter speed
+
+        Elemental singleCaster = SlotAssignment.Elementals[singlePacket.casterSlot];
+        savedSinglePacket = (singlePacket, singleCaster);
+
+        Elemental allyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
+        savedAllyPacket = (allyPacket, allyCaster);
+
+        Elemental enemyCaster = SlotAssignment.Elementals[enemyPacket.casterSlot];
+        savedEnemyPacket = (enemyPacket, enemyCaster);
+
+        ResetPackets();
+    }
     public void EnemyCannotCounter()
     {
         RequestPacket(true, false);
@@ -548,7 +578,54 @@ public class ExecutionCore : MonoBehaviour
     }
 
 
-    // Effect methods:
+    // WriteSpellEffect methods:
+        // These methods restore saved packets and write TimeScale SpellEffect messages before CallEffectMethod occurs
+        // These methods are not called for counter SpellEffects
+    public void WriteSpellEffectMessage()
+    {
+        if (savedSinglePacket.Item1.actionType != null)
+        {
+            DisplaySavedSpellTargets(savedSinglePacket);
+
+            string message = GenerateSpellEffectMessage(savedSinglePacket);
+            RestoreSavedPackets();
+            console.WriteConsoleMessage(message, null, CallEffectMethod);
+        }
+        else
+        {
+            DisplaySavedSpellTargets(savedAllyPacket);
+
+            string allyMessage = GenerateSpellEffectMessage(savedAllyPacket);
+            console.WriteConsoleMessage(allyMessage, null, WriteEnemySpellEffectMessage);
+        }
+    }
+    public void WriteEnemySpellEffectMessage()
+    {
+        DisplaySavedSpellTargets(savedEnemyPacket);
+
+        string enemyMessage = GenerateSpellEffectMessage(savedEnemyPacket);
+        RestoreSavedPackets();
+        console.WriteConsoleMessage(enemyMessage + " simultaneously", null, CallEffectMethod);
+    }
+    private string GenerateSpellEffectMessage((RelayPacket, Elemental) savedSpellPacket)
+    {
+        string casterOwner = savedSpellPacket.Item2.isAlly ? "Your " : "The enemy ";
+        return casterOwner + savedSpellPacket.Item2.name + "'s " + savedSpellPacket.Item1.name + " will occur";
+    }
+    private void DisplaySavedSpellTargets((RelayPacket, Elemental) savedSpellPacket)
+    {
+        int casterSlot = SlotAssignment.GetSlot(savedSpellPacket.Item2);
+        targetManager.DisplayTargets(new() { casterSlot }, savedSpellPacket.Item1.targetSlots.ToList(), false);
+    }
+    private void RestoreSavedPackets()
+    {
+        singlePacket = savedSinglePacket.Item1;
+        allyPacket = savedAllyPacket.Item1;
+        enemyPacket = savedEnemyPacket.Item1;
+        ResetSavedPackets();
+    }
+
+    // Normal EffectMethods:
     public void CallEffectMethod()
     {
         targetManager.ResetAllTargets();
@@ -565,7 +642,7 @@ public class ExecutionCore : MonoBehaviour
             _ => SpellEffect,
         };
 
-        // Call the effect method
+        // Call the effect method(s)
         if (singlePacket.actionType != null)
             effectDelegate(singlePacket);
         else
@@ -576,6 +653,8 @@ public class ExecutionCore : MonoBehaviour
 
         if (Clock.CurrentRoundState == Clock.RoundState.Counter)
             CheckForCounter();
+        else if (switchPacket.actionType == "spell" && flungSparks.Count > 0)
+            WriteSparkDamageMessage();
         else
             NewCycle();
     }
@@ -600,7 +679,21 @@ public class ExecutionCore : MonoBehaviour
 
     private void SparkEffect(RelayPacket packet)
     {
-        Debug.Log("SparkEffect");
+        Elemental sparkCaster = SlotAssignment.Elementals[packet.casterSlot];
+
+        // Cache message in sparkInfo list in case caster is null (Eliminated) when the message needs to be written
+        string casterOwner = sparkCaster.isAlly ? "Your" : "The enemy's";
+        string sparkMessage = casterOwner + " " + sparkCaster.name + "'s Spark will deal 1 to the target";
+
+        SparkInfo sparkInfo = new()
+        {
+            caster = sparkCaster,
+            targetSlot = packet.targetSlots[0],
+            message = sparkMessage
+        };
+        flungSparks.Add(sparkInfo);
+
+        sparkCaster.ToggleSpark(false);
     }
 
     private void TraitEffect(RelayPacket packet)
@@ -608,15 +701,49 @@ public class ExecutionCore : MonoBehaviour
         Debug.Log("TraitEffect");
     }
 
-    //public void WriteSpellMessage()
-    //{
-    //    Debug.Log("SpellMessage");
-    //    //."caster's spell will occur" output method is spelleffect NOT USED FOR COUNTER, COUNTER JUMPS RIGHT TO SPELLEFFECT
-    //}
-    public void SpellEffect(RelayPacket packet)
+    private void SpellEffect(RelayPacket packet)
     {
         Debug.Log("SpellEffect");
-        //.IF COUNTER, RETURN TO CHECKFORCOUNTER SO THAT OTHER COUNTERS CAN OCCUR BEFORE THE SAVED SPELL DOES
+    }
+
+    private void WriteSparkDamageMessage()
+    {
+        // Check if the target is still available
+        Elemental sparkTarget = SlotAssignment.Elementals[flungSparks[0].targetSlot];
+        if (sparkTarget == null || sparkTarget.DisengageStrength > 0)
+        {
+            CycleSparks();
+            return;
+        }
+
+        // Don't dim caster if it's still alive
+        List<int> casterList = new();
+        if (flungSparks[0].caster != null)
+        {
+            int casterSlot = SlotAssignment.GetSlot(flungSparks[0].caster);
+            casterList.Add(casterSlot);
+        }
+        targetManager.DisplayTargets(casterList, new List<int>() { flungSparks[0].targetSlot }, false);
+
+        console.WriteConsoleMessage(flungSparks[0].message, null, SparkDamage);
+    }
+    public void SparkDamage()
+    {
+        targetManager.ResetAllTargets();
+
+        Elemental target = SlotAssignment.Elementals[flungSparks[0].targetSlot];
+        target.TakeDamage(1, flungSparks[0].caster);
+
+        CycleSparks();
+    }
+    private void CycleSparks()
+    {
+        flungSparks.RemoveAt(0);
+
+        if (flungSparks.Count > 0)
+            WriteSparkDamageMessage();
+        else
+            NewCycle();
     }
 
 
@@ -649,7 +776,6 @@ public class ExecutionCore : MonoBehaviour
     private void NewCycle()
     {
         ResetPackets();
-        ResetSavedPackets();
 
         //.if immediate available, do immediate things
         //.if no actions available, autopass and "You have no available actions"
@@ -691,4 +817,10 @@ public class ExecutionCore : MonoBehaviour
         savedAllyPacket = default;
         savedEnemyPacket = default;
     }
+}
+public struct SparkInfo
+{
+    public Elemental caster;
+    public int targetSlot;
+    public string message;
 }

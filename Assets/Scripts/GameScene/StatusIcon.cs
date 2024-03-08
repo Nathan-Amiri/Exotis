@@ -35,7 +35,6 @@ public class StatusIcon : MonoBehaviour
     public void AddIcon(int statusNumber = 0)
     {
         gameObject.SetActive(true);
-        Debug.Log(gameObject.name);
 
         if (statusNumber > 9)
         {

@@ -115,6 +115,13 @@ public class DelegationCore : MonoBehaviour
     {
         currentAction = action;
 
+        // Set packet info
+        packet.actionType = currentAction.ActionType;
+        packet.casterSlot = SlotAssignment.GetSlot(currentAction.ParentElemental);
+
+        // Reset before proceeding
+        ResetScene();
+
         if (currentAction is Spell spell)
         {
             packet.name = spell.name;
@@ -166,13 +173,6 @@ public class DelegationCore : MonoBehaviour
         }
         else
             spell = null;
-
-        // Set packet info
-        packet.actionType = currentAction.ActionType;
-        packet.casterSlot = SlotAssignment.GetSlot(currentAction.ParentElemental);
-
-        // Reset before proceeding
-        ResetScene();
 
         // Check if the action is untargeted
         if (currentAction.MaxTargets == 0)

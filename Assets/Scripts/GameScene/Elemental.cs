@@ -9,14 +9,12 @@ using UnityEngine.UI;
 public class Elemental : MonoBehaviour
 {
     // PREFAB REFERENCE:
-    [SerializeField] private GameObject extra; // Everything but display. Set inactive when benched
-    [SerializeField] private GameObject status; // Flip if enemy
+    [SerializeField] private GameObject extra;
+    [SerializeField] private GameObject status;
     [SerializeField] private List<Image> colorOutlines;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private Image speedColorBackground;
     [SerializeField] private TMP_Text healthText;
-    [SerializeField] private Image icon; // Set a to 150 when targeting
-    [SerializeField] private GameObject targetButton;
     [SerializeField] private Image retreatButton;
 
     [SerializeField] private Image gemImage;
@@ -31,9 +29,13 @@ public class Elemental : MonoBehaviour
     [SerializeField] private Sprite potionSprite;
     [SerializeField] private Sprite potionGraySprite;
 
-    // Read by ExecutionCore
+        // Read by ExecutionCore
     public Trait trait;
     public List<Spell> spells = new();
+
+        // Set by TargetManager
+    public Image icon;
+    public Button targetButton;
 
     // SCENE REFERENCE:
     [SerializeField] private Transform inPlayParent;
@@ -101,6 +103,13 @@ public class Elemental : MonoBehaviour
 
         retreatButton.color = isAlly ? StaticLibrary.gameColors["pink"] : StaticLibrary.gameColors["gray"];
 
+        // If guest, flip y position of Elemental and status icons
+        if (!NetworkManager.Singleton.IsHost)
+        {
+            transform.localPosition *= new Vector2(1, -1);
+            status.transform.localPosition *= new Vector2(1, -1);
+        }
+
         // Trait setup
         trait.nameText.text = info.traitName;
         trait.SetElementalInfoFields(info);
@@ -114,9 +123,8 @@ public class Elemental : MonoBehaviour
     }
 
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, Elemental caster)
     {
-
         HealthChange(-amount);
     }
 

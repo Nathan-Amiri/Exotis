@@ -5,9 +5,6 @@ using UnityEngine.UI;
 
 public class TargetManager : MonoBehaviour
 {
-    [SerializeField] private List<Image> elementalIcons = new();
-    [SerializeField] private List<Button> elementalTargetButtons = new();
-
     public void DisplayTargets(List<int> casterSlots, List<int> targetSlots, bool interactable)
     {
         // Reset targets and dims
@@ -15,14 +12,15 @@ public class TargetManager : MonoBehaviour
 
         foreach (int targetSlot in targetSlots)
         {
-            elementalTargetButtons[targetSlot].gameObject.SetActive(true);
-            elementalTargetButtons[targetSlot].interactable = interactable;
+            Button targetButton = SlotAssignment.Elementals[targetSlot].targetButton;
+            targetButton.gameObject.SetActive(true);
+            targetButton.interactable = interactable;
         }
 
         // Dim all non-casters
-        for (int i = 0; i < elementalIcons.Count; i++)
+        for (int i = 0; i < SlotAssignment.Elementals.Count; i++)
             if (!casterSlots.Contains(i))
-                elementalIcons[i].color = Color.black; //new Color32(130, 130, 130, 255);
+                SlotAssignment.Elementals[i].icon.color = Color.black;
     }
 
     public void ResetCertainTargets(List<int> targetSlots)
@@ -31,27 +29,27 @@ public class TargetManager : MonoBehaviour
 
         foreach (int targetSlot in targetSlots)
         {
-            elementalTargetButtons[targetSlot].gameObject.SetActive(false);
-            elementalTargetButtons[targetSlot].interactable = false;
+            Button targetButton = SlotAssignment.Elementals[targetSlot].targetButton;
+            targetButton.gameObject.SetActive(false);
+            targetButton.interactable = false;
         }
     }
 
     public void ResetAllTargets()
     {
-        foreach (Button targetButton in elementalTargetButtons)
+        foreach (Elemental elemental in SlotAssignment.Elementals)
         {
-            targetButton.gameObject.SetActive(false);
-            targetButton.interactable = false;
-        }
+            elemental.targetButton.gameObject.SetActive(false);
+            elemental.targetButton.interactable = false;
 
-        foreach (Image elementalIcon in elementalIcons)
-            elementalIcon.color = Color.white;
+            elemental.icon.color = Color.white;
+        }
     }
 
     public bool AnyTargetsAvailable()
     {
-        foreach (Button targetButton in elementalTargetButtons)
-            if (targetButton.gameObject.activeSelf)
+        foreach (Elemental elemental in SlotAssignment.Elementals)
+            if (elemental.targetButton.gameObject.activeSelf)
                 return true;
 
         return false;
