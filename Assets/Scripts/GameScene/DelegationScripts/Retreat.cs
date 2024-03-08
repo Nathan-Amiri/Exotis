@@ -51,13 +51,13 @@ public class Retreat : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
-        if (ParentElemental.currentActions == 0)
+        if (reset)
+        {
+            button.interactable = false;
             return;
+        }
 
-        if (!ParentElemental.CanSwap())
-            return;
-
-        button.interactable = !reset;
+        button.interactable = ActionAvailable();
     }
 
     public void OnClick()
@@ -66,5 +66,17 @@ public class Retreat : MonoBehaviour, IDelegationAction
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked
         button.interactable = false;
+    }
+
+    // Called by Elemental
+    public bool ActionAvailable()
+    {
+        if (ParentElemental.currentActions == 0)
+            return false;
+
+        if (!ParentElemental.CanSwap())
+            return false;
+
+        return true;
     }
 }

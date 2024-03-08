@@ -70,24 +70,7 @@ public class Trait : MonoBehaviour, IDelegationAction
             return;
         }
 
-        switch (Clock.CurrentRoundState)
-        {
-            case Clock.RoundState.RoundStart:
-                button.interactable = usableRoundStart;
-                break;
-            case Clock.RoundState.RoundEnd:
-                button.interactable = usableRoundEnd;
-                break;
-            case Clock.RoundState.TimeScale:
-                button.interactable = usableDuringTimeScaleSpeeds;
-                break;
-            case Clock.RoundState.Counter:
-                button.interactable = usableCounterSpeed;
-                break;
-            case Clock.RoundState.Immediate:
-                button.interactable = true;
-                break;
-        }
+        button.interactable = ActionAvailable();
     }
 
     public void OnClick()
@@ -96,5 +79,18 @@ public class Trait : MonoBehaviour, IDelegationAction
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked
         button.interactable = false;
+    }
+
+    // Called by Elemental
+    public bool ActionAvailable()
+    {
+        return Clock.CurrentRoundState switch
+        {
+            Clock.RoundState.RoundStart => usableRoundStart,
+            Clock.RoundState.RoundEnd => usableRoundEnd,
+            Clock.RoundState.TimeScale => usableDuringTimeScaleSpeeds,
+            Clock.RoundState.Counter => usableCounterSpeed,
+            _ => true //.immediate. What to do here?
+        };
     }
 }

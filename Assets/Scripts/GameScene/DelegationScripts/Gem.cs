@@ -46,13 +46,13 @@ public class Gem : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
-        if (!ParentElemental.HasGem)
+        if (reset)
+        {
+            button.interactable = false;
             return;
+        }
 
-        if (ParentElemental.Health == ParentElemental.MaxHealth)
-            return;
-
-        button.interactable = !reset;
+        button.interactable = ActionAvailable();
     }
 
     public void OnClick()
@@ -61,5 +61,17 @@ public class Gem : MonoBehaviour, IDelegationAction
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked
         button.interactable = false;
+    }
+
+    // Called by Elemental
+    public bool ActionAvailable()
+    {
+        if (!ParentElemental.HasGem)
+            return false;
+
+        if (ParentElemental.Health == ParentElemental.MaxHealth)
+            return false;
+
+        return true;
     }
 }

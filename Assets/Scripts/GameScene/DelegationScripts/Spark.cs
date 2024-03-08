@@ -50,13 +50,13 @@ public class Spark : MonoBehaviour, IDelegationAction
         if (!ParentElemental.isAlly)
             return;
 
-        if (!ParentElemental.HasSpark)
-            return;
-
         if (reset)
+        {
             button.interactable = false;
-        else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
-            button.interactable = true;
+            return;
+        }
+
+        button.interactable = ActionAvailable();
     }
 
     public void OnClick()
@@ -65,5 +65,17 @@ public class Spark : MonoBehaviour, IDelegationAction
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked
         button.interactable = false;
+    }
+
+    // Called by Elemental
+    public bool ActionAvailable()
+    {
+        if (!ParentElemental.HasSpark)
+            return false;
+
+        if (Clock.CurrentRoundState != Clock.RoundState.Counter)
+            return false;
+
+        return true;
     }
 }

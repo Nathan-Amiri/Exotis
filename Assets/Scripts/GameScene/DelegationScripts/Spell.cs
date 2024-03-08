@@ -90,29 +90,7 @@ public class Spell : MonoBehaviour, IDelegationAction
             return;
         }
 
-        if (ParentElemental.currentActions == 0)
-            return;
-
-        if (ParentElemental.StunStrength > 0)
-            return;
-
-        if (IsWearying && ParentElemental.WearyStrength > 0)
-            return;
-
-        switch (Clock.CurrentRoundState)
-        {
-            // If DelegationScenario is RoundStart or RoundEnd, do nothing
-            case Clock.RoundState.TimeScale:
-                if (isCounter) return;
-                button.interactable = IsWild || Clock.CurrentTimeScale >= TimeScale;
-                break;
-            case Clock.RoundState.Counter:
-                button.interactable = isCounter;
-                break;
-            case Clock.RoundState.Immediate:
-                button.interactable = true;
-                break;
-        }
+        button.interactable = ActionAvailable();
     }
 
     public void OnClick()
@@ -121,5 +99,39 @@ public class Spell : MonoBehaviour, IDelegationAction
 
         // Immediately turn off button so that it cannot be double clicked before the Reset even is invoked
         button.interactable = false;
+    }
+
+    // Called by Elemental
+    public bool ActionAvailable()
+    {
+        if (ParentElemental.currentActions == 0)
+            return false;
+
+        if (ParentElemental.StunStrength > 0)
+            return false;
+
+        if (IsWearying && ParentElemental.WearyStrength > 0)
+            return false;
+
+        switch (Clock.CurrentRoundState)
+        {
+            case Clock.RoundState.RoundStart:
+                return false;
+
+            case Clock.RoundState.RoundEnd:
+                return false;
+
+            case Clock.RoundState.TimeScale:
+                if (isCounter)
+                    return false;
+
+                return IsWild || Clock.CurrentTimeScale >= TimeScale;
+
+            case Clock.RoundState.Counter:
+                return isCounter;
+
+            default: //.immediate. What to do here?
+                return true;
+        }
     }
 }

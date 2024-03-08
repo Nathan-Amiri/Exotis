@@ -519,7 +519,7 @@ public class ExecutionCore : MonoBehaviour
             // If countering player has no available actions, write to console and prepare CallEffectMethod
             int counteringPlayerNumber = isCounteringPlayer ? allyPlayerNumber : enemyPlayerNumber;
 
-            if (!CheckForAvailableActions(counteringPlayerNumber))
+            if (!CheckForAvailableActions(isCounteringPlayer))
             {
                 // Switch back to TimeScale RoundState
                 clock.NewRoundState(Clock.RoundState.TimeScale);
@@ -532,8 +532,8 @@ public class ExecutionCore : MonoBehaviour
         }
         else // If multiple counter
         {
-            bool allyCounterAvailable = CheckForAvailableActions(allyPlayerNumber);
-            bool enemyCounterAvailable = CheckForAvailableActions(enemyPlayerNumber);
+            bool allyCounterAvailable = CheckForAvailableActions(true);
+            bool enemyCounterAvailable = CheckForAvailableActions(false);
 
             if (!allyCounterAvailable && !enemyCounterAvailable)
             {
@@ -788,9 +788,17 @@ public class ExecutionCore : MonoBehaviour
 
 
     //.not sure what to call these methods yet:
-    private bool CheckForAvailableActions(int player)
+    private bool CheckForAvailableActions(bool isAlly)
     {
-        return true;
+        // Check all allied Elementals in play for available actions
+        for (int i = 0; i < 4; i++)
+        {
+            Elemental elemental = SlotAssignment.Elementals[i];
+            if ((elemental.isAlly == isAlly) && elemental.CanAct())
+                return true;
+        }
+
+        return false;
     }
 
     //private bool CheckForGameOver()

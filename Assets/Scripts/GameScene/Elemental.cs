@@ -29,9 +29,12 @@ public class Elemental : MonoBehaviour
     [SerializeField] private Sprite potionSprite;
     [SerializeField] private Sprite potionGraySprite;
 
-        // Read by ExecutionCore
+        // IDelegationActions. Read by ExecutionCore
     public Trait trait;
     public List<Spell> spells = new();
+    public Retreat retreat;
+    public Gem gem;
+    public Spark spark;
 
         // Set by TargetManager
     public Image icon;
@@ -149,6 +152,27 @@ public class Elemental : MonoBehaviour
         return true;
     }
 
+    public bool CanAct()
+    {
+        if (retreat.ActionAvailable())
+            return true;
+
+        if (trait.ActionAvailable())
+            return true;
+
+        foreach (Spell spell in spells)
+            if (spell.ActionAvailable())
+                return true;
+
+        if (spark.ActionAvailable())
+            return true;
+
+        if (gem.ActionAvailable())
+            return true;
+
+        return false;
+    }
+
     // Item:
     public void ToggleGem(bool gainGem)
     {
@@ -224,21 +248,14 @@ public class Elemental : MonoBehaviour
         {
             currentStatuses.Add(statusNumber);
 
-            StatusIcon newStatusIcon = GetStatusIcon(statusNumber);
-            if (newStatusIcon != null)
-                newStatusIcon.AddIcon(statusNumber);
+            // Get the next available status icon
+            // 7 is the maximum number of Status Icons that can be active at once
+            if (currentStatuses.Count <= 7)
+                statusIcons[currentStatuses.Count - 1].AddIcon(statusNumber);
         }
         // If status effect is being removed
         else if (oldStatusStrength == 1 && !increaseStatusStrength)
             RemoveStatusIcon(statusNumber);
-    }
-    private StatusIcon GetStatusIcon(int statusNumber)
-    {
-        // 7 is the maximum number of Status Icons that can be active at once
-        if (currentStatuses.Count > 7)
-            return null;
-
-        return statusIcons[currentStatuses.Count - 1];
     }
     private void RemoveStatusIcon(int statusNumber)
     {
