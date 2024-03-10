@@ -18,7 +18,7 @@
 
 12 Swoop 4 "I deal 2 to a target in play"
 13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap"
-14 Whirlwind 3 "I deal 2 to a target in play. I'm Enraged and Weakened next round"
+14 Whirlwind 3 "I deal 2 to a target in play. I'm Wearied, Enraged, and Weakened next round"
 15 Flurry C "My Ally Swaps"
 
 16 Surge 3 "I deal 2 to a target in play. The first time I cast this Spell, I gain a Spark"
