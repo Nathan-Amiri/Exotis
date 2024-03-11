@@ -44,23 +44,9 @@ public class ExecutionCore : MonoBehaviour
 
     private readonly List<SparkInfo> flungSparks = new();
 
-    /*
-        Todo:
-    
-    gemeffect
-    retreateffect
-    traiteffect
-    spelleffect
-    sparkeffect
-
-    roundend
-    repopulation
-    roundstart
-    
-    checkforavailableactions
-    checkforgameover
-
-    */
+    private readonly List<DelayedInfo> roundStartInfos = new();
+    private readonly List<DelayedInfo> roundEndInfos = new();
+    private readonly List<DelayedInfo> nextRoundEndInfos = new();
 
     private void DebugPacket(RelayPacket packet)
     {
@@ -775,6 +761,10 @@ public class ExecutionCore : MonoBehaviour
 
     private void NewCycle()
     {
+        // Check if game has ended
+        if (CheckForGameEnd())
+            return;
+
         ResetPackets();
 
         //.if immediate available, do immediate things
@@ -801,12 +791,43 @@ public class ExecutionCore : MonoBehaviour
         return false;
     }
 
-    //private bool CheckForGameOver()
-    //{
-    //    //.eliminate elementals below 0 health
+    private bool CheckForGameEnd()
+    {
+        // Eliminate Elementals at 0 health
+        foreach (Elemental elemental in SlotAssignment.Elementals)
+            if (elemental.Health == 0)
+                Destroy(elemental);
 
-    //    return false;
-    //}
+        // Check if game has ended
+        List<int> allySlots = new() { 0, 1, 4, 5 };
+
+        bool allAllyElementalsEliminated = true;
+        bool allEnemyElementalsEliminated = true;
+
+        for (int i = 0; i < SlotAssignment.Elementals.Count; i++)
+        {
+            // If an ally Elemental is not Eliminated, enemy has not won, and vice versa
+            if (SlotAssignment.Elementals[i] == null)
+                continue;
+
+            if (allySlots.Contains(i))
+                allAllyElementalsEliminated = false;
+            else
+                allEnemyElementalsEliminated = false;
+        }
+
+        if (!allAllyElementalsEliminated && !allEnemyElementalsEliminated)
+            return false;
+
+        if (allAllyElementalsEliminated && allEnemyElementalsEliminated)
+            console.WriteConsoleMessage("All Elementals have been Eliminated simultaneously. The game ends in a tie!");
+        else if (allAllyElementalsEliminated)
+            console.WriteConsoleMessage("All your Elementals have been Eliminated. The enemy wins the game!");
+        else // If all enemy elementals are eliminated
+            console.WriteConsoleMessage("All the enemy’s Elementals have been Eliminated. You win the game!");
+
+        return true;
+    }
 
     private bool IsAllyPacket(RelayPacket packet)
     {
@@ -831,4 +852,11 @@ public struct SparkInfo
     public Elemental caster;
     public int targetSlot;
     public string message;
+}
+public struct DelayedInfo
+{
+    public string spellOrTraitName;
+    public int occurance;
+
+    public List<Elemental> elementals;
 }

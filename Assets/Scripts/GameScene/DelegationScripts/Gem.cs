@@ -72,6 +72,9 @@ public class Gem : MonoBehaviour, IDelegationAction
         if (ParentElemental.Health == ParentElemental.MaxHealth)
             return false;
 
-        return true;
+        if (Clock.CurrentRoundState == Clock.RoundState.TimeScale || Clock.CurrentRoundState == Clock.RoundState.Counter)
+            return true;
+
+        return false;
     }
 }

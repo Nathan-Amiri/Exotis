@@ -5,7 +5,7 @@ using UnityEngine;
 public class Clock : MonoBehaviour
 {
     // No roundstartmessages currently exist in game
-    public enum RoundState { RoundStart, RoundEnd, TimeScale, Counter, Immediate, Repopulation, Reset }
+    public enum RoundState { RoundStart, RoundEnd, TimeScale, Counter, Immediate, Repopulation }
     public static RoundState CurrentRoundState { get; private set; }
 
     public static int CurrentTimeScale;
