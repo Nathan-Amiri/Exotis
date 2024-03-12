@@ -439,14 +439,14 @@ public class ExecutionCore : MonoBehaviour
                 console.WriteConsoleMessage("The enemy has passed", null, WriteActionMessage);
             }
 
-            // Use Elemental's MaxHealth to determine Elemental speed
-            else if (allyCaster.MaxHealth < enemyCaster.MaxHealth)
+            // If one caster outsped the other
+            else if (allyCaster.Speed > enemyCaster.Speed)
             {
                 targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
                 IsolatePacket(allyPacket);
                 console.WriteConsoleMessage("Your " + allyCaster.name + " outsped the enemy's " + enemyCaster.name, null, WriteActionMessage);
             }
-            else if (allyCaster.MaxHealth > enemyCaster.MaxHealth)
+            else if (allyCaster.Speed < enemyCaster.Speed)
             {
                 targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
                 IsolatePacket(enemyPacket);
@@ -485,15 +485,15 @@ public class ExecutionCore : MonoBehaviour
             console.WriteConsoleMessage("You planned to act at " + allyTimescale + ":00", "The enemy will act first at " + enemyTimescale + ":00", WriteActionMessage);
         }
 
-        // If timescales tied, use Elemental's MaxHealth to determine Elemental speed
-        else if (allyCaster.MaxHealth < enemyCaster.MaxHealth)
+        // If timescales tied, compare caster speed
+        else if (allyCaster.Speed > enemyCaster.Speed)
         {
             targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
             IsolatePacket(allyPacket);
             console.WriteConsoleMessage("Both players planned to act at " + allyTimescale + ":00. " +
                 "Your " + allyCaster.name + " outsped the enemy's " + enemyCaster.name, null, WriteActionMessage);
         }
-        else if (allyCaster.MaxHealth > enemyCaster.MaxHealth)
+        else if (allyCaster.Speed < enemyCaster.Speed)
         {
             targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
             IsolatePacket(enemyPacket);
@@ -501,7 +501,7 @@ public class ExecutionCore : MonoBehaviour
                 "The enemy's " + enemyCaster.name + " outsped your " + allyCaster.name, null, WriteActionMessage);
         }
 
-        // If timescales and Elemental speeds tied
+        // If timescales and caster speeds tied
         else
         {
             targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);

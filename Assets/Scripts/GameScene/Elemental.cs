@@ -49,6 +49,8 @@ public class Elemental : MonoBehaviour
     [NonSerialized] public bool isAlly;
     public int MaxHealth { get; private set; }
     public int Health { get; private set; }
+        // 0 = slow, 1 = medium, 2 = fast. When Slowed, Speed -= 3
+    public int Speed { get; private set; }
 
     [NonSerialized] public int currentActions;
 
@@ -236,6 +238,11 @@ public class Elemental : MonoBehaviour
     }
     public void ToggleSlowed(bool becomeSlowed)
     {
+        if (becomeSlowed && SlowStrength == 0)
+            Speed -= 3;
+        else if (!becomeSlowed && SlowStrength > 0)
+            Speed += 3;
+
         UpdateStatusIcons(5, SlowStrength, becomeSlowed);
         SlowStrength += becomeSlowed ? 1 : -1;
     }
