@@ -1,21 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Clock : MonoBehaviour
 {
-    // No roundstartmessages currently exist in game
-    public enum RoundState { RoundStart, RoundEnd, TimeScale, Counter, Immediate, Repopulation }
+    // STATIC:
+    public enum RoundState { RoundStart, RoundEnd, Timescale, Counter, Immediate, Repopulation }
     public static RoundState CurrentRoundState { get; private set; }
 
-    public static int CurrentTimeScale;
+    public static int CurrentTimescale { get; private set; }
 
-    private void Start()
-    {
-        CurrentRoundState = RoundState.RoundStart;
-
-        CurrentTimeScale = 7;
-    }
+    // SCENE REFERENCE:
+    [SerializeField] private TMP_Text timescaleText;
 
     //Only called by ExecutionCore
     public void NewRoundState(RoundState newState)
@@ -24,8 +21,10 @@ public class Clock : MonoBehaviour
     }
 
     // Only called by ExecutionCore
-    public void NewTimeScale(int newScale)
+    public void NewTimescale(int newTimescale)
     {
-        CurrentTimeScale = newScale;
+        CurrentTimescale = newTimescale;
+
+        timescaleText.text = newTimescale + ":00";
     }
 }

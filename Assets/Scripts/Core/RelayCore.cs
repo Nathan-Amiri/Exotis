@@ -56,7 +56,7 @@ public struct RelayPacket : INetworkSerializable
 
     // Below variables only used for Spells
     public string name; // Spell names are capitalized
-    public int wildTimeScale; // Possible values: 1, 5
+    public int wildTimescale; // Possible values: 1, 5
         // *Hex
     public string hexType; // Possible values: slow, poison, weaken
     public bool potion;
@@ -70,7 +70,7 @@ public struct RelayPacket : INetworkSerializable
         serializer.SerializeValue(ref casterSlot);
         serializer.SerializeValue(ref targetSlots);
         serializer.SerializeValue(ref name);
-        serializer.SerializeValue(ref wildTimeScale);
+        serializer.SerializeValue(ref wildTimescale);
         serializer.SerializeValue(ref hexType);
         serializer.SerializeValue(ref potion);
         serializer.SerializeValue(ref frenzy);

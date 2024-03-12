@@ -1181,7 +1181,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentReference: {fileID: 8031699915942597635}
   image: {fileID: 9147209889962173083}
-  timeScaleText: {fileID: 5440332039977804964}
+  timescaleText: {fileID: 5440332039977804964}
   nameText: {fileID: 152563077750856118}
   button: {fileID: 6006373699372451695}
   delegationCore: {fileID: 0}
@@ -4106,7 +4106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentReference: {fileID: 8031699915942597635}
   image: {fileID: 4448591900768938786}
-  timeScaleText: {fileID: 5218900009966536189}
+  timescaleText: {fileID: 5218900009966536189}
   nameText: {fileID: 7804811815993715988}
   button: {fileID: 7893370039366900750}
   delegationCore: {fileID: 0}
@@ -4583,7 +4583,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentReference: {fileID: 8031699915942597635}
   image: {fileID: 8638896162105076252}
-  timeScaleText: {fileID: 8061952287583240063}
+  timescaleText: {fileID: 8061952287583240063}
   nameText: {fileID: 2529912421368529097}
   button: {fileID: 5265503217003988670}
   delegationCore: {fileID: 0}

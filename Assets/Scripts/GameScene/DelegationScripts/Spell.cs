@@ -10,7 +10,7 @@ public class Spell : MonoBehaviour, IDelegationAction
     [SerializeField] private Elemental parentReference;
 
     [SerializeField] private Image image;
-    [SerializeField] private TMP_Text timeScaleText;
+    [SerializeField] private TMP_Text timescaleText;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private Button button;
 
@@ -20,7 +20,7 @@ public class Spell : MonoBehaviour, IDelegationAction
     // DYNAMIC:
         // SpellInfo fields
     private bool isCounter;
-    public int TimeScale { get; private set; } // 0 if counter or wild
+    public int Timescale { get; private set; } // 0 if counter or wild
 
     public bool IsWild { get; private set; }
     public bool IsDamaging { get; private set; }
@@ -58,14 +58,14 @@ public class Spell : MonoBehaviour, IDelegationAction
 
         image.color = StaticLibrary.gameColors[info.elementColor.ToString()];
 
-        timeScaleText.text = info.timeScale.ToString();
+        timescaleText.text = info.timescale.ToString();
 
-        if (info.timeScale.ToString() == "C")
+        if (info.timescale.ToString() == "C")
             isCounter = true;
-        else if (info.timeScale.ToString() == "?")
+        else if (info.timescale.ToString() == "?")
             IsWild = true;
         else
-            TimeScale = (int)char.GetNumericValue(info.timeScale);
+            Timescale = (int)char.GetNumericValue(info.timescale);
 
         IsDamaging = info.isDamaging;
         IsWearying = info.isWearying;
@@ -121,11 +121,11 @@ public class Spell : MonoBehaviour, IDelegationAction
             case Clock.RoundState.RoundEnd:
                 return false;
 
-            case Clock.RoundState.TimeScale:
+            case Clock.RoundState.Timescale:
                 if (isCounter)
                     return false;
 
-                return IsWild || Clock.CurrentTimeScale >= TimeScale;
+                return IsWild || Clock.CurrentTimescale >= Timescale;
 
             case Clock.RoundState.Counter:
                 return isCounter;

@@ -31,7 +31,7 @@ public class Trait : MonoBehaviour, IDelegationAction
     private bool usableRoundStart;
     private bool usableRoundEnd;
     private bool usableCounterSpeed;
-    private bool usableDuringTimeScaleSpeeds;
+    private bool usableDuringTimescaleSpeeds;
 
     private void OnEnable()
     {
@@ -55,7 +55,7 @@ public class Trait : MonoBehaviour, IDelegationAction
 
         usableRoundStart = info.usableRoundStart;
         usableRoundEnd = info.usableRoundEnd;
-        usableDuringTimeScaleSpeeds = info.usableDuringTimeScaleSpeeds;
+        usableDuringTimescaleSpeeds = info.usableDuringTimescaleSpeeds;
         usableCounterSpeed = info.usableCounterSpeed;
     }
 
@@ -88,7 +88,7 @@ public class Trait : MonoBehaviour, IDelegationAction
         {
             Clock.RoundState.RoundStart => usableRoundStart,
             Clock.RoundState.RoundEnd => usableRoundEnd,
-            Clock.RoundState.TimeScale => usableDuringTimeScaleSpeeds,
+            Clock.RoundState.Timescale => usableDuringTimescaleSpeeds,
             Clock.RoundState.Counter => usableCounterSpeed,
             _ => true //.immediate. What to do here?
         };

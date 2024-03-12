@@ -69,8 +69,8 @@ public class DelegationCore : MonoBehaviour
             return;
         }
 
-        if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-            console.WriteConsoleMessage("Choose an action to use at " + Clock.CurrentTimeScale + ":00 or later");
+        if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
+            console.WriteConsoleMessage("Choose an action to use at " + Clock.CurrentTimescale + ":00 or later");
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
             console.WriteConsoleMessage("Choose a counter action");
         else
@@ -126,7 +126,7 @@ public class DelegationCore : MonoBehaviour
         {
             packet.name = spell.name;
 
-            if (spell.IsWild && packet.wildTimeScale == 0)
+            if (spell.IsWild && packet.wildTimescale == 0)
             {
                 ResetScene();
 
@@ -134,7 +134,7 @@ public class DelegationCore : MonoBehaviour
                 console.WriteConsoleMessage("At what time?");
 
                 wildButtons[0].SetActive(true);
-                wildButtons[1].SetActive(Clock.CurrentTimeScale >= 5);
+                wildButtons[1].SetActive(Clock.CurrentTimescale >= 5);
 
                 return;
             }
@@ -236,9 +236,9 @@ public class DelegationCore : MonoBehaviour
         cancelButton.SetActive(true);
     }
 
-    public void SelectWildButton(int wildTimeScale)
+    public void SelectWildButton(int wildTimescale)
     {
-        packet.wildTimeScale = wildTimeScale;
+        packet.wildTimescale = wildTimescale;
 
         SelectAction(currentAction);
     }

@@ -20,6 +20,7 @@ public class ExecutionCore : MonoBehaviour
     [SerializeField] private Clock clock;
     [SerializeField] private Console console;
     [SerializeField] private TargetManager targetManager;
+    [SerializeField] private SpellTraitEffect spellTraitEffect;
 
     // CONSTANT:
     private delegate void EffectDelegate(RelayPacket effectPacket);
@@ -44,53 +45,195 @@ public class ExecutionCore : MonoBehaviour
 
     private readonly List<SparkInfo> flungSparks = new();
 
-    private readonly List<DelayedInfo> roundStartInfos = new();
-    private readonly List<DelayedInfo> roundEndInfos = new();
-    private readonly List<DelayedInfo> nextRoundEndInfos = new();
+    private readonly List<SpellTraitEffectInfo> roundStartInfos = new();
+    private List<SpellTraitEffectInfo> roundEndInfos = new();
+    private readonly List<SpellTraitEffectInfo> nextRoundEndInfos = new();
 
-    private void DebugPacket(RelayPacket packet)
+    // Round/Cycle methods:
+    public void RoundStart() // Called by Setup
     {
-        string debugMessage = "player[" + packet.player + "], " + packet.actionType;
+        // Update clock
+        clock.NewTimescale(7);
+        clock.NewRoundState(Clock.RoundState.RoundStart);
 
-        if (packet.actionType == "pass")
+        // Reset actions and Armored
+        for (int i = 0; i < 8; i++)
         {
-            Debug.Log(debugMessage);
+            Elemental elemental = SlotAssignment.Elementals[i];
+            if (elemental != null)
+                elemental.currentActions = i < 4 ? 1 : 0;
+        }
+
+        // RoundStart Delayed Effects
+        foreach (SpellTraitEffectInfo info in roundStartInfos)
+            spellTraitEffect.CallEffectMethod(info);
+
+        roundStartInfos.Clear();
+
+        // Start new cycle
+        NewCycle();
+    }
+
+    private void NewCycle()
+    {
+        ResetPackets();
+
+        // Set clock to 0:00 if it's the end of the round
+        if (Clock.CurrentRoundState == Clock.RoundState.RoundEnd)
+            clock.NewTimescale(0);
+
+        bool allyActionAvailable = CheckForAvailableActions(true);
+        bool enemyActionAvailable = CheckForAvailableActions(false);
+
+        // If neither player can act
+        if (!allyActionAvailable && !enemyActionAvailable)
+        {
+            // If neither player can act at RoundStart, do not write
+            if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
+            {
+                // Switch to Timescale RoundState
+                clock.NewRoundState(Clock.RoundState.Timescale);
+                NewCycle();
+            }
+            // If neither player can act at timescale, write and prepare to request RoundEnd delegations
+            else if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
+            {
+                // Switch to RoundEnd RoundState
+                clock.NewRoundState(Clock.RoundState.Timescale);
+
+                console.WriteConsoleMessage("Neither player has available actions. Round will end", null, NewCycle);
+            }
+            // If neither player can act at RoundEnd, do not write
+            else if (Clock.CurrentRoundState == Clock.RoundState.RoundEnd)
+                RoundEnd();
+            else
+                Debug.LogError("Cannot start cycle with the following RoundState: " + Clock.CurrentRoundState);
+        }
+        else
+            RequestPacket(allyActionAvailable, enemyActionAvailable);
+    }
+
+    public void RoundEnd()
+    {
+        //.blubber first
+        //.high voltage second, right before poison
+
+        // Deal Poison damage to all Elementals in play
+        for (int i = 0; i < 4; i++)
+        {
+            Elemental elemental = SlotAssignment.Elementals[i];
+            if (elemental.PoisonStrength > 0)
+                elemental.TakeDamage(1, elemental, false);
+        }
+
+        // RoundEnd Delayed Effects
+        foreach (SpellTraitEffectInfo info in roundEndInfos)
+            spellTraitEffect.CallEffectMethod(info);
+
+        roundEndInfos = nextRoundEndInfos;
+        nextRoundEndInfos.Clear();
+
+        Repopulation();
+    }
+
+    // Repopulation methods:
+    private void Repopulation()
+    {
+        bool isHost = NetworkManager.Singleton.IsHost;
+
+        // Check if ally/enemy can repopulate
+        bool allyCanRepopulate = CheckIfPlayerCanRepopulate(isHost);
+        bool enemyCanRepopulate = CheckIfPlayerCanRepopulate(!isHost);
+
+        // If neither player can repopulate, start a new round
+        if (!allyCanRepopulate && !enemyCanRepopulate)
+        {
+            RoundStart();
             return;
         }
 
-        debugMessage += ", caster[" + packet.casterSlot + "]";
+        // Check if delegations are needed for ally/enemy repopulation
+        bool allyDelegationNeeded = allyCanRepopulate && CheckIfRepopulationDelegationNeeded(isHost);
+        bool enemyDelegationNeeded = enemyCanRepopulate && CheckIfRepopulationDelegationNeeded(!isHost);
 
-        if (packet.targetSlots.Length > 0)
-        {
-            string plural = packet.targetSlots.Length == 1 ? string.Empty : "s";
-            debugMessage += ", target" + plural + "[" + packet.targetSlots[0];
-            for (int i = 1; i < packet.targetSlots.Length; i++)
-                debugMessage += ", " + packet.targetSlots[i];
-            debugMessage += "]";
-        }
+        if (allyCanRepopulate && !allyDelegationNeeded)
+            AutomaticRepopulation(isHost);
+        if (enemyCanRepopulate && !enemyDelegationNeeded)
+            AutomaticRepopulation(!isHost);
 
-        if (packet.actionType != "spell")
+        if (!allyDelegationNeeded && !enemyDelegationNeeded)
+            RoundStart();
+        else
+            RequestPacket(allyDelegationNeeded, enemyDelegationNeeded);
+    }
+    private bool CheckIfPlayerCanRepopulate(bool hostPlayer)
+    {
+        // If checking guest player's slots, add 2
+        int guestAdd = hostPlayer ? 0 : 2;
+
+        // If the player doesn't have an empty slot in play, player can't repopulate
+        if (SlotAssignment.Elementals[0 + guestAdd] != null && SlotAssignment.Elementals[1 + guestAdd] != null)
+            return true;
+
+        // If the player has no benched Elementals, player cannot repopulate
+        if (SlotAssignment.Elementals[4 + guestAdd] == null && SlotAssignment.Elementals[5 + guestAdd] == null)
+            return false;
+
+        return true;
+    }
+    private bool CheckIfRepopulationDelegationNeeded(bool hostPlayer)
+    {
+        // If checking guest player's slots, add 2
+        int guestAdd = hostPlayer ? 0 : 2;
+
+        // If the player doesn't have two benched Elementals, delegation isn't needed
+        if (SlotAssignment.Elementals[4 + guestAdd] == null || SlotAssignment.Elementals[5 + guestAdd] == null)
+            return false;
+
+        // If the player has two empty slots in play, delegation isn't needed
+        if (SlotAssignment.Elementals[0 + guestAdd] == null && SlotAssignment.Elementals[1 + guestAdd] == null)
+            return false;
+
+        return true;
+    }
+    private void AutomaticRepopulation(bool hostPlayer)
+    {
+        // If checking guest player's slots, add 2
+        int guestAdd = hostPlayer ? 0 : 2;
+
+        // If both slots need to be automatically repopulated
+        if (SlotAssignment.Elementals[0 + guestAdd] == null && SlotAssignment.Elementals[1 + guestAdd] == null)
         {
-            Debug.Log(debugMessage);
+            SlotAssignment.Repopulate(0 + guestAdd, 4 + guestAdd);
+            SlotAssignment.Repopulate(1 + guestAdd, 5 + guestAdd);
             return;
         }
 
-        if (packet.name != string.Empty)
-            debugMessage += ", " + packet.name.ToLower();
+        int emptyInPlaySlot = SlotAssignment.Elementals[0 + guestAdd] == null ? 0 + guestAdd : 1 + guestAdd;
+        int filledBenchedSlot = SlotAssignment.Elementals[4 + guestAdd] != null ? 4 + guestAdd : 5 + guestAdd;
 
-        if (packet.wildTimeScale != 0)
-            debugMessage += ", wild[" + packet.wildTimeScale + "]";
+        SlotAssignment.Repopulate(emptyInPlaySlot, filledBenchedSlot);
+    }
+    private void ReceiveRepopulationPacket()
+    {
+        if (singlePacket.actionType != null)
+            RepopulateFromPacket(singlePacket);
+        else
+        {
+            RepopulateFromPacket(allyPacket);
+            RepopulateFromPacket(enemyPacket);
+        }
+    }
+    private void RepopulateFromPacket(RelayPacket packet)
+    {
+        // If checking guest player's slots, add 2
+        int guestAdd = packet.player == 0 ? 0 : 2;
 
-        if (packet.hexType != string.Empty) // *Hex
-            debugMessage += "[" + packet.hexType + "]";
+        int emptyInPlaySlot = SlotAssignment.Elementals[0 + guestAdd] == null ? 0 + guestAdd : 1 + guestAdd;
 
-        if (packet.potion)
-            debugMessage += ", potion";
+        SlotAssignment.Repopulate(emptyInPlaySlot, packet.targetSlots[0]);
 
-        if (packet.frenzy)
-            debugMessage += ", frenzy";
-
-        Debug.Log(debugMessage);
+        RoundStart();
     }
 
     // Packet methods:
@@ -166,6 +309,12 @@ public class ExecutionCore : MonoBehaviour
         // Reset expectedPackets before executing packet(s) in case enemy packets arrive before they're needed
         expectedPackets = 0;
 
+        if (Clock.CurrentRoundState == Clock.RoundState.Repopulation)
+        {
+            ReceiveRepopulationPacket();
+            return;
+        }
+
         // Execute packet
         if (singlePacket.actionType == null)
             TieBreaker();
@@ -173,6 +322,50 @@ public class ExecutionCore : MonoBehaviour
             WriteActionMessage();
     }
 
+    private void DebugPacket(RelayPacket packet)
+    {
+        string debugMessage = "player[" + packet.player + "], " + packet.actionType;
+
+        if (packet.actionType == "pass")
+        {
+            Debug.Log(debugMessage);
+            return;
+        }
+
+        debugMessage += ", caster[" + packet.casterSlot + "]";
+
+        if (packet.targetSlots.Length > 0)
+        {
+            string plural = packet.targetSlots.Length == 1 ? string.Empty : "s";
+            debugMessage += ", target" + plural + "[" + packet.targetSlots[0];
+            for (int i = 1; i < packet.targetSlots.Length; i++)
+                debugMessage += ", " + packet.targetSlots[i];
+            debugMessage += "]";
+        }
+
+        if (packet.actionType != "spell")
+        {
+            Debug.Log(debugMessage);
+            return;
+        }
+
+        if (packet.name != string.Empty)
+            debugMessage += ", " + packet.name.ToLower();
+
+        if (packet.wildTimescale != 0)
+            debugMessage += ", wild[" + packet.wildTimescale + "]";
+
+        if (packet.hexType != string.Empty) // *Hex
+            debugMessage += "[" + packet.hexType + "]";
+
+        if (packet.potion)
+            debugMessage += ", potion";
+
+        if (packet.frenzy)
+            debugMessage += ", frenzy";
+
+        Debug.Log(debugMessage);
+    }
 
     // Tiebreaker methods:
     private void TieBreaker()
@@ -180,31 +373,12 @@ public class ExecutionCore : MonoBehaviour
         Elemental allyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
         Elemental enemyCaster = SlotAssignment.Elementals[enemyPacket.casterSlot];
 
-        int allyTimeScale = GetTimeScale(allyPacket);
-        int enemyTimeScale = GetTimeScale(enemyPacket);
+        int allyTimescale = GetTimescale(allyPacket);
+        int enemyTimescale = GetTimescale(enemyPacket);
 
         // If both players passed
         if (allyPacket.actionType == "pass" && enemyPacket.actionType == "pass")
-        {
-            ResetPackets();
-
-            if (Clock.CurrentRoundState == Clock.RoundState.Counter)
-            {
-                // Switch back to TimeScale RoundState
-                clock.NewRoundState(Clock.RoundState.TimeScale);
-
-                console.WriteConsoleMessage("Both players have passed", null, WriteSpellEffectMessage);
-            }
-            else if (Clock.CurrentRoundState == Clock.RoundState.TimeScale)
-                console.WriteConsoleMessage("Both players have passed. Round will end", null, RoundEnd);
-            // If both players pass at RoundStart/End, continue without writing to console
-            else if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
-            {
-                clock.NewRoundState(Clock.RoundState.TimeScale);
-                NewCycle();
-            }
-            //.else if roundend, continue without writing to console--but what happens next?
-        }
+            DoublePass();
 
         // If both players Retreated
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
@@ -291,24 +465,24 @@ public class ExecutionCore : MonoBehaviour
         else if (allyPacket.actionType == "pass")
         {
             IsolatePacket(enemyPacket);
-            console.WriteConsoleMessage("You have passed", "The enemy will act at " + enemyTimeScale + ":00", WriteActionMessage);
+            console.WriteConsoleMessage("You have passed", "The enemy will act at " + enemyTimescale + ":00", WriteActionMessage);
         }
         else if (enemyPacket.actionType == "pass")
         {
             IsolatePacket(allyPacket);
-            console.WriteConsoleMessage("You will act at " + allyTimeScale + ":00", "The enemy has passed", WriteActionMessage);
+            console.WriteConsoleMessage("You will act at " + allyTimescale + ":00", "The enemy has passed", WriteActionMessage);
         }
 
         // If one player declared a sooner timescale
-        else if (allyTimeScale > enemyTimeScale)
+        else if (allyTimescale > enemyTimescale)
         {
             IsolatePacket(allyPacket);
-            console.WriteConsoleMessage("You will act first at " + allyTimeScale + ":00", "The enemy planned to act at " + enemyTimeScale + ":00", WriteActionMessage);
+            console.WriteConsoleMessage("You will act first at " + allyTimescale + ":00", "The enemy planned to act at " + enemyTimescale + ":00", WriteActionMessage);
         }
-        else if (enemyTimeScale > allyTimeScale)
+        else if (enemyTimescale > allyTimescale)
         {
             IsolatePacket(enemyPacket);
-            console.WriteConsoleMessage("You planned to act at " + allyTimeScale + ":00", "The enemy will act first at " + enemyTimeScale + ":00", WriteActionMessage);
+            console.WriteConsoleMessage("You planned to act at " + allyTimescale + ":00", "The enemy will act first at " + enemyTimescale + ":00", WriteActionMessage);
         }
 
         // If timescales tied, use Elemental's MaxHealth to determine Elemental speed
@@ -316,14 +490,14 @@ public class ExecutionCore : MonoBehaviour
         {
             targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
             IsolatePacket(allyPacket);
-            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimescale + ":00. " +
                 "Your " + allyCaster.name + " outsped the enemy's " + enemyCaster.name, null, WriteActionMessage);
         }
         else if (allyCaster.MaxHealth > enemyCaster.MaxHealth)
         {
             targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
             IsolatePacket(enemyPacket);
-            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimescale + ":00. " +
                 "The enemy's " + enemyCaster.name + " outsped your " + allyCaster.name, null, WriteActionMessage);
         }
 
@@ -331,17 +505,17 @@ public class ExecutionCore : MonoBehaviour
         else
         {
             targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { }, false);
-            console.WriteConsoleMessage("Both players planned to act at " + allyTimeScale + ":00. " +
+            console.WriteConsoleMessage("Both players planned to act at " + allyTimescale + ":00. " +
                     "Your " + allyCaster.name + " tied with the enemy's " + enemyCaster.name, null, WriteActionMessage);
         }
     }
-    private int GetTimeScale(RelayPacket packet)
+    private int GetTimescale(RelayPacket packet)
     {
         if (packet.actionType != "spell")
             return 0;
 
-        if (packet.wildTimeScale != 0)
-            return packet.wildTimeScale;
+        if (packet.wildTimescale != 0)
+            return packet.wildTimescale;
 
         List<Spell> casterSpells = SlotAssignment.Elementals[packet.casterSlot].spells;
         Spell castSpell = null;
@@ -354,7 +528,7 @@ public class ExecutionCore : MonoBehaviour
         if (castSpell == null)
             Debug.LogError("Caster's Spell not found");
 
-        return castSpell.TimeScale;
+        return castSpell.Timescale;
     }
     private bool CheckForActionType(string actionType)
     {
@@ -390,21 +564,8 @@ public class ExecutionCore : MonoBehaviour
         if (singlePacket.actionType != null)
         {
             // If the acting player passed
-            //.at the moment, this is only possible during counter time. In the future, I might need to update this code or make a new method for this situation
-            //.I think this is messy anyway. It works, but it'd be nice to tidy this path up a bit
             if (singlePacket.actionType == "pass")
-            {
-                // Switch back to TimeScale RoundState
-                clock.NewRoundState(Clock.RoundState.TimeScale);
-
-                // If counter time and you passed, WriteSpellEffectMessage without writing that you've passed
-                if (IsAllyPacket(singlePacket))
-                    WriteSpellEffectMessage();
-                else
-                    console.WriteConsoleMessage("The enemy has passed", null, WriteSpellEffectMessage);
-
-                return;
-            }
+                SinglePass();
 
             (string, Console.OutputMethod) messageAndOutput = GenerateActionMessage(singlePacket);
             console.WriteConsoleMessage(messageAndOutput.Item1, null, messageAndOutput.Item2);
@@ -454,11 +615,11 @@ public class ExecutionCore : MonoBehaviour
             else if (packet.hexType == "weaken")
                 hexEffect = "Weakening";
 
-            return (caster + " will cast Hex, " + hexEffect + " the target", CheckForCounter);
+            return (caster + " will cast Hex, " + hexEffect + " the target", NewCounterCycle);
         }
 
         // If counter, counter spell will occur before checking for counter again
-        Console.OutputMethod spellOutputMethod = Clock.CurrentRoundState == Clock.RoundState.TimeScale ? CheckForCounter : CallEffectMethod;
+        Console.OutputMethod spellOutputMethod = Clock.CurrentRoundState == Clock.RoundState.Timescale ? NewCounterCycle : CallEffectMethod;
 
         if (packet.frenzy) // *Frenzy
         {
@@ -474,10 +635,63 @@ public class ExecutionCore : MonoBehaviour
         return (caster + " will cast " + packet.name, spellOutputMethod);
     }
 
+    // Pass methods:
+    private void DoublePass()
+    {
+        ResetPackets();
+
+        if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
+        {
+            clock.NewRoundState(Clock.RoundState.Timescale);
+            NewCycle();
+        }
+        else if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
+        {
+            clock.NewRoundState(Clock.RoundState.RoundEnd);
+            console.WriteConsoleMessage("Both players have passed. Round will end", null, NewCycle);
+        }
+        else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+        {
+            clock.NewRoundState(Clock.RoundState.Timescale);
+            console.WriteConsoleMessage("Both players have passed", null, WriteSpellEffectMessage);
+        }
+        else if (Clock.CurrentRoundState == Clock.RoundState.RoundEnd)
+            RoundEnd();
+    }
+    private void SinglePass()
+    {
+        if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
+        {
+            clock.NewRoundState(Clock.RoundState.Timescale);
+            NewCycle();
+        }
+        else if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
+        {
+            // If you passed, don't write message
+            if (IsAllyPacket(singlePacket))
+                NewCycle();
+                clock.NewRoundState(Clock.RoundState.RoundEnd);
+            console.WriteConsoleMessage("Both players have passed. Round will end", null, NewCycle);
+        }
+        else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
+        {
+            clock.NewRoundState(Clock.RoundState.Timescale);
+
+            // If you passed, don't write message
+            if (IsAllyPacket(singlePacket))
+                WriteSpellEffectMessage();
+            else
+                console.WriteConsoleMessage("The enemy has passed", null, WriteSpellEffectMessage);
+        }
+        else if (Clock.CurrentRoundState == Clock.RoundState.RoundEnd)
+            RoundEnd();
+    }
 
     // CheckForCounter methods:
-    public void CheckForCounter()
+    public void NewCounterCycle()
     {
+        // This method performs a similar role to NewCycle, but only handles counter cycles (which occur inside normal cycles)
+
         targetManager.ResetAllTargets();
 
         // If it isn't already counter time, save packets
@@ -507,8 +721,8 @@ public class ExecutionCore : MonoBehaviour
 
             if (!CheckForAvailableActions(isCounteringPlayer))
             {
-                // Switch back to TimeScale RoundState
-                clock.NewRoundState(Clock.RoundState.TimeScale);
+                // Switch back to Timescale RoundState
+                clock.NewRoundState(Clock.RoundState.Timescale);
 
                 string counteringPlayer = isCounteringPlayer ? "You have" : "The enemy has";
                 console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, WriteSpellEffectMessage);
@@ -523,19 +737,13 @@ public class ExecutionCore : MonoBehaviour
 
             if (!allyCounterAvailable && !enemyCounterAvailable)
             {
-                // Switch back to TimeScale RoundState
-                clock.NewRoundState(Clock.RoundState.TimeScale);
+                // Switch back to Timescale RoundState
+                clock.NewRoundState(Clock.RoundState.Timescale);
 
                 console.WriteConsoleMessage("Neither player has available counter actions", null, WriteSpellEffectMessage);
             }
-            else if (allyCounterAvailable && enemyCounterAvailable)
-                RequestPacket(true, true);
-            else if (allyCounterAvailable && !enemyCounterAvailable)
-                // Inform the player that the enemy cannot counter before requesting ally packet
-                console.WriteConsoleMessage("The enemy has no available counter actions", null, EnemyCannotCounter);
-            else // If only enemy counter available
-                 // Inform the player that they cannot counter before requesting enemy packet
-                console.WriteConsoleMessage("You have no available counter actions", null, AllyCannotCounter);
+            else
+                RequestPacket(allyCounterAvailable, enemyCounterAvailable);
         }
     }
     private void SavePackets()
@@ -554,18 +762,9 @@ public class ExecutionCore : MonoBehaviour
 
         ResetPackets();
     }
-    public void EnemyCannotCounter()
-    {
-        RequestPacket(true, false);
-    }
-    public void AllyCannotCounter()
-    {
-        RequestPacket(false, true);
-    }
-
 
     // WriteSpellEffect methods:
-        // These methods restore saved packets and write TimeScale SpellEffect messages before CallEffectMethod occurs
+        // These methods restore saved packets and write Timescale SpellEffect messages before CallEffectMethod occurs
         // These methods are not called for counter SpellEffects
     public void WriteSpellEffectMessage()
     {
@@ -611,7 +810,7 @@ public class ExecutionCore : MonoBehaviour
         ResetSavedPackets();
     }
 
-    // Normal EffectMethods:
+    // Normal Effect Methods:
     public void CallEffectMethod()
     {
         targetManager.ResetAllTargets();
@@ -637,8 +836,11 @@ public class ExecutionCore : MonoBehaviour
             effectDelegate(enemyPacket);
         }
 
+        if (CheckForGameEnd())
+            return;
+
         if (Clock.CurrentRoundState == Clock.RoundState.Counter)
-            CheckForCounter();
+            NewCounterCycle();
         else if (switchPacket.actionType == "spell" && flungSparks.Count > 0)
             WriteSparkDamageMessage();
         else
@@ -684,14 +886,46 @@ public class ExecutionCore : MonoBehaviour
 
     private void TraitEffect(RelayPacket packet)
     {
-        Debug.Log("TraitEffect");
+        SpellTraitEffectInfo info = ConvertPacketToSpellTraitEffectInfo(packet);
+
+        spellTraitEffect.CallEffectMethod(info);
     }
 
     private void SpellEffect(RelayPacket packet)
     {
-        Debug.Log("SpellEffect");
+        int newTimeScale = GetTimescale(packet);
+        clock.NewTimescale(newTimeScale);
+
+        SpellTraitEffectInfo info = ConvertPacketToSpellTraitEffectInfo(packet);
+
+        // Turn on Potion/Frenzy boosting before SpellTraitEffect class calls TakeDamage
+        info.caster.potionBoosting = packet.potion;
+        info.caster.frenzyBoosting = packet.frenzy;
+
+        info.caster.currentActions -= 1;
+        spellTraitEffect.CallEffectMethod(info);
+
+        // Immediately turn Potion/Frenzy boosting off again
+        info.caster.potionBoosting = false;
+        info.caster.frenzyBoosting = false;
     }
 
+    private SpellTraitEffectInfo ConvertPacketToSpellTraitEffectInfo(RelayPacket packet)
+    {
+        List<Elemental> newTargets = new();
+        foreach (int targetSlot in packet.targetSlots)
+            newTargets.Add(SlotAssignment.Elementals[targetSlot]);
+
+        return new SpellTraitEffectInfo()
+        {
+            occurance = 0,
+            spellOrTraitName = packet.name,
+            caster = SlotAssignment.Elementals[packet.casterSlot],
+            targets = newTargets
+        };
+    }
+
+    // Spark Damage Methods:
     private void WriteSparkDamageMessage()
     {
         // Check if the target is still available
@@ -718,7 +952,7 @@ public class ExecutionCore : MonoBehaviour
         targetManager.ResetAllTargets();
 
         Elemental target = SlotAssignment.Elementals[flungSparks[0].targetSlot];
-        target.TakeDamage(1, flungSparks[0].caster);
+        target.TakeDamage(1, flungSparks[0].caster, false);
 
         CycleSparks();
     }
@@ -727,57 +961,18 @@ public class ExecutionCore : MonoBehaviour
         flungSparks.RemoveAt(0);
 
         if (flungSparks.Count > 0)
-            WriteSparkDamageMessage();
-        else
-            NewCycle();
-    }
-
-
-    //.not sure what to call these methods yet:
-    private void RoundEnd()
-    {
-        //make clock say 0:00
-
-        Debug.Log("RoundEnd");
-    }
-
-    public void RoundStart() // Called by Setup
-    {
-        //.make clock say 7:00
-
-        // Reset actions and Armored
-        for (int i = 0; i < 8; i++)
         {
-            Elemental elemental = SlotAssignment.Elementals[i];
-            if (elemental != null)
-                elemental.currentActions = i < 4 ? 1 : 0;
+            WriteSparkDamageMessage();
+            return;
         }
 
-        //.delayed effects occur simultaneously and silently
-        //.cycle text messages using preset order (see bible)
+        if (CheckForGameEnd())
+            return;
 
         NewCycle();
     }
 
-    private void NewCycle()
-    {
-        // Check if game has ended
-        if (CheckForGameEnd())
-            return;
-
-        ResetPackets();
-
-        //.if immediate available, do immediate things
-        //.if no actions available, autopass and "You have no available actions"
-        //.if only one player has an action available, do it similarly to counter stuff. No autopassing!!
-
-        // Request roundstart/end/timescale packets
-        RequestPacket(true, true);
-    }
-
-
-
-    //.not sure what to call these methods yet:
+    // Misc methods:
     private bool CheckForAvailableActions(bool isAlly)
     {
         // Check all allied Elementals in play for available actions
@@ -852,11 +1047,4 @@ public struct SparkInfo
     public Elemental caster;
     public int targetSlot;
     public string message;
-}
-public struct DelayedInfo
-{
-    public string spellOrTraitName;
-    public int occurance;
-
-    public List<Elemental> elementals;
 }

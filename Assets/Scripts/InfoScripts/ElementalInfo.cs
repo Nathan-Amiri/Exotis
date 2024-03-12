@@ -17,5 +17,5 @@ public class ElementalInfo : ScriptableObject
     public bool usableRoundStart;
     public bool usableRoundEnd;
     public bool usableCounterSpeed;
-    public bool usableDuringTimeScaleSpeeds;
+    public bool usableDuringTimescaleSpeeds;
 }

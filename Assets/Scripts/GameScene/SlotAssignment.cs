@@ -66,4 +66,18 @@ public class SlotAssignment : MonoBehaviour
         (Elementals[inPlaySlot].currentActions, Elementals[benchedSlot].currentActions) = 
             (Elementals[benchedSlot].currentActions, Elementals[inPlaySlot].currentActions);
     }
+
+    public static void Repopulate(int inPlaySlot, int benchedSlot)
+    {
+        Elemental benchedElemental = Elementals[benchedSlot];
+
+        // Swap board position
+
+        // Hide Spells/Items/Statuses
+        benchedElemental.ToggleBenched(false);
+
+        // Update SlotAssignment.Elementals
+        Elementals[inPlaySlot] = benchedElemental;
+        Elementals[benchedSlot] = null;
+    }
 }

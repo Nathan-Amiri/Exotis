@@ -52,6 +52,10 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public int currentActions;
 
+        // Only true during SpellEffect when Spell is boosted by Potion/Frenzy
+    [NonSerialized] public bool potionBoosting;
+    [NonSerialized] public bool frenzyBoosting;
+
         // Items
     public bool HasSpark { get; private set; }
     public bool HasGem { get; private set; }
@@ -126,8 +130,19 @@ public class Elemental : MonoBehaviour
     }
 
 
-    public void TakeDamage(int amount, Elemental caster)
+    public void TakeDamage(int amount, Elemental caster, bool spellDamage = true)
     {
+        if (caster.potionBoosting)
+        {
+            amount += 1;
+            caster.TogglePotion(false);
+        }
+
+        if (caster.frenzyBoosting)
+            amount += 1;
+
+        //.weaken and armor only work on spelldamage
+
         HealthChange(-amount);
     }
 

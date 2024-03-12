@@ -21,5 +21,5 @@ MonoBehaviour:
   traitCanTargetBenchedAlly: 0
   usableRoundStart: 0
   usableRoundEnd: 0
-  usableCounterSpeed: 1
+  usableCounterSpeed: 0
   usableDuringTimeScaleSpeeds: 1
