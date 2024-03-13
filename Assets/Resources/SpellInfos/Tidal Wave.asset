@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tidal Wave
   m_EditorClassIdentifier: 
   elementColor: 0
-  timeScale: 50
+  timescale: 50
   maxTargets: 1
   canTargetSelf: 1
   canTargetAlly: 1

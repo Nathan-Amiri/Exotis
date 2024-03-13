@@ -13,4 +13,11 @@ MonoBehaviour:
   m_Name: Allure
   m_EditorClassIdentifier: 
   elementColor: 8
-  timeScale: 67
+  timescale: 67
+  maxTargets: 0
+  canTargetSelf: 0
+  canTargetAlly: 0
+  canTargetEnemy: 0
+  canTargetBenchedAlly: 0
+  isDamaging: 0
+  isWearying: 0

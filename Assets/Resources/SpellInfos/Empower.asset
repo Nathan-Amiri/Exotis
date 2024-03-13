@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Empower
   m_EditorClassIdentifier: 
   elementColor: 2
-  timeScale: 50
+  timescale: 50
   maxTargets: 1
   canTargetSelf: 1
   canTargetAlly: 1

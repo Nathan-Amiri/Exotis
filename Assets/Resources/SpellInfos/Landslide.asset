@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Landslide
   m_EditorClassIdentifier: 
   elementColor: 2
-  timeScale: 51
+  timescale: 51
   maxTargets: 0
   canTargetSelf: 0
   canTargetAlly: 0
   canTargetEnemy: 0
   canTargetBenchedAlly: 0
   isDamaging: 1
+  isWearying: 0

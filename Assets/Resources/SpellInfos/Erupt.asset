@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Erupt
   m_EditorClassIdentifier: 
   elementColor: 1
-  timeScale: 51
+  timescale: 51
   maxTargets: 1
   canTargetSelf: 1
   canTargetAlly: 1

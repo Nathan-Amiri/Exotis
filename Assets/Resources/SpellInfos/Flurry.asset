@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Flurry
   m_EditorClassIdentifier: 
   elementColor: 3
-  timeScale: 67
+  timescale: 67
   maxTargets: 0
   canTargetSelf: 0
   canTargetAlly: 0

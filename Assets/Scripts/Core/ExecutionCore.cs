@@ -1,11 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Unity.Netcode;
-using UnityEditor.VersionControl;
 using UnityEngine;
-using static Unity.Networking.Transport.Utilities.ReliableUtility;
 
 public class ExecutionCore : MonoBehaviour
 {
@@ -17,6 +14,7 @@ public class ExecutionCore : MonoBehaviour
 
     // SCENE REFERENCE:
     [SerializeField] private DelegationCore delegationCore;
+    [SerializeField] private SlotAssignment slotAssignment;
     [SerializeField] private Clock clock;
     [SerializeField] private Console console;
     [SerializeField] private TargetManager targetManager;
@@ -59,7 +57,7 @@ public class ExecutionCore : MonoBehaviour
         // Reset actions and Armored
         for (int i = 0; i < 8; i++)
         {
-            Elemental elemental = SlotAssignment.Elementals[i];
+            Elemental elemental = slotAssignment.Elementals[i];
             if (elemental != null)
                 elemental.currentActions = i < 4 ? 1 : 0;
         }
@@ -91,23 +89,18 @@ public class ExecutionCore : MonoBehaviour
             // If neither player can act at RoundStart, do not write
             if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
             {
-                // Switch to Timescale RoundState
                 clock.NewRoundState(Clock.RoundState.Timescale);
                 NewCycle();
             }
             // If neither player can act at timescale, write and prepare to request RoundEnd delegations
             else if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
             {
-                // Switch to RoundEnd RoundState
                 clock.NewRoundState(Clock.RoundState.Timescale);
-
-                console.WriteConsoleMessage("Neither player has available actions. Round will end", null, NewCycle);
+                console.WriteConsoleMessage("Neither player has any available actions. Round will end", null, NewCycle);
             }
             // If neither player can act at RoundEnd, do not write
-            else if (Clock.CurrentRoundState == Clock.RoundState.RoundEnd)
-                RoundEnd();
             else
-                Debug.LogError("Cannot start cycle with the following RoundState: " + Clock.CurrentRoundState);
+                RoundEnd();
         }
         else
             RequestPacket(allyActionAvailable, enemyActionAvailable);
@@ -121,7 +114,7 @@ public class ExecutionCore : MonoBehaviour
         // Deal Poison damage to all Elementals in play
         for (int i = 0; i < 4; i++)
         {
-            Elemental elemental = SlotAssignment.Elementals[i];
+            Elemental elemental = slotAssignment.Elementals[i];
             if (elemental.PoisonStrength > 0)
                 elemental.TakeDamage(1, elemental, false);
         }
@@ -136,83 +129,68 @@ public class ExecutionCore : MonoBehaviour
         Repopulation();
     }
 
-    // Repopulation methods:
     private void Repopulation()
     {
         bool isHost = NetworkManager.Singleton.IsHost;
 
         // Check if ally/enemy can repopulate
-        bool allyCanRepopulate = CheckIfPlayerCanRepopulate(isHost);
-        bool enemyCanRepopulate = CheckIfPlayerCanRepopulate(!isHost);
+        bool allyCanRepopulate = CheckIfRepopulationDelegationNeeded(isHost);
+        bool enemyCanRepopulate = CheckIfRepopulationDelegationNeeded(!isHost);
 
-        // If neither player can repopulate, start a new round
         if (!allyCanRepopulate && !enemyCanRepopulate)
-        {
-            RoundStart();
-            return;
-        }
-
-        // Check if delegations are needed for ally/enemy repopulation
-        bool allyDelegationNeeded = allyCanRepopulate && CheckIfRepopulationDelegationNeeded(isHost);
-        bool enemyDelegationNeeded = enemyCanRepopulate && CheckIfRepopulationDelegationNeeded(!isHost);
-
-        if (allyCanRepopulate && !allyDelegationNeeded)
-            AutomaticRepopulation(isHost);
-        if (enemyCanRepopulate && !enemyDelegationNeeded)
-            AutomaticRepopulation(!isHost);
-
-        if (!allyDelegationNeeded && !enemyDelegationNeeded)
             RoundStart();
         else
-            RequestPacket(allyDelegationNeeded, enemyDelegationNeeded);
-    }
-    private bool CheckIfPlayerCanRepopulate(bool hostPlayer)
-    {
-        // If checking guest player's slots, add 2
-        int guestAdd = hostPlayer ? 0 : 2;
-
-        // If the player doesn't have an empty slot in play, player can't repopulate
-        if (SlotAssignment.Elementals[0 + guestAdd] != null && SlotAssignment.Elementals[1 + guestAdd] != null)
-            return true;
-
-        // If the player has no benched Elementals, player cannot repopulate
-        if (SlotAssignment.Elementals[4 + guestAdd] == null && SlotAssignment.Elementals[5 + guestAdd] == null)
-            return false;
-
-        return true;
-    }
-    private bool CheckIfRepopulationDelegationNeeded(bool hostPlayer)
-    {
-        // If checking guest player's slots, add 2
-        int guestAdd = hostPlayer ? 0 : 2;
-
-        // If the player doesn't have two benched Elementals, delegation isn't needed
-        if (SlotAssignment.Elementals[4 + guestAdd] == null || SlotAssignment.Elementals[5 + guestAdd] == null)
-            return false;
-
-        // If the player has two empty slots in play, delegation isn't needed
-        if (SlotAssignment.Elementals[0 + guestAdd] == null && SlotAssignment.Elementals[1 + guestAdd] == null)
-            return false;
-
-        return true;
-    }
-    private void AutomaticRepopulation(bool hostPlayer)
-    {
-        // If checking guest player's slots, add 2
-        int guestAdd = hostPlayer ? 0 : 2;
-
-        // If both slots need to be automatically repopulated
-        if (SlotAssignment.Elementals[0 + guestAdd] == null && SlotAssignment.Elementals[1 + guestAdd] == null)
         {
-            SlotAssignment.Repopulate(0 + guestAdd, 4 + guestAdd);
-            SlotAssignment.Repopulate(1 + guestAdd, 5 + guestAdd);
-            return;
+            clock.NewRoundState(Clock.RoundState.Repopulation);
+            RequestPacket(allyCanRepopulate, enemyCanRepopulate);
+        }
+    }
+    private bool CheckIfRepopulationDelegationNeeded(bool checkHostPlayer)
+    {
+        // If checking guest player's slots, add 2
+        int a = checkHostPlayer ? 0 : 2;
+
+        List<bool> slotIsEmpty = new()
+        {
+            slotAssignment.Elementals[0 + a] == null,
+            slotAssignment.Elementals[1 + a] == null,
+            slotAssignment.Elementals[4 + a] == null,
+            slotAssignment.Elementals[5 + a] == null
+        };
+
+        // Return if both in play slots are full or if both benched slots are empty
+        if (!slotIsEmpty[0] && !slotIsEmpty[1])
+            return false;
+
+        if (slotIsEmpty[4] && slotIsEmpty[5])
+            return false;
+
+        // If both in play slots are empty, repopulate automatically
+        if (slotIsEmpty[0] && slotIsEmpty[1])
+        {
+            if (!slotIsEmpty[4])
+            {
+                slotAssignment.Repopulate(0 + a, 4 + a);
+                if (!slotIsEmpty[5])
+                    slotAssignment.Repopulate(1 + a, 5 + a);
+            }
+            else
+                slotAssignment.Repopulate(0 + a, 5 + a);
+
+            return false;
         }
 
-        int emptyInPlaySlot = SlotAssignment.Elementals[0 + guestAdd] == null ? 0 + guestAdd : 1 + guestAdd;
-        int filledBenchedSlot = SlotAssignment.Elementals[4 + guestAdd] != null ? 4 + guestAdd : 5 + guestAdd;
+        // If either benched slot is missing, repopulate automatically
+        if (slotIsEmpty[4] || slotIsEmpty[5])
+        {
+            int inPlaySlot = slotIsEmpty[0] ? 0 + a : 1 + a;
+            int benchedSlot = !slotIsEmpty[4] ? 4 + a : 5 + a;
+            slotAssignment.Repopulate(inPlaySlot, benchedSlot);
 
-        SlotAssignment.Repopulate(emptyInPlaySlot, filledBenchedSlot);
+            return false;
+        }
+        
+        return true;
     }
     private void ReceiveRepopulationPacket()
     {
@@ -223,17 +201,16 @@ public class ExecutionCore : MonoBehaviour
             RepopulateFromPacket(allyPacket);
             RepopulateFromPacket(enemyPacket);
         }
+
+        RoundStart();
     }
     private void RepopulateFromPacket(RelayPacket packet)
     {
         // If checking guest player's slots, add 2
-        int guestAdd = packet.player == 0 ? 0 : 2;
+        int a = packet.player == 0 ? 0 : 2;
+        int emptyInPlaySlot = slotAssignment.Elementals[0 + a] == null ? 0 + a : 1 + a;
 
-        int emptyInPlaySlot = SlotAssignment.Elementals[0 + guestAdd] == null ? 0 + guestAdd : 1 + guestAdd;
-
-        SlotAssignment.Repopulate(emptyInPlaySlot, packet.targetSlots[0]);
-
-        RoundStart();
+        slotAssignment.Repopulate(emptyInPlaySlot, packet.targetSlots[0]);
     }
 
     // Packet methods:
@@ -370,8 +347,8 @@ public class ExecutionCore : MonoBehaviour
     // Tiebreaker methods:
     private void TieBreaker()
     {
-        Elemental allyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
-        Elemental enemyCaster = SlotAssignment.Elementals[enemyPacket.casterSlot];
+        Elemental allyCaster = slotAssignment.Elementals[allyPacket.casterSlot];
+        Elemental enemyCaster = slotAssignment.Elementals[enemyPacket.casterSlot];
 
         int allyTimescale = GetTimescale(allyPacket);
         int enemyTimescale = GetTimescale(enemyPacket);
@@ -517,7 +494,7 @@ public class ExecutionCore : MonoBehaviour
         if (packet.wildTimescale != 0)
             return packet.wildTimescale;
 
-        List<Spell> casterSpells = SlotAssignment.Elementals[packet.casterSlot].spells;
+        List<Spell> casterSpells = slotAssignment.Elementals[packet.casterSlot].spells;
         Spell castSpell = null;
         foreach (Spell spell in casterSpells)
             if (spell.Name == packet.name)
@@ -565,7 +542,10 @@ public class ExecutionCore : MonoBehaviour
         {
             // If the acting player passed
             if (singlePacket.actionType == "pass")
+            {
                 SinglePass();
+                return;
+            }
 
             (string, Console.OutputMethod) messageAndOutput = GenerateActionMessage(singlePacket);
             console.WriteConsoleMessage(messageAndOutput.Item1, null, messageAndOutput.Item2);
@@ -588,7 +568,7 @@ public class ExecutionCore : MonoBehaviour
     {
         targetManager.DisplayTargets(new List<int> { packet.casterSlot }, packet.targetSlots.ToList(), false);
 
-        Elemental casterElemental = SlotAssignment.Elementals[packet.casterSlot];
+        Elemental casterElemental = slotAssignment.Elementals[packet.casterSlot];
 
         string packetOwner = IsAllyPacket(packet) ? "Your" : "The enemy's";
         string caster = packetOwner + " " + casterElemental.name;
@@ -660,6 +640,8 @@ public class ExecutionCore : MonoBehaviour
     }
     private void SinglePass()
     {
+        ResetPackets();
+
         if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
         {
             clock.NewRoundState(Clock.RoundState.Timescale);
@@ -667,18 +649,20 @@ public class ExecutionCore : MonoBehaviour
         }
         else if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
         {
+            clock.NewRoundState(Clock.RoundState.RoundEnd);
+
             // If you passed, don't write message
             if (IsAllyPacket(singlePacket))
                 NewCycle();
-                clock.NewRoundState(Clock.RoundState.RoundEnd);
-            console.WriteConsoleMessage("Both players have passed. Round will end", null, NewCycle);
+            else
+                console.WriteConsoleMessage("The enemy has passed. Round will end", null, NewCycle);
         }
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
         {
             clock.NewRoundState(Clock.RoundState.Timescale);
 
             // If you passed, don't write message
-            if (IsAllyPacket(singlePacket))
+            if (!IsAllyPacket(singlePacket))
                 WriteSpellEffectMessage();
             else
                 console.WriteConsoleMessage("The enemy has passed", null, WriteSpellEffectMessage);
@@ -687,7 +671,7 @@ public class ExecutionCore : MonoBehaviour
             RoundEnd();
     }
 
-    // CheckForCounter methods:
+    // NewCounterCycle methods:
     public void NewCounterCycle()
     {
         // This method performs a similar role to NewCycle, but only handles counter cycles (which occur inside normal cycles)
@@ -716,18 +700,14 @@ public class ExecutionCore : MonoBehaviour
         {
             bool isCounteringPlayer = !IsAllyPacket(savedSinglePacket.Item1);
 
-            // If countering player has no available actions, write to console and prepare CallEffectMethod
-            int counteringPlayerNumber = isCounteringPlayer ? allyPlayerNumber : enemyPlayerNumber;
-
             if (!CheckForAvailableActions(isCounteringPlayer))
             {
-                // Switch back to Timescale RoundState
                 clock.NewRoundState(Clock.RoundState.Timescale);
 
                 string counteringPlayer = isCounteringPlayer ? "You have" : "The enemy has";
                 console.WriteConsoleMessage(counteringPlayer + " no available counter actions", null, WriteSpellEffectMessage);
             }
-            else // If counter action is available, request counter packet
+            else
                 RequestPacket(isCounteringPlayer, !isCounteringPlayer);
         }
         else // If multiple counter
@@ -737,10 +717,9 @@ public class ExecutionCore : MonoBehaviour
 
             if (!allyCounterAvailable && !enemyCounterAvailable)
             {
-                // Switch back to Timescale RoundState
                 clock.NewRoundState(Clock.RoundState.Timescale);
 
-                console.WriteConsoleMessage("Neither player has available counter actions", null, WriteSpellEffectMessage);
+                console.WriteConsoleMessage("Neither player has any available counter actions", null, WriteSpellEffectMessage);
             }
             else
                 RequestPacket(allyCounterAvailable, enemyCounterAvailable);
@@ -751,13 +730,13 @@ public class ExecutionCore : MonoBehaviour
         // Caster Elementals are cached in case casters Swap before their Spell occurs
         // No need to store messages as SparkInfos do, since casters can't be Eliminated at counter speed
 
-        Elemental singleCaster = SlotAssignment.Elementals[singlePacket.casterSlot];
+        Elemental singleCaster = slotAssignment.Elementals[singlePacket.casterSlot];
         savedSinglePacket = (singlePacket, singleCaster);
 
-        Elemental allyCaster = SlotAssignment.Elementals[allyPacket.casterSlot];
+        Elemental allyCaster = slotAssignment.Elementals[allyPacket.casterSlot];
         savedAllyPacket = (allyPacket, allyCaster);
 
-        Elemental enemyCaster = SlotAssignment.Elementals[enemyPacket.casterSlot];
+        Elemental enemyCaster = slotAssignment.Elementals[enemyPacket.casterSlot];
         savedEnemyPacket = (enemyPacket, enemyCaster);
 
         ResetPackets();
@@ -799,7 +778,7 @@ public class ExecutionCore : MonoBehaviour
     }
     private void DisplaySavedSpellTargets((RelayPacket, Elemental) savedSpellPacket)
     {
-        int casterSlot = SlotAssignment.GetSlot(savedSpellPacket.Item2);
+        int casterSlot = slotAssignment.GetSlot(savedSpellPacket.Item2);
         targetManager.DisplayTargets(new() { casterSlot }, savedSpellPacket.Item1.targetSlots.ToList(), false);
     }
     private void RestoreSavedPackets()
@@ -850,24 +829,24 @@ public class ExecutionCore : MonoBehaviour
     private void RetreatEffect(RelayPacket packet)
     {
         // Remove action/Add armor before swapping
-        SlotAssignment.Elementals[packet.casterSlot].currentActions -= 1;
-        SlotAssignment.Elementals[packet.targetSlots[0]].ToggleArmored(true);
+        slotAssignment.Elementals[packet.casterSlot].currentActions -= 1;
+        slotAssignment.Elementals[packet.targetSlots[0]].ToggleArmored(true);
 
-        SlotAssignment.Swap(packet.casterSlot, packet.targetSlots[0]);
+        slotAssignment.Swap(packet.casterSlot, packet.targetSlots[0]);
 
         //.add lateeffect to remove armor at end of round
     }
 
     private void GemEffect(RelayPacket packet)
     {
-        Elemental caster = SlotAssignment.Elementals[packet.casterSlot];
+        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
         caster.HealthChange(2);
         caster.ToggleGem(false);
     }
 
     private void SparkEffect(RelayPacket packet)
     {
-        Elemental sparkCaster = SlotAssignment.Elementals[packet.casterSlot];
+        Elemental sparkCaster = slotAssignment.Elementals[packet.casterSlot];
 
         // Cache message in sparkInfo list in case caster is null (Eliminated) when the message needs to be written
         string casterOwner = sparkCaster.isAlly ? "Your" : "The enemy's";
@@ -914,13 +893,13 @@ public class ExecutionCore : MonoBehaviour
     {
         List<Elemental> newTargets = new();
         foreach (int targetSlot in packet.targetSlots)
-            newTargets.Add(SlotAssignment.Elementals[targetSlot]);
+            newTargets.Add(slotAssignment.Elementals[targetSlot]);
 
         return new SpellTraitEffectInfo()
         {
             occurance = 0,
             spellOrTraitName = packet.name,
-            caster = SlotAssignment.Elementals[packet.casterSlot],
+            caster = slotAssignment.Elementals[packet.casterSlot],
             targets = newTargets
         };
     }
@@ -929,7 +908,7 @@ public class ExecutionCore : MonoBehaviour
     private void WriteSparkDamageMessage()
     {
         // Check if the target is still available
-        Elemental sparkTarget = SlotAssignment.Elementals[flungSparks[0].targetSlot];
+        Elemental sparkTarget = slotAssignment.Elementals[flungSparks[0].targetSlot];
         if (sparkTarget == null || sparkTarget.DisengageStrength > 0)
         {
             CycleSparks();
@@ -940,7 +919,7 @@ public class ExecutionCore : MonoBehaviour
         List<int> casterList = new();
         if (flungSparks[0].caster != null)
         {
-            int casterSlot = SlotAssignment.GetSlot(flungSparks[0].caster);
+            int casterSlot = slotAssignment.GetSlot(flungSparks[0].caster);
             casterList.Add(casterSlot);
         }
         targetManager.DisplayTargets(casterList, new List<int>() { flungSparks[0].targetSlot }, false);
@@ -951,7 +930,7 @@ public class ExecutionCore : MonoBehaviour
     {
         targetManager.ResetAllTargets();
 
-        Elemental target = SlotAssignment.Elementals[flungSparks[0].targetSlot];
+        Elemental target = slotAssignment.Elementals[flungSparks[0].targetSlot];
         target.TakeDamage(1, flungSparks[0].caster, false);
 
         CycleSparks();
@@ -978,7 +957,7 @@ public class ExecutionCore : MonoBehaviour
         // Check all allied Elementals in play for available actions
         for (int i = 0; i < 4; i++)
         {
-            Elemental elemental = SlotAssignment.Elementals[i];
+            Elemental elemental = slotAssignment.Elementals[i];
             if ((elemental.isAlly == isAlly) && elemental.CanAct())
                 return true;
         }
@@ -989,7 +968,7 @@ public class ExecutionCore : MonoBehaviour
     private bool CheckForGameEnd()
     {
         // Eliminate Elementals at 0 health
-        foreach (Elemental elemental in SlotAssignment.Elementals)
+        foreach (Elemental elemental in slotAssignment.Elementals)
             if (elemental.Health == 0)
                 Destroy(elemental);
 
@@ -999,10 +978,10 @@ public class ExecutionCore : MonoBehaviour
         bool allAllyElementalsEliminated = true;
         bool allEnemyElementalsEliminated = true;
 
-        for (int i = 0; i < SlotAssignment.Elementals.Count; i++)
+        for (int i = 0; i < slotAssignment.Elementals.Count; i++)
         {
             // If an ally Elemental is not Eliminated, enemy has not won, and vice versa
-            if (SlotAssignment.Elementals[i] == null)
+            if (slotAssignment.Elementals[i] == null)
                 continue;
 
             if (allySlots.Contains(i))

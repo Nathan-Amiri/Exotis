@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enchain
   m_EditorClassIdentifier: 
   elementColor: 6
-  timeScale: 51
+  timescale: 85
   maxTargets: 1
   canTargetSelf: 1
   canTargetAlly: 1

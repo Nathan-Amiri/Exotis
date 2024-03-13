@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Hail
   m_EditorClassIdentifier: 
   elementColor: 5
-  timeScale: 52
+  timescale: 52
   maxTargets: 3
   canTargetSelf: 1
   canTargetAlly: 1

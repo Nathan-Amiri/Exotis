@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Fairy Dust
   m_EditorClassIdentifier: 
   elementColor: 8
-  timeScale: 49
+  timescale: 49
   maxTargets: 2
   canTargetSelf: 1
   canTargetAlly: 1
   canTargetEnemy: 0
   canTargetBenchedAlly: 1
+  isDamaging: 0
+  isWearying: 0

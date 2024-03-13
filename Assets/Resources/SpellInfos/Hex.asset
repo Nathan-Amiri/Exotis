@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Hex
   m_EditorClassIdentifier: 
   elementColor: 6
-  timeScale: 53
+  timescale: 53
   maxTargets: 1
   canTargetSelf: 1
   canTargetAlly: 1

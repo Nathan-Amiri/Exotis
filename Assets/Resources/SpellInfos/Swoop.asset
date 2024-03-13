@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Swoop
   m_EditorClassIdentifier: 
   elementColor: 3
-  timeScale: 52
+  timescale: 52
   maxTargets: 1
   canTargetSelf: 1
   canTargetAlly: 1

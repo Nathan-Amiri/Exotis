@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cleanse
   m_EditorClassIdentifier: 
   elementColor: 0
-  timeScale: 63
+  timescale: 63
   maxTargets: 1
   canTargetSelf: 1
   canTargetAlly: 1

@@ -13,4 +13,11 @@ MonoBehaviour:
   m_Name: Poison Cloud
   m_EditorClassIdentifier: 
   elementColor: 7
-  timeScale: 53
+  timescale: 53
+  maxTargets: 0
+  canTargetSelf: 0
+  canTargetAlly: 0
+  canTargetEnemy: 0
+  canTargetBenchedAlly: 0
+  isDamaging: 0
+  isWearying: 0

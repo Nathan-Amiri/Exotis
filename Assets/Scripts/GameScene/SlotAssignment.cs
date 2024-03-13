@@ -5,17 +5,23 @@ using UnityEngine;
 public class SlotAssignment : MonoBehaviour
 {
     // STATIC:
-    public static List<Elemental> Elementals {  get; private set; }
+    public List<Elemental> Elementals { get; private set; }
 
     // SCENE REFERENCE:
     [SerializeField] private List<Elemental> assignedElementals;
 
+    // CONSTANT:
+    private readonly List<Vector2> boardPositions = new();
+
     private void Awake()
     {
         Elementals = assignedElementals;
+
+        foreach (Elemental elemental in Elementals)
+            boardPositions.Add(elemental.transform.position);
     }
 
-    public static int GetSlot(Elemental elemental)
+    public int GetSlot(Elemental elemental)
     {
         for (int i = 0; i < Elementals.Count; i++)
         {
@@ -27,7 +33,7 @@ public class SlotAssignment : MonoBehaviour
         return default;
     }
 
-    public static Dictionary<string, int> GetSlotDesignations(int selfSlot)
+    public Dictionary<string, int> GetSlotDesignations(int selfSlot)
     {
         List<int> slotsToDesignate = new();
 
@@ -46,14 +52,14 @@ public class SlotAssignment : MonoBehaviour
         };
     }
 
-    public static void Swap(int inPlaySlot, int benchedSlot)
+    public void Swap(int inPlaySlot, int benchedSlot)
     {
         Elemental inPlayElemental = Elementals[inPlaySlot];
         Elemental benchedElemental = Elementals[benchedSlot];
 
         // Swap board position
-        (benchedElemental.transform.localPosition, inPlayElemental.transform.localPosition) = 
-            (inPlayElemental.transform.localPosition, benchedElemental.transform.localPosition);
+        (benchedElemental.transform.position, inPlayElemental.transform.position) = 
+            (inPlayElemental.transform.position, benchedElemental.transform.position);
 
         // Hide Spells/Items/Statuses
         inPlayElemental.ToggleBenched(true);
@@ -67,11 +73,12 @@ public class SlotAssignment : MonoBehaviour
             (Elementals[benchedSlot].currentActions, Elementals[inPlaySlot].currentActions);
     }
 
-    public static void Repopulate(int inPlaySlot, int benchedSlot)
+    public void Repopulate(int inPlaySlot, int benchedSlot)
     {
         Elemental benchedElemental = Elementals[benchedSlot];
 
         // Swap board position
+        benchedElemental.transform.position = boardPositions[inPlaySlot];
 
         // Hide Spells/Items/Statuses
         benchedElemental.ToggleBenched(false);

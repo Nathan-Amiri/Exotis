@@ -13,4 +13,11 @@ MonoBehaviour:
   m_Name: Heat Up
   m_EditorClassIdentifier: 
   elementColor: 1
-  timeScale: 53
+  timescale: 53
+  maxTargets: 0
+  canTargetSelf: 0
+  canTargetAlly: 0
+  canTargetEnemy: 0
+  canTargetBenchedAlly: 0
+  isDamaging: 0
+  isWearying: 0

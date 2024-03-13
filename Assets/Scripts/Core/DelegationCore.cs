@@ -21,6 +21,7 @@ public class DelegationCore : MonoBehaviour
 
     // SCENE REFERENCE:
     [SerializeField] private RelayCore relayCore;
+    [SerializeField] private SlotAssignment slotAssignment;
     [SerializeField] private Console console;
     [SerializeField] private TargetManager targetManager;
 
@@ -117,7 +118,7 @@ public class DelegationCore : MonoBehaviour
 
         // Set packet info
         packet.actionType = currentAction.ActionType;
-        packet.casterSlot = SlotAssignment.GetSlot(currentAction.ParentElemental);
+        packet.casterSlot = slotAssignment.GetSlot(currentAction.ParentElemental);
 
         // Reset before proceeding
         ResetScene();
@@ -156,7 +157,7 @@ public class DelegationCore : MonoBehaviour
                 // Target all available targets in play
                 List<int> landslideSlots = new();
 
-                Dictionary<string, int> targetSlots = SlotAssignment.GetSlotDesignations(packet.casterSlot);
+                Dictionary<string, int> targetSlots = slotAssignment.GetSlotDesignations(packet.casterSlot);
 
                 if (CheckTargetAvailable(targetSlots["allySlot"]))
                     landslideSlots.Add(targetSlots["allySlot"]);
@@ -187,7 +188,7 @@ public class DelegationCore : MonoBehaviour
         // Get targetable slots
         List<int> availableTargetSlots = new();
 
-        Dictionary<string, int> potentialTargetSlots = SlotAssignment.GetSlotDesignations(packet.casterSlot);
+        Dictionary<string, int> potentialTargetSlots = slotAssignment.GetSlotDesignations(packet.casterSlot);
 
         if (currentAction.CanTargetSelf)
             availableTargetSlots.Add(packet.casterSlot);
@@ -340,7 +341,7 @@ public class DelegationCore : MonoBehaviour
 
     private bool CheckTargetAvailable(int slot)
     {
-        Elemental target = SlotAssignment.Elementals[slot];
+        Elemental target = slotAssignment.Elementals[slot];
 
         // Slot does not contain an Elemental
         if (target == null)

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fortify
   m_EditorClassIdentifier: 
   elementColor: 2
-  timeScale: 55
+  timescale: 55
   maxTargets: 0
   canTargetSelf: 0
   canTargetAlly: 0

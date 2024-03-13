@@ -41,6 +41,8 @@ public class Elemental : MonoBehaviour
     public Button targetButton;
 
     // SCENE REFERENCE:
+    [SerializeField] private SlotAssignment slotAssignment;
+
     [SerializeField] private Transform inPlayParent;
     [SerializeField] private Transform benchParent;
 
@@ -163,7 +165,7 @@ public class Elemental : MonoBehaviour
 
         // Check if any benched allies exist
         int guestAdd = NetworkManager.Singleton.IsHost ? 0 : 2;
-        if (SlotAssignment.Elementals[4 + guestAdd] == null && SlotAssignment.Elementals[5 + guestAdd] == null)
+        if (slotAssignment.Elementals[4 + guestAdd] == null && slotAssignment.Elementals[5 + guestAdd] == null)
             return false;
 
         return true;

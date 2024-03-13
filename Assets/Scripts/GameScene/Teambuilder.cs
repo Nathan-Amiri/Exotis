@@ -8,7 +8,7 @@ public class Teambuilder : MonoBehaviour
 {
     //.temporary class for testing
 
-    [SerializeField] private GameObject teambuilderCanvas;
+    [SerializeField] private TMP_Text errorText;
 
     [SerializeField] private List<TMP_InputField> elementalInputFields = new();
     [SerializeField] private List<TMP_InputField> spellInputFields = new();
@@ -38,25 +38,19 @@ public class Teambuilder : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            teambuilderCanvas.SetActive(!teambuilderCanvas.activeSelf);
-    }
-
     public void SelectSave()
     {
         foreach (var field in elementalInputFields)
             if (!StaticLibrary.validElementalNames.Contains(field.text))
             {
-                Debug.Log("Team not valid!");
+                StartCoroutine(ErrorMessage("The following Elemental name is invalid: " + field.text));
                 return;
             }
 
         foreach (var field in spellInputFields)
             if (!StaticLibrary.validSpellNames.Contains(field.text))
             {
-                Debug.Log("Team not valid!");
+                StartCoroutine(ErrorMessage("The following Spell name is invalid: " + field.text));
                 return;
             }
 
@@ -66,6 +60,16 @@ public class Teambuilder : MonoBehaviour
         for (int i = 0; i < spellInputFields.Count; i++)
             PlayerPrefs.SetString("Spell" + i, spellInputFields[i].text);
 
-        Debug.Log("team saved successfully! Restart playmode");
+        StartCoroutine(ErrorMessage("Team saved successfully!"));
+    }
+
+    private IEnumerator ErrorMessage(string newMessage) //.temporary duplicate of gamemanager's ErrorMessage method
+    {
+        errorText.text = newMessage;
+
+        yield return new WaitForSeconds(3);
+
+        if (errorText.text == newMessage)
+            errorText.text = string.Empty;
     }
 }
