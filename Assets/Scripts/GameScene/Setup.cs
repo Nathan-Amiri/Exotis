@@ -2,13 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using TMPro;
 
 public class Setup : NetworkBehaviour
 {
     // STATIC:
-    public delegate void GuestFlipAction();
-    public static event GuestFlipAction GuestFlip;
-
     public delegate void GuestSwitchAction();
     public static event GuestSwitchAction GuestSwitch;
 
@@ -21,6 +19,9 @@ public class Setup : NetworkBehaviour
 
     [SerializeField] private Teambuilder teambuilder;
     [SerializeField] private ExecutionCore executionCore;
+    
+    [SerializeField] private TMP_Text allyUsernameText;
+    [SerializeField] private TMP_Text enemyUsernameText;
 
     public override void OnNetworkSpawn()
     {
@@ -32,11 +33,11 @@ public class Setup : NetworkBehaviour
         string[] spells = teambuilder.teamSpellNames.ToArray();
         StringContainer[] spellStringContainers = StringContainerConverter.ContainStrings(spells);
 
-        GuestConnectedRpc(elementalStringContainers, spellStringContainers);
+        GuestConnectedRpc(PlayerPrefs.GetString("Username"), elementalStringContainers, spellStringContainers);
     }
 
     [Rpc(SendTo.Server)]
-    public void GuestConnectedRpc(StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
+    public void GuestConnectedRpc(string guestUsername, StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
     {
         // Get host's team (string lists/arrays aren't serializable, so they're placed in serializable 'container' classes)
         string[] hostElementalNames = teambuilder.teamElementalNames.ToArray();
@@ -44,23 +45,22 @@ public class Setup : NetworkBehaviour
         string[] hostSpellNames = teambuilder.teamSpellNames.ToArray();
         StringContainer[] spellStringContainers = StringContainerConverter.ContainStrings(hostSpellNames);
 
-        SetUpTeamsRpc(elementalStringContainers, spellStringContainers, guestElementalNames, guestSpellNames);
+        SetUpTeamsRpc(PlayerPrefs.GetString("Username"), guestUsername, elementalStringContainers, spellStringContainers, guestElementalNames, guestSpellNames);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void SetUpTeamsRpc(StringContainer[] hostElementalNames, StringContainer[] hostSpellNames, StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
+    public void SetUpTeamsRpc(string hostUsername, string guestUsername, 
+        StringContainer[] hostElementalNames, StringContainer[] hostSpellNames, StringContainer[] guestElementalNames, StringContainer[] guestSpellNames)
     {
         List<Elemental> allyElementals = IsHost ? hostSceneElementals : guestSceneElementals;
         foreach (Elemental elemental in allyElementals)
             elemental.isAlly = true;
 
-        // Flip before Elemental.Setup so Elemental can set status correctly
-        // Switch benched Elementals after Flipping to prevent execution order bugs
         if (!IsHost)
-        {
-            GuestFlip?.Invoke();
             GuestSwitch?.Invoke();
-        }
+
+        allyUsernameText.text = IsHost ? hostUsername : guestUsername;
+        enemyUsernameText.text = IsHost ? guestUsername : hostUsername;
 
         for (int i = 0; i < 4; i++)
         {

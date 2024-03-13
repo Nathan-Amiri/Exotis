@@ -11190,8 +11190,10 @@ MonoBehaviour:
   - {fileID: 749075476}
   - {fileID: 954370429}
   - {fileID: 1089244142}
-  teambuilder: {fileID: 0}
+  teambuilder: {fileID: 1538797283}
   executionCore: {fileID: 1386828397}
+  allyUsernameText: {fileID: 2086530098}
+  enemyUsernameText: {fileID: 933055328}
 --- !u!114 &1265245691
 MonoBehaviour:
   m_ObjectHideFlags: 0

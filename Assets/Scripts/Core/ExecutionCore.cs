@@ -119,6 +119,9 @@ public class ExecutionCore : MonoBehaviour
                 elemental.TakeDamage(1, elemental, false);
         }
 
+        if (CheckForGameEnd())
+            return;
+
         // RoundEnd Delayed Effects
         foreach (SpellTraitEffectInfo info in roundEndInfos)
             spellTraitEffect.CallEffectMethod(info);

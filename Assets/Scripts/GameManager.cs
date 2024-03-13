@@ -324,4 +324,26 @@ public class GameManager : NetworkBehaviour
             Debug.Log(e);
         }
     }
+
+    //.temp connect code for testing
+    private bool alreadyConnected;
+    private void Update()
+    {
+        if (alreadyConnected)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            NetworkManager.Singleton.StartHost();
+            alreadyConnected = true;
+            connectCanvas.SetActive(false);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            NetworkManager.Singleton.StartClient();
+            alreadyConnected = true;
+            connectCanvas.SetActive(false);
+        }
+    }
 }
