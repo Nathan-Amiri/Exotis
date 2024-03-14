@@ -11274,6 +11274,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9af9e3812a0da72498c1bd8c31c63671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  executionCore: {fileID: 1386828397}
+  slotAssignment: {fileID: 1265245691}
 --- !u!1 &1278761691
 GameObject:
   m_ObjectHideFlags: 0

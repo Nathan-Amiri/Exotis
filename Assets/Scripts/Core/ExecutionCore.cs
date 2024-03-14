@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,9 +35,9 @@ public class ExecutionCore : MonoBehaviour
     private RelayPacket allyPacket;
     private RelayPacket enemyPacket;
 
-        // Spells cache their packets here before requesting new counter packets
-        // Caster Elementals are cached in case casters Swap before their Spell occurs
-        // No need to store messages as SparkInfos do, since casters can't be Eliminated at counter speed
+    // Spells cache their packets here before requesting new counter packets
+    // Caster Elementals are cached in case casters Swap before their Spell occurs
+    // No need to store messages as SparkInfos do, since casters can't be Eliminated at counter speed
     private (RelayPacket, Elemental) savedSinglePacket;
     private (RelayPacket, Elemental) savedAllyPacket;
     private (RelayPacket, Elemental) savedEnemyPacket;
@@ -116,7 +117,7 @@ public class ExecutionCore : MonoBehaviour
         {
             Elemental elemental = slotAssignment.Elementals[i];
             if (elemental.PoisonStrength > 0)
-                elemental.TakeDamage(1, elemental, false);
+                elemental.DealDamage(1, elemental, false);
         }
 
         if (CheckForGameEnd())
@@ -258,7 +259,6 @@ public class ExecutionCore : MonoBehaviour
         {
             allyPacket = packet;
 
-            // If there's an enemy packet in queue
             if (enemyPacketQueue.Count > 0)
             {
                 enemyPacket = GetNextEnemyPacketFromQueue();
@@ -266,14 +266,12 @@ public class ExecutionCore : MonoBehaviour
             }
             else
             {
-                // Wait for enemy packet
                 console.WriteConsoleMessage("Waiting for enemy");
                 return;
             }
         }
         else // If expecting 2 and packet is enemy
         {
-            // If ally packet exists
             if (allyPacket.actionType != null)
             {
                 enemyPacket = packet;
@@ -903,7 +901,8 @@ public class ExecutionCore : MonoBehaviour
             occurance = 0,
             spellOrTraitName = packet.name,
             caster = slotAssignment.Elementals[packet.casterSlot],
-            targets = newTargets
+            targets = newTargets,
+            hexType = packet.hexType
         };
     }
 
@@ -934,7 +933,7 @@ public class ExecutionCore : MonoBehaviour
         targetManager.ResetAllTargets();
 
         Elemental target = slotAssignment.Elementals[flungSparks[0].targetSlot];
-        target.TakeDamage(1, flungSparks[0].caster, false);
+        target.DealDamage(1, flungSparks[0].caster, false);
 
         CycleSparks();
     }
@@ -1022,6 +1021,22 @@ public class ExecutionCore : MonoBehaviour
         savedSinglePacket = default;
         savedAllyPacket = default;
         savedEnemyPacket = default;
+    }
+
+    public void AddRoundStartDelayedEffect(int newOccurance, SpellTraitEffectInfo info)
+    {
+        info.occurance = newOccurance;
+        roundStartInfos.Add(info);
+    }
+    public void AddRoundEndDelayedEffect(int newOccurance, SpellTraitEffectInfo info)
+    {
+        info.occurance = newOccurance;
+        roundEndInfos.Add(info);
+    }
+    public void AddNextRoundEndDelayedEffect(int newOccurance, SpellTraitEffectInfo info)
+    {
+        info.occurance = newOccurance;
+        nextRoundEndInfos.Add(info);
     }
 }
 public struct SparkInfo

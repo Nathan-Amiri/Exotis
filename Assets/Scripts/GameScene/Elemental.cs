@@ -81,6 +81,9 @@ public class Elemental : MonoBehaviour
     public int PoisonStrength { get; private set; }
     public int WeakenStrength { get; private set; }
 
+    [NonSerialized] public bool hasCastSurge; // *Surge
+    [NonSerialized] public bool hasCastHex; // *Hex
+
 
     public void Setup(string elementalName) // Called by Setup
     {
@@ -134,7 +137,7 @@ public class Elemental : MonoBehaviour
     }
 
 
-    public void TakeDamage(int amount, Elemental caster, bool spellDamage = true)
+    public void DealDamage(int amount, Elemental caster, bool spellDamage = true)
     {
         if (caster.potionBoosting)
         {
@@ -156,6 +159,13 @@ public class Elemental : MonoBehaviour
         Health = Mathf.Clamp(Health, 0, MaxHealth);
 
         healthText.text = Health.ToString();
+    }
+
+    public void Eliminate()
+    {
+        Health = 0;
+
+        healthText.text = "0";
     }
 
     public bool CanSwap()
@@ -225,6 +235,10 @@ public class Elemental : MonoBehaviour
     }
     public void ToggleArmored(bool becomeArmored)
     {
+        // Armor can be removed by TakeDamage and then again from a DelayedEffect
+        if (ArmorStrength == 0 && !becomeArmored)
+            return;
+
         UpdateStatusIcons(2, ArmorStrength, becomeArmored);
         ArmorStrength += becomeArmored ? 1 : -1;
     }

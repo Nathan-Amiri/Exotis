@@ -52,6 +52,13 @@ public class SlotAssignment : MonoBehaviour
         };
     }
 
+    public Elemental GetAlly(Elemental elemental)
+    {
+        int elementalSlot = GetSlot(elemental);
+        int allySlot = GetSlotDesignations(elementalSlot)["allySlot"];
+        return Elementals[allySlot];
+    }
+
     public void Swap(int inPlaySlot, int benchedSlot)
     {
         Elemental inPlayElemental = Elementals[inPlaySlot];
