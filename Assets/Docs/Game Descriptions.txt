@@ -11,7 +11,7 @@
 6 Heat Up 5 "I gain a Potion. I'm Enraged this round. I can't cast this Spell again until I Swap"
 7 Hellfire 3 "I deal 4 to a target in play. Then, I'm Eliminated"
 
-8 Empower 2 "I deal 2 to a target in play. If I took damage this round, I deal 3 instead"
+8 Empower 2 "I deal 2 to a target in play. If I lost health this round, I deal 3 instead"
 9 Fortify 7 "This round, I'm Disengaged and my ally is Armored. I'm Wearied next round"
 10 Block C "I'm Armored this round. I can recast this Spell at 2:00 to deal 1 to any targets in play. This Spell can't counter a non-damaging Spell."
 11 Landslide 3 "I target all other Elementals in play. I deal 2 to each of the targets"

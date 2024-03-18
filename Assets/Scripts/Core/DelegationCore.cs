@@ -175,8 +175,10 @@ public class DelegationCore : MonoBehaviour
         else
             spell = null;
 
+        int maxTargets = GetMaxTargets(action);
+
         // Check if the action is untargeted
-        if (currentAction.MaxTargets == 0)
+        if (maxTargets == 0)
         {
             console.ResetConsole();
             cancelButton.SetActive(true);
@@ -232,9 +234,16 @@ public class DelegationCore : MonoBehaviour
         // Turn on target buttons
         targetManager.DisplayTargets(new List<int> { packet.casterSlot }, availableTargetSlots, true);
 
-        string message = action.MaxTargets == 1 ? "Choose a target" : "Choose target(s)";
+        string message = maxTargets == 1 ? "Choose a target" : "Choose target(s)";
         console.WriteConsoleMessage(message);
         cancelButton.SetActive(true);
+    }
+    private int GetMaxTargets(IDelegationAction action)
+    {
+        if (action is Spell spell && spell.readyForRecast)
+            return spell.maxRecastTargets;
+
+        return action.MaxTargets;
     }
 
     public void SelectWildButton(int wildTimescale)
@@ -284,7 +293,7 @@ public class DelegationCore : MonoBehaviour
         // Turn off unavailable target buttons
         targetManager.ResetCertainTargets(new List<int> { targetSlot });
 
-        if (packet.targetSlots.Length == currentAction.MaxTargets)
+        if (packet.targetSlots.Length == GetMaxTargets(currentAction))
             targetManager.ResetAllTargets();
 
 
@@ -306,10 +315,11 @@ public class DelegationCore : MonoBehaviour
         if (!currentAction.ParentElemental.HasPotion)
             return false;
 
-        if (currentAction is not Spell currentSpell)
+        if (currentAction is not Spell spell)
             return false;
 
-        if (!currentSpell.IsDamaging)
+        bool spellIsDamaging = spell.readyForRecast ? spell.recastIsDamaging : spell.IsDamaging;
+        if (!spellIsDamaging)
             return false;
 
         if (packet.targetSlots.Length != 1)

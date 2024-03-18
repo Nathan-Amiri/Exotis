@@ -83,7 +83,7 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public bool hasCastSurge; // *Surge
     [NonSerialized] public bool hasCastHex; // *Hex
-
+    [NonSerialized] public bool isEmpowered; // *Empower
 
     public void Setup(string elementalName) // Called by Setup
     {
@@ -139,6 +139,8 @@ public class Elemental : MonoBehaviour
 
     public void DealDamage(int amount, Elemental caster, bool spellDamage = true)
     {
+        //.need to order everything later
+
         if (caster.potionBoosting)
         {
             amount += 1;
@@ -149,6 +151,11 @@ public class Elemental : MonoBehaviour
             amount += 1;
 
         //.weaken and armor only work on spelldamage
+
+        if (amount > 0)
+            return;
+
+        isEmpowered = true;
 
         HealthChange(-amount);
     }
@@ -200,6 +207,26 @@ public class Elemental : MonoBehaviour
             return true;
 
         return false;
+    }
+
+    public Spell GetSpell(string spellName)
+    {
+        foreach (Spell spell in spells)
+            if (spell.Name == spellName)
+                return spell;
+
+        Debug.LogError("The following Spell was not found among " + name + "'s Spells: " + spellName);
+        return null;
+    }
+
+    public void OnRoundStart()
+    {
+        isEmpowered = false;
+    }
+    public void OnRoundEnd()
+    {
+        foreach (Spell spell in spells)
+            spell.ToggleRecast(false);
     }
 
     // Item:

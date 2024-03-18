@@ -92,7 +92,8 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Empower(SpellTraitEffectInfo info)
     {
-        //.special treatment
+        int damage = info.caster.isEmpowered ? 3 : 2;
+        info.targets[0].DealDamage(damage, info.caster, true);
     }
     private void Fortify(SpellTraitEffectInfo info)
     {
@@ -119,8 +120,23 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Block(SpellTraitEffectInfo info)
     {
-        //.recast
-        //.special treatment
+        if (info.recast)
+        {
+            foreach (Elemental target in info.targets)
+                target.DealDamage(1, info.caster, true);
+
+            info.caster.GetSpell("Block").ToggleRecast(false);
+        }
+        else if (info.occurance == 0)
+        {
+            info.caster.ToggleArmored(true);
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+
+            info.caster.GetSpell("Block").ToggleRecast(true);
+        }
+        else // 1
+            info.caster.ToggleArmored(false);
     }
     private void Landslide(SpellTraitEffectInfo info)
     {
@@ -403,6 +419,7 @@ public struct SpellTraitEffectInfo
     public string spellOrTraitName;
 
     public int occurance;
+    public bool recast;
 
     public Elemental caster;
     public List<Elemental> targets;

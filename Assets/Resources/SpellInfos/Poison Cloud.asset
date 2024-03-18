@@ -21,3 +21,4 @@ MonoBehaviour:
   canTargetBenchedAlly: 0
   isDamaging: 0
   isWearying: 0
+  maxRecastTargets: 1

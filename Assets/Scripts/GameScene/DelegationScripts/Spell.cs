@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -16,6 +17,7 @@ public class Spell : MonoBehaviour, IDelegationAction
 
     // SCENE REFERENCE
     [SerializeField] private DelegationCore delegationCore;
+    [SerializeField] private ExecutionCore executionCore;
 
     // DYNAMIC:
         // SpellInfo fields
@@ -35,6 +37,11 @@ public class Spell : MonoBehaviour, IDelegationAction
     public bool CanTargetEnemy { get; private set; }
     public bool CanTargetBenchedAlly { get; private set; }
     public string Name { get; private set; }
+
+    [NonSerialized] public bool readyForRecast;
+    [NonSerialized] public int maxRecastTargets;
+    [NonSerialized] public bool recastIsDamaging;
+
 
     private void OnEnable()
     {
@@ -77,6 +84,9 @@ public class Spell : MonoBehaviour, IDelegationAction
         CanTargetAlly = info.canTargetAlly;
         CanTargetEnemy = info.canTargetEnemy;
         CanTargetBenchedAlly = info.canTargetBenchedAlly;
+
+        maxRecastTargets = info.maxRecastTargets;
+        recastIsDamaging = info.recastIsDamaging;
     }
 
     public void OnNewActionNeeded(bool reset = false)
@@ -104,10 +114,16 @@ public class Spell : MonoBehaviour, IDelegationAction
     // Called by Elemental
     public bool ActionAvailable()
     {
-        if (ParentElemental.currentActions == 0)
+        if (ParentElemental.DisengageStrength > 0)
             return false;
 
         if (ParentElemental.StunStrength > 0)
+            return false;
+
+        if (readyForRecast && Clock.CurrentRoundState == Clock.RoundState.Timescale && Clock.CurrentTimescale >= 2)
+            return true;
+
+        if (ParentElemental.currentActions == 0)
             return false;
 
         if (IsWearying && ParentElemental.WearyStrength > 0)
@@ -128,10 +144,21 @@ public class Spell : MonoBehaviour, IDelegationAction
                 return IsWild || Clock.CurrentTimescale >= Timescale;
 
             case Clock.RoundState.Counter:
+
+                if (Name == "Block") // *Block
+                    return executionCore.GetCounteringSpell().IsDamaging;
+
                 return isCounter;
 
-            default: //.immediate. What to do here?
-                return true;
+            default:
+                Debug.LogError("Can't cast Spell during this roundstate: " + Clock.CurrentRoundState);
+                return false;
         }
+    }
+
+    public void ToggleRecast(bool on)
+    {
+        readyForRecast = on;
+        timescaleText.text = on ? "2:00" : Timescale + ":00";
     }
 }

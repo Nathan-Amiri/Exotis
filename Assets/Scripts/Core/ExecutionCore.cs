@@ -60,7 +60,10 @@ public class ExecutionCore : MonoBehaviour
         {
             Elemental elemental = slotAssignment.Elementals[i];
             if (elemental != null)
+            {
                 elemental.currentActions = i < 4 ? 1 : 0;
+                elemental.OnRoundStart();
+            }
         }
 
         // RoundStart Delayed Effects
@@ -129,6 +132,9 @@ public class ExecutionCore : MonoBehaviour
 
         roundEndInfos = nextRoundEndInfos;
         nextRoundEndInfos.Clear();
+
+        foreach (Elemental elemental in slotAssignment.Elementals)
+            elemental.OnRoundEnd();
 
         Repopulation();
     }
@@ -495,18 +501,8 @@ public class ExecutionCore : MonoBehaviour
         if (packet.wildTimescale != 0)
             return packet.wildTimescale;
 
-        List<Spell> casterSpells = slotAssignment.Elementals[packet.casterSlot].spells;
-        Spell castSpell = null;
-        foreach (Spell spell in casterSpells)
-            if (spell.Name == packet.name)
-            {
-                castSpell = spell;
-                break;
-            }
-        if (castSpell == null)
-            Debug.LogError("Caster's Spell not found");
-
-        return castSpell.Timescale;
+        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
+        return caster.GetSpell(packet.name).Timescale;
     }
     private bool CheckForActionType(string actionType)
     {
@@ -892,15 +888,21 @@ public class ExecutionCore : MonoBehaviour
 
     private SpellTraitEffectInfo ConvertPacketToSpellTraitEffectInfo(RelayPacket packet)
     {
+        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
         List<Elemental> newTargets = new();
         foreach (int targetSlot in packet.targetSlots)
             newTargets.Add(slotAssignment.Elementals[targetSlot]);
 
+        bool recast = false;
+        if (packet.actionType == "spell")
+            recast = caster.GetSpell(packet.name).readyForRecast;
+
         return new SpellTraitEffectInfo()
         {
             occurance = 0,
+            recast = recast,
             spellOrTraitName = packet.name,
-            caster = slotAssignment.Elementals[packet.casterSlot],
+            caster = caster,
             targets = newTargets,
             hexType = packet.hexType
         };
@@ -1008,6 +1010,16 @@ public class ExecutionCore : MonoBehaviour
     private bool IsAllyPacket(RelayPacket packet)
     {
         return packet.player == 0 == NetworkManager.Singleton.IsHost;
+    }
+
+    public Spell GetCounteringSpell() // *Block
+    {
+        // This method only run during delegation, and so never runs on enemy players
+        RelayPacket counteringPacket = singlePacket.actionType != null ? singlePacket : enemyPacket;
+
+        Elemental caster = slotAssignment.Elementals[counteringPacket.casterSlot];
+
+        return caster.GetSpell(counteringPacket.name);
     }
 
     private void ResetPackets()

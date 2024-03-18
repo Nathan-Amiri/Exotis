@@ -16,4 +16,7 @@ public class SpellInfo : ScriptableObject
 
     public bool isDamaging;
     public bool isWearying;
+
+    public int maxRecastTargets;
+    public bool recastIsDamaging;
 }
