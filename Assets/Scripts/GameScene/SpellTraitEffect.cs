@@ -83,7 +83,19 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void HeatUp(SpellTraitEffectInfo info)
     {
-        //.can't cast until swap
+        if (info.occurance == 0)
+        {
+            info.caster.TogglePotion(true);
+            info.caster.ToggleEnraged(true);
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+
+            info.caster.GetSpell("Heat Up").cannotCastUntilSwap = true;
+        }
+        else // 1
+        {
+            info.caster.ToggleEnraged(false);
+        }
     }
     private void Hellfire(SpellTraitEffectInfo info)
     {

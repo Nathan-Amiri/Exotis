@@ -42,6 +42,8 @@ public class Spell : MonoBehaviour, IDelegationAction
     [NonSerialized] public int maxRecastTargets;
     [NonSerialized] public bool recastIsDamaging;
 
+    [NonSerialized] public bool cannotCastUntilSwap;
+
 
     private void OnEnable()
     {
@@ -129,6 +131,9 @@ public class Spell : MonoBehaviour, IDelegationAction
         if (IsWearying && ParentElemental.WearyStrength > 0)
             return false;
 
+        if (cannotCastUntilSwap)
+            return false;
+
         switch (Clock.CurrentRoundState)
         {
             case Clock.RoundState.RoundStart:
@@ -159,6 +164,10 @@ public class Spell : MonoBehaviour, IDelegationAction
     public void ToggleRecast(bool on)
     {
         readyForRecast = on;
-        timescaleText.text = on ? "2:00" : Timescale + ":00";
+
+        if (on)
+            timescaleText.text = "2";
+        else
+            timescaleText.text = isCounter ? "C" : Timescale.ToString();
     }
 }

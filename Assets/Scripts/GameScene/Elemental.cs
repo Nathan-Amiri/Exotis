@@ -83,7 +83,7 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public bool hasCastSurge; // *Surge
     [NonSerialized] public bool hasCastHex; // *Hex
-    [NonSerialized] public bool isEmpowered; // *Empower
+    [NonSerialized] public bool isEmpowered; // *Empower, //.make into status condition
 
     public void Setup(string elementalName) // Called by Setup
     {
@@ -134,6 +134,9 @@ public class Elemental : MonoBehaviour
         extra.SetActive(!benched);
         transform.SetParent(benched ? benchParent : inPlayParent);
         transform.localScale = benched ? new Vector2(.5f, .5f) : Vector2.one;
+
+        if (!benched)
+            OnSwapIntoPlay();
     }
 
 
@@ -152,7 +155,7 @@ public class Elemental : MonoBehaviour
 
         //.weaken and armor only work on spelldamage
 
-        if (amount > 0)
+        if (amount <= 0)
             return;
 
         isEmpowered = true;
@@ -226,7 +229,13 @@ public class Elemental : MonoBehaviour
     public void OnRoundEnd()
     {
         foreach (Spell spell in spells)
-            spell.ToggleRecast(false);
+            if (spell.readyForRecast)
+                spell.ToggleRecast(false);
+    }
+    public void OnSwapIntoPlay()
+    {
+        foreach (Spell spell in spells)
+            spell.cannotCastUntilSwap = false;
     }
 
     // Item:

@@ -502,7 +502,8 @@ public class ExecutionCore : MonoBehaviour
             return packet.wildTimescale;
 
         Elemental caster = slotAssignment.Elementals[packet.casterSlot];
-        return caster.GetSpell(packet.name).Timescale;
+        Spell spell = caster.GetSpell(packet.name);
+        return spell.readyForRecast ? 2 : spell.Timescale;
     }
     private bool CheckForActionType(string actionType)
     {
@@ -1012,10 +1013,10 @@ public class ExecutionCore : MonoBehaviour
         return packet.player == 0 == NetworkManager.Singleton.IsHost;
     }
 
-    public Spell GetCounteringSpell() // *Block
+    public Spell GetCounteringSpell()
     {
         // This method only run during delegation, and so never runs on enemy players
-        RelayPacket counteringPacket = singlePacket.actionType != null ? singlePacket : enemyPacket;
+        RelayPacket counteringPacket = savedSinglePacket.Item1.actionType != null ? savedSinglePacket.Item1 : savedEnemyPacket.Item1;
 
         Elemental caster = slotAssignment.Elementals[counteringPacket.casterSlot];
 

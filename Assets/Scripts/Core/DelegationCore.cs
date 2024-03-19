@@ -190,17 +190,19 @@ public class DelegationCore : MonoBehaviour
         // Get targetable slots
         List<int> availableTargetSlots = new();
 
+        bool recast = spell != null && spell.readyForRecast;
+
         Dictionary<string, int> potentialTargetSlots = slotAssignment.GetSlotDesignations(packet.casterSlot);
 
         if (currentAction.CanTargetSelf)
             availableTargetSlots.Add(packet.casterSlot);
 
         int allySlot = potentialTargetSlots["allySlot"];
-        if (currentAction.CanTargetAlly && CheckTargetAvailable(allySlot))
+        if ((currentAction.CanTargetAlly || recast) && CheckTargetAvailable(allySlot))
             availableTargetSlots.Add(allySlot);
 
         int enemy1Slot = potentialTargetSlots["enemy1Slot"];
-        if (currentAction.CanTargetEnemy)
+        if (currentAction.CanTargetEnemy || recast)
         {
             if (CheckTargetAvailable(enemy1Slot))
                 availableTargetSlots.Add(enemy1Slot);
