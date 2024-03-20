@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class SpellTraitEffect : MonoBehaviour
 {
     [SerializeField] private ExecutionCore executionCore;
     [SerializeField] private SlotAssignment slotAssignment;
 
-    private delegate void EffectMethod(SpellTraitEffectInfo info);
+    private delegate void EffectMethod(EffectInfo info);
 
     private readonly Dictionary<string, EffectMethod> effectMethodIndex = new();
 
@@ -17,7 +16,7 @@ public class SpellTraitEffect : MonoBehaviour
         PopulateIndex();
     }
 
-    public void CallEffectMethod(SpellTraitEffectInfo info)
+    public void CallEffectMethod(EffectInfo info)
     {
         if (!effectMethodIndex.ContainsKey(info.spellOrTraitName))
         {
@@ -34,12 +33,12 @@ public class SpellTraitEffect : MonoBehaviour
     //.don't change from swapping
     //.only an issue during spell ties
 
-    private void Flow(SpellTraitEffectInfo info)
+    private void Flow(EffectInfo info)
     {
         info.targets[0].DealDamage(2, info.caster);
         info.caster.HealthChange(1);
     }
-    private void Cleanse(SpellTraitEffectInfo info)
+    private void Cleanse(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -53,12 +52,12 @@ public class SpellTraitEffect : MonoBehaviour
         else // 2
             info.caster.ToggleWearied(false);
     }
-    private void Mirage(SpellTraitEffectInfo info)
+    private void Mirage(EffectInfo info)
     {
         //.swap issue
         //.special treatment
     }
-    private void TidalWave(SpellTraitEffectInfo info)
+    private void TidalWave(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -70,18 +69,17 @@ public class SpellTraitEffect : MonoBehaviour
         else if (info.occurance == 1)
             info.targets[0].ToggleWeakened(false);
     }
-    private void Erupt(SpellTraitEffectInfo info)
+    private void Erupt(EffectInfo info)
     {
         info.targets[0].DealDamage(3, info.caster);
         info.caster.DealDamage(1, info.caster);
     }
-    private void Singe(SpellTraitEffectInfo info)
+    private void Singe(EffectInfo info)
     {
         //.swap issue
-        //.recast
         //.special treatment
     }
-    private void HeatUp(SpellTraitEffectInfo info)
+    private void HeatUp(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -97,17 +95,17 @@ public class SpellTraitEffect : MonoBehaviour
             info.caster.ToggleEnraged(false);
         }
     }
-    private void Hellfire(SpellTraitEffectInfo info)
+    private void Hellfire(EffectInfo info)
     {
         info.targets[0].DealDamage(4, info.caster);
         info.caster.Eliminate();
     }
-    private void Empower(SpellTraitEffectInfo info)
+    private void Empower(EffectInfo info)
     {
         int damage = info.caster.isEmpowered ? 3 : 2;
         info.targets[0].DealDamage(damage, info.caster, true);
     }
-    private void Fortify(SpellTraitEffectInfo info)
+    private void Fortify(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -121,16 +119,13 @@ public class SpellTraitEffect : MonoBehaviour
             executionCore.AddNextRoundEndDelayedEffect(3, info);
         }
         else if (info.occurance == 1)
-        {
             info.caster.ToggleDisengaged(false);
-            info.targets[0].ToggleArmored(false);
-        }
         else if (info.occurance == 2)
             info.caster.ToggleWearied(true);
         else // 3
             info.caster.ToggleWearied(false);
     }
-    private void Block(SpellTraitEffectInfo info)
+    private void Block(EffectInfo info)
     {
         if (info.recast)
         {
@@ -139,31 +134,27 @@ public class SpellTraitEffect : MonoBehaviour
 
             info.caster.GetSpell("Block").ToggleRecast(false);
         }
-        else if (info.occurance == 0)
+        else
         {
             info.caster.ToggleArmored(true);
 
-            executionCore.AddRoundEndDelayedEffect(1, info);
-
             info.caster.GetSpell("Block").ToggleRecast(true);
         }
-        else // 1
-            info.caster.ToggleArmored(false);
     }
-    private void Landslide(SpellTraitEffectInfo info)
+    private void Landslide(EffectInfo info)
     {
         foreach (Elemental target in info.targets)
             target.DealDamage(2, info.caster);
     }
-    private void Swoop(SpellTraitEffectInfo info)
+    private void Swoop(EffectInfo info)
     {
         info.targets[0].DealDamage(2, info.caster);
     }
-    private void TakeFlight(SpellTraitEffectInfo info)
+    private void TakeFlight(EffectInfo info)
     {
         //.swap issue
     }
-    private void Whirlwind(SpellTraitEffectInfo info)
+    private void Whirlwind(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -186,11 +177,11 @@ public class SpellTraitEffect : MonoBehaviour
             info.caster.ToggleWearied(false);
         }
     }
-    private void Flurry(SpellTraitEffectInfo info)
+    private void Flurry(EffectInfo info)
     {
         //.swap issue
     }
-    private void Surge(SpellTraitEffectInfo info)
+    private void Surge(EffectInfo info)
     {
         info.targets[0].DealDamage(2, info.caster);
         if (!info.caster.hasCastSurge)
@@ -199,22 +190,40 @@ public class SpellTraitEffect : MonoBehaviour
             info.caster.hasCastSurge = true;
         }
     }
-    private void Blink(SpellTraitEffectInfo info)
+    private void Blink(EffectInfo info)
     {
-        //.can't cast until swap
-        //.until spell occurs
+        if (info.occurance == 0)
+        {
+            info.caster.ToggleSpark(true);
+            info.caster.ToggleEnraged(true);
+
+            executionCore.AddAfterSpellOccursDelayedEffect(1, info);
+
+            info.caster.GetSpell("Blink").cannotCastUntilSwap = true;
+        }
+        else // 1
+            info.caster.ToggleEnraged(false);
     }
-    private void Defuse(SpellTraitEffectInfo info)
+        private void Defuse(EffectInfo info)
     {
-        //.can't cast until swap
+        if (info.occurance == 0)
+        {
+            info.targets[0].ToggleStunned(true);
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+
+            info.caster.GetSpell("Defuse").cannotCastUntilSwap = true;
+        }
+        else // 1
+            info.targets[0].ToggleStunned(false);
     }
-    private void Recharge(SpellTraitEffectInfo info)
+    private void Recharge(EffectInfo info)
     {
         info.targets[0].HealthChange(1);
         info.caster.ToggleSpark(true);
         slotAssignment.GetAlly(info.caster).ToggleSpark(true);
     }
-    private void IcyBreath(SpellTraitEffectInfo info)
+    private void IcyBreath(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -226,7 +235,7 @@ public class SpellTraitEffect : MonoBehaviour
         else // 1
             info.targets[0].ToggleSlowed(false);
     }
-    private void Hail(SpellTraitEffectInfo info)
+    private void Hail(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -242,15 +251,28 @@ public class SpellTraitEffect : MonoBehaviour
             foreach (Elemental target in info.targets)
                 target.ToggleSlowed(false);
     }
-    private void Freeze(SpellTraitEffectInfo info)
+    private void Freeze(EffectInfo info)
     {
-        //.can't cast until swap
+        if (info.occurance == 0)
+        {
+            info.targets[0].ToggleDisengaged(true);
+            info.caster.ToggleDisengaged(true);
+
+            executionCore.AddNextRoundEndDelayedEffect(1, info);
+
+            info.caster.GetSpell("Freeze").cannotCastUntilSwap = true;
+        }
+        else // 1
+        {
+            info.targets[0].ToggleDisengaged(false);
+            info.caster.ToggleDisengaged(false);
+        }
     }
-    private void NumbingCold(SpellTraitEffectInfo info)
+    private void NumbingCold(EffectInfo info)
     {
         //.special treatment
     }
-    private void Enchain(SpellTraitEffectInfo info)
+    private void Enchain(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -262,11 +284,17 @@ public class SpellTraitEffect : MonoBehaviour
         else // 1
             info.targets[0].ToggleTrapped(false);
     }
-    private void Animate(SpellTraitEffectInfo info)
+    private void Animate(EffectInfo info)
     {
-        //.can't cast until swap
+        slotAssignment.GetAlly(info.caster).currentActions += 1;
+
+        info.caster.ToggleArmored(true);
+
+        executionCore.AddNextRoundEndDelayedEffect(1, info);
+
+        info.caster.GetSpell("Animate").cannotCastUntilSwap = true;
     }
-    private void Nightmare(SpellTraitEffectInfo info)
+    private void Nightmare(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -284,7 +312,7 @@ public class SpellTraitEffect : MonoBehaviour
             info.caster.ToggleWearied(false);
         }
     }
-    private void Hex(SpellTraitEffectInfo info)
+    private void Hex(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -309,7 +337,7 @@ public class SpellTraitEffect : MonoBehaviour
             else if (info.hexType == "weaken") info.targets[0].ToggleWeakened(false);
         }
     }
-    private void FangedBite(SpellTraitEffectInfo info)
+    private void FangedBite(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -323,20 +351,52 @@ public class SpellTraitEffect : MonoBehaviour
         else // 2
             info.targets[0].TogglePoisoned(false);
     }
-    private void Infect(SpellTraitEffectInfo info)
+    private void Infect(EffectInfo info)
     {
         info.targets[0].TogglePoisoned(true);
     }
-    private void PoisonCloud(SpellTraitEffectInfo info)
+    private void PoisonCloud(EffectInfo info)
     {
-        //.recast
-        //.special treatment
+        if (info.recast)
+            info.targets[0].DealDamage(2, info.caster);
+        else if (info.occurance == 0)
+        {
+            info.caster.inPoisonCloud = true;
+
+            info.caster.GetSpell("Poison Cloud").readyForRecast = true;
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+        }
+        else // 1
+        {
+            info.caster.inPoisonCloud = false;
+            foreach (Elemental elemental in info.caster.poisonedByPoisonCloud)
+                elemental.TogglePoisoned(false);
+        }
     }
-    private void Cripple(SpellTraitEffectInfo info)
+    private void Cripple(EffectInfo info)
     {
-        //.can't cast until swap
+        if (info.occurance == 0)
+        {
+            foreach (Elemental availableTarget in slotAssignment.GetAllAvailableTargets(info.caster, true))
+                if (availableTarget.PoisonStrength > 0)
+                {
+                    info.targets.Add(availableTarget);
+
+                    availableTarget.ToggleSlowed(true);
+                }
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+
+            info.caster.currentActions += 1;
+
+            info.caster.GetSpell("Cripple").cannotCastUntilSwap = true;
+        }
+        else // 1
+            foreach (Elemental target in info.targets)
+                target.ToggleSlowed(false);
     }
-    private void Sparkle(SpellTraitEffectInfo info)
+    private void Sparkle(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -350,11 +410,11 @@ public class SpellTraitEffect : MonoBehaviour
         else // 2
             info.targets[0].ToggleWeakened(false);
     }
-    private void Allure(SpellTraitEffectInfo info)
+    private void Allure(EffectInfo info)
     {
         //.special treatment--consider all possible problematic interactions
     }
-    private void FairyDust(SpellTraitEffectInfo info)
+    private void FairyDust(EffectInfo info)
     {
         if (info.occurance == 0)
             executionCore.AddRoundStartDelayedEffect(1, info);
@@ -362,7 +422,7 @@ public class SpellTraitEffect : MonoBehaviour
             foreach (Elemental target in info.targets)
                 target.TogglePotion(true);
     }
-    private void Gift(SpellTraitEffectInfo info)
+    private void Gift(EffectInfo info)
     {
         if (info.occurance == 0)
         {
@@ -425,16 +485,4 @@ public class SpellTraitEffect : MonoBehaviour
         effectMethodIndex.Add("Fairy Dust", FairyDust);
         effectMethodIndex.Add("Gift", Gift);
     }
-}
-public struct SpellTraitEffectInfo
-{
-    public string spellOrTraitName;
-
-    public int occurance;
-    public bool recast;
-
-    public Elemental caster;
-    public List<Elemental> targets;
-
-    public string hexType;
 }

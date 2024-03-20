@@ -152,21 +152,14 @@ public class DelegationCore : MonoBehaviour
             }
             else if (spell.name == "Landslide") // *Landslide
             {
-                ResetScene(); //.consider making all similarly targeted traits use this code, making a separate method
+                ResetScene();
 
-                // Target all available targets in play
-                List<int> landslideSlots = new();
+                List<int> availableTargets = new() { 0, 1, 2, 3 };
+                foreach (int target in availableTargets)
+                    if (target == packet.casterSlot || !slotAssignment.CheckTargetAvailable(target))
+                        availableTargets.Remove(target);
 
-                Dictionary<string, int> targetSlots = slotAssignment.GetSlotDesignations(packet.casterSlot);
-
-                if (CheckTargetAvailable(targetSlots["allySlot"]))
-                    landslideSlots.Add(targetSlots["allySlot"]);
-                if (CheckTargetAvailable(targetSlots["enemy1Slot"]))
-                    landslideSlots.Add(targetSlots["enemy1Slot"]);
-                if (CheckTargetAvailable(targetSlots["enemy2Slot"]))
-                    landslideSlots.Add(targetSlots["enemy2Slot"]);
-
-                packet.targetSlots = landslideSlots.ToArray();
+                packet.targetSlots = availableTargets.ToArray();
 
                 cancelButton.SetActive(true);
                 submitButton.SetActive(true);
@@ -198,26 +191,26 @@ public class DelegationCore : MonoBehaviour
             availableTargetSlots.Add(packet.casterSlot);
 
         int allySlot = potentialTargetSlots["allySlot"];
-        if ((currentAction.CanTargetAlly || recast) && CheckTargetAvailable(allySlot))
+        if ((currentAction.CanTargetAlly || recast) && slotAssignment.CheckTargetAvailable(allySlot))
             availableTargetSlots.Add(allySlot);
 
         int enemy1Slot = potentialTargetSlots["enemy1Slot"];
         if (currentAction.CanTargetEnemy || recast)
         {
-            if (CheckTargetAvailable(enemy1Slot))
+            if (slotAssignment.CheckTargetAvailable(enemy1Slot))
                 availableTargetSlots.Add(enemy1Slot);
             // Enemy 2
-            if (CheckTargetAvailable(enemy1Slot + 1))
+            if (slotAssignment.CheckTargetAvailable(enemy1Slot + 1))
                 availableTargetSlots.Add(enemy1Slot + 1);
         }
 
         int benchedAlly1Slot = potentialTargetSlots["benchedAlly1Slot"];
         if (currentAction.CanTargetBenchedAlly)
         {
-            if (CheckTargetAvailable(benchedAlly1Slot))
+            if (slotAssignment.CheckTargetAvailable(benchedAlly1Slot))
                 availableTargetSlots.Add(benchedAlly1Slot);
             // Benched ally 2
-            if (CheckTargetAvailable(benchedAlly1Slot + 1))
+            if (slotAssignment.CheckTargetAvailable(benchedAlly1Slot + 1))
                 availableTargetSlots.Add(benchedAlly1Slot + 1);
         }
 
@@ -351,20 +344,7 @@ public class DelegationCore : MonoBehaviour
         currentAction = null;
     }
 
-    private bool CheckTargetAvailable(int slot)
-    {
-        Elemental target = slotAssignment.Elementals[slot];
 
-        // Slot does not contain an Elemental
-        if (target == null)
-            return false;
-
-        // Slot contains an Elemental that is Disengaged
-        if (target.DisengageStrength > 0)
-            return false;
-
-        return true;
-    }
 
     private void ResetScene()
     {

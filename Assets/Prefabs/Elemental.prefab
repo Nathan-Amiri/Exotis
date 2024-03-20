@@ -669,6 +669,7 @@ MonoBehaviour:
   spark: {fileID: 702550637351455029}
   icon: {fileID: 4617789464618039637}
   targetButton: {fileID: 4390679080903958386}
+  slotAssignment: {fileID: 0}
   inPlayParent: {fileID: 0}
   benchParent: {fileID: 0}
   statusIcons:
@@ -1185,6 +1186,7 @@ MonoBehaviour:
   nameText: {fileID: 152563077750856118}
   button: {fileID: 6006373699372451695}
   delegationCore: {fileID: 0}
+  executionCore: {fileID: 0}
 --- !u!114 &8892323734768867851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4110,6 +4112,7 @@ MonoBehaviour:
   nameText: {fileID: 7804811815993715988}
   button: {fileID: 7893370039366900750}
   delegationCore: {fileID: 0}
+  executionCore: {fileID: 0}
 --- !u!114 &1974966559459511743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4587,6 +4590,7 @@ MonoBehaviour:
   nameText: {fileID: 2529912421368529097}
   button: {fileID: 5265503217003988670}
   delegationCore: {fileID: 0}
+  executionCore: {fileID: 0}
 --- !u!114 &5542399757140415611
 MonoBehaviour:
   m_ObjectHideFlags: 0

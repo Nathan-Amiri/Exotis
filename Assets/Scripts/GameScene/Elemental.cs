@@ -83,7 +83,11 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public bool hasCastSurge; // *Surge
     [NonSerialized] public bool hasCastHex; // *Hex
+
     [NonSerialized] public bool isEmpowered; // *Empower, //.make into status condition
+
+    [NonSerialized] public bool inPoisonCloud; // *Poison Cloud, //.make into status condition
+    public readonly List<Elemental> poisonedByPoisonCloud = new();
 
     public void Setup(string elementalName) // Called by Setup
     {
@@ -142,18 +146,38 @@ public class Elemental : MonoBehaviour
 
     public void DealDamage(int amount, Elemental caster, bool spellDamage = true)
     {
-        //.need to order everything later
+        if (EnrageStrength > 0)
+            return;
 
-        if (caster.potionBoosting)
+        if (DisengageStrength > 0)
+            return;
+
+        if (spellDamage)
         {
-            amount += 1;
-            caster.TogglePotion(false);
+            if (caster.potionBoosting)
+            {
+                amount += 1;
+                caster.TogglePotion(false);
+            }
+
+            if (caster.frenzyBoosting) // *Frenzy
+                amount += 1;
+
+            if (ArmorStrength > 0)
+            {
+                amount -= 1;
+                ToggleArmored(false);
+            }
+
+            if (caster.WeakenStrength > 0)
+                amount -= 1;
+
+            if (caster.inPoisonCloud && amount > 0) // *Poison Cloud
+            {
+                TogglePoisoned(true);
+                caster.poisonedByPoisonCloud.Add(this);
+            }
         }
-
-        if (caster.frenzyBoosting)
-            amount += 1;
-
-        //.weaken and armor only work on spelldamage
 
         if (amount <= 0)
             return;
@@ -231,6 +255,8 @@ public class Elemental : MonoBehaviour
         foreach (Spell spell in spells)
             if (spell.readyForRecast)
                 spell.ToggleRecast(false);
+
+        ToggleArmored(false);
     }
     public void OnSwapIntoPlay()
     {
@@ -271,7 +297,6 @@ public class Elemental : MonoBehaviour
     }
     public void ToggleArmored(bool becomeArmored)
     {
-        // Armor can be removed by TakeDamage and then again from a DelayedEffect
         if (ArmorStrength == 0 && !becomeArmored)
             return;
 

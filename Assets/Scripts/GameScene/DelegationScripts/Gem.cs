@@ -69,6 +69,9 @@ public class Gem : MonoBehaviour, IDelegationAction
         if (!ParentElemental.HasGem)
             return false;
 
+        if (ParentElemental.DisengageStrength > 0)
+            return false;
+
         if (ParentElemental.Health == ParentElemental.MaxHealth)
             return false;
 

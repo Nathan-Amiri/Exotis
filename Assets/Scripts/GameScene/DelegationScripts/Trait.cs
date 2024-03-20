@@ -84,6 +84,9 @@ public class Trait : MonoBehaviour, IDelegationAction
     // Called by Elemental
     public bool ActionAvailable()
     {
+        if (ParentElemental.DisengageStrength > 0)
+            return false;
+
         return Clock.CurrentRoundState switch
         {
             Clock.RoundState.RoundStart => usableRoundStart,

@@ -59,6 +59,40 @@ public class SlotAssignment : MonoBehaviour
         return Elementals[allySlot];
     }
 
+    public bool CheckTargetAvailable(int slot)
+    {
+        Elemental target = Elementals[slot];
+
+        // Slot does not contain an Elemental
+        if (target == null)
+            return false;
+
+        // Slot contains an Elemental that is Disengaged
+        if (target.DisengageStrength > 0)
+            return false;
+
+        return true;
+    }
+
+    public List<Elemental> GetAllAvailableTargets(Elemental caster, bool includeBenchedTargets)
+    {
+        List<Elemental> availableTargets = new();
+
+        int slotsToCheck = includeBenchedTargets ? 8 : 4;
+        for (int i = 0; i < slotsToCheck; i++)
+        {
+            if (!CheckTargetAvailable(i))
+                continue;
+
+            if (i == GetSlot(caster))
+                continue;
+
+            availableTargets.Add(Elementals[i]);
+        }
+
+        return availableTargets;
+    }
+
     public void Swap(int inPlaySlot, int benchedSlot)
     {
         Elemental inPlayElemental = Elementals[inPlaySlot];

@@ -73,6 +73,9 @@ public class Spark : MonoBehaviour, IDelegationAction
         if (!ParentElemental.HasSpark)
             return false;
 
+        if (ParentElemental.DisengageStrength > 0)
+            return false;
+
         if (Clock.CurrentRoundState != Clock.RoundState.Counter)
             return false;
 

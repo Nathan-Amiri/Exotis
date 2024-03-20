@@ -1,9 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using static Unity.Networking.Transport.Utilities.ReliableUtility;
 
 public class ExecutionCore : MonoBehaviour
 {
@@ -22,7 +22,7 @@ public class ExecutionCore : MonoBehaviour
     [SerializeField] private SpellTraitEffect spellTraitEffect;
 
     // CONSTANT:
-    private delegate void EffectDelegate(RelayPacket effectPacket);
+    private delegate void EffectDelegate(EffectInfo info);
 
     // DYNAMIC:
     // 0 = not waiting for any packets (e.g. while waiting on console button),
@@ -44,9 +44,10 @@ public class ExecutionCore : MonoBehaviour
 
     private readonly List<SparkInfo> flungSparks = new();
 
-    private readonly List<SpellTraitEffectInfo> roundStartInfos = new();
-    private List<SpellTraitEffectInfo> roundEndInfos = new();
-    private readonly List<SpellTraitEffectInfo> nextRoundEndInfos = new();
+    private readonly List<EffectInfo> roundStartInfos = new();
+    private List<EffectInfo> roundEndInfos = new();
+    private readonly List<EffectInfo> nextRoundEndInfos = new();
+    private readonly List<EffectInfo> afterSpellOccursInfos = new();
 
     // Round/Cycle methods:
     public void RoundStart() // Called by Setup
@@ -67,7 +68,7 @@ public class ExecutionCore : MonoBehaviour
         }
 
         // RoundStart Delayed Effects
-        foreach (SpellTraitEffectInfo info in roundStartInfos)
+        foreach (EffectInfo info in roundStartInfos)
             spellTraitEffect.CallEffectMethod(info);
 
         roundStartInfos.Clear();
@@ -127,7 +128,7 @@ public class ExecutionCore : MonoBehaviour
             return;
 
         // RoundEnd Delayed Effects
-        foreach (SpellTraitEffectInfo info in roundEndInfos)
+        foreach (EffectInfo info in roundEndInfos)
             spellTraitEffect.CallEffectMethod(info);
 
         roundEndInfos = nextRoundEndInfos;
@@ -792,10 +793,16 @@ public class ExecutionCore : MonoBehaviour
     {
         targetManager.ResetAllTargets();
 
-        // Determine which effect method is correct
-        RelayPacket switchPacket = singlePacket.actionType != null ? singlePacket : allyPacket;
+        List<RelayPacket> packets = new();
+        if (singlePacket.actionType != null)
+            packets.Add(singlePacket);
+        else
+        {
+            packets.Add(allyPacket);
+            packets.Add(enemyPacket);
+        }
 
-        EffectDelegate effectDelegate = switchPacket.actionType switch
+        EffectDelegate effectDelegate = packets[0].actionType switch
         {
             "retreat" => RetreatEffect,
             "gem" => GemEffect,
@@ -804,90 +811,46 @@ public class ExecutionCore : MonoBehaviour
             _ => SpellEffect,
         };
 
-        // Call the effect method(s)
-        if (singlePacket.actionType != null)
-            effectDelegate(singlePacket);
-        else
+        // Must convert all packets to infos before calling any effect methods
+        // to ensure targeting is correct during Spell/Trait ties that involve Swapping
+        List<EffectInfo> effectInfos = new();
+        foreach (RelayPacket packet in packets)
+            effectInfos.Add(ConvertToEffectInfo(packet));
+
+        if (packets[0].actionType == "Spell")
         {
-            effectDelegate(allyPacket);
-            effectDelegate(enemyPacket);
+            int newTimeScale = GetTimescale(packets[0]);
+            clock.NewTimescale(newTimeScale);
+
+            foreach (RelayPacket packet in packets)
+                TogglePotionFrenzyBoosting(packet, true);
         }
+
+        foreach (EffectInfo info in effectInfos)
+            effectDelegate(info);
 
         if (CheckForGameEnd())
             return;
 
+        if (packets[0].actionType == "spell")
+        {
+            foreach (RelayPacket packet in packets)
+                TogglePotionFrenzyBoosting(packet, false);
+
+            foreach (EffectInfo info in afterSpellOccursInfos)
+                spellTraitEffect.CallEffectMethod(info);
+
+            afterSpellOccursInfos.Clear();
+        }
+
         if (Clock.CurrentRoundState == Clock.RoundState.Counter)
             NewCounterCycle();
-        else if (switchPacket.actionType == "spell" && flungSparks.Count > 0)
+        else if (packets[0].actionType == "spell" && flungSparks.Count > 0)
             WriteSparkDamageMessage();
         else
             NewCycle();
     }
-
-    private void RetreatEffect(RelayPacket packet)
-    {
-        // Remove action/Add armor before swapping
-        slotAssignment.Elementals[packet.casterSlot].currentActions -= 1;
-        slotAssignment.Elementals[packet.targetSlots[0]].ToggleArmored(true);
-
-        slotAssignment.Swap(packet.casterSlot, packet.targetSlots[0]);
-
-        //.add lateeffect to remove armor at end of round
-    }
-
-    private void GemEffect(RelayPacket packet)
-    {
-        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
-        caster.HealthChange(2);
-        caster.ToggleGem(false);
-    }
-
-    private void SparkEffect(RelayPacket packet)
-    {
-        Elemental sparkCaster = slotAssignment.Elementals[packet.casterSlot];
-
-        // Cache message in sparkInfo list in case caster is null (Eliminated) when the message needs to be written
-        string casterOwner = sparkCaster.isAlly ? "Your" : "The enemy's";
-        string sparkMessage = casterOwner + " " + sparkCaster.name + "'s Spark will deal 1 to the target";
-
-        SparkInfo sparkInfo = new()
-        {
-            caster = sparkCaster,
-            targetSlot = packet.targetSlots[0],
-            message = sparkMessage
-        };
-        flungSparks.Add(sparkInfo);
-
-        sparkCaster.ToggleSpark(false);
-    }
-
-    private void TraitEffect(RelayPacket packet)
-    {
-        SpellTraitEffectInfo info = ConvertPacketToSpellTraitEffectInfo(packet);
-
-        spellTraitEffect.CallEffectMethod(info);
-    }
-
-    private void SpellEffect(RelayPacket packet)
-    {
-        int newTimeScale = GetTimescale(packet);
-        clock.NewTimescale(newTimeScale);
-
-        SpellTraitEffectInfo info = ConvertPacketToSpellTraitEffectInfo(packet);
-
-        // Turn on Potion/Frenzy boosting before SpellTraitEffect class calls TakeDamage
-        info.caster.potionBoosting = packet.potion;
-        info.caster.frenzyBoosting = packet.frenzy;
-
-        info.caster.currentActions -= 1;
-        spellTraitEffect.CallEffectMethod(info);
-
-        // Immediately turn Potion/Frenzy boosting off again
-        info.caster.potionBoosting = false;
-        info.caster.frenzyBoosting = false;
-    }
-
-    private SpellTraitEffectInfo ConvertPacketToSpellTraitEffectInfo(RelayPacket packet)
+    private EffectInfo ConvertToEffectInfo(RelayPacket packet)
     {
         Elemental caster = slotAssignment.Elementals[packet.casterSlot];
         List<Elemental> newTargets = new();
@@ -898,7 +861,7 @@ public class ExecutionCore : MonoBehaviour
         if (packet.actionType == "spell")
             recast = caster.GetSpell(packet.name).readyForRecast;
 
-        return new SpellTraitEffectInfo()
+        return new EffectInfo()
         {
             occurance = 0,
             recast = recast,
@@ -907,6 +870,53 @@ public class ExecutionCore : MonoBehaviour
             targets = newTargets,
             hexType = packet.hexType
         };
+    }
+    private void TogglePotionFrenzyBoosting(RelayPacket packet, bool on)
+    {
+        slotAssignment.Elementals[packet.casterSlot].potionBoosting = on && packet.potion;
+        slotAssignment.Elementals[packet.casterSlot].frenzyBoosting = on && packet.frenzy;
+    }
+
+    private void RetreatEffect(EffectInfo info)
+    {
+        info.caster.currentActions -= 1;
+        info.targets[0].ToggleArmored(true);
+
+        slotAssignment.Swap(slotAssignment.GetSlot(info.caster), slotAssignment.GetSlot(info.targets[0]));
+    }
+
+    private void GemEffect(EffectInfo info)
+    {
+        info.caster.HealthChange(2);
+        info.caster.ToggleGem(false);
+    }
+
+    private void SparkEffect(EffectInfo info)
+    {
+        // Cache message in sparkInfo list in case caster is null (Eliminated) when the message needs to be written
+        string casterOwner = info.caster.isAlly ? "Your" : "The enemy's";
+        string sparkMessage = casterOwner + " " + info.caster.name + "'s Spark will deal 1 to the target";
+
+        SparkInfo sparkInfo = new()
+        {
+            caster = info.caster,
+            targetSlot = slotAssignment.GetSlot(info.caster),
+            message = sparkMessage
+        };
+        flungSparks.Add(sparkInfo);
+
+        info.caster.ToggleSpark(false);
+    }
+
+    private void TraitEffect(EffectInfo info)
+    {
+        spellTraitEffect.CallEffectMethod(info);
+    }
+
+    private void SpellEffect(EffectInfo info)
+    {
+        info.caster.currentActions -= 1;
+        spellTraitEffect.CallEffectMethod(info);
     }
 
     // Spark Damage Methods:
@@ -1036,21 +1046,38 @@ public class ExecutionCore : MonoBehaviour
         savedEnemyPacket = default;
     }
 
-    public void AddRoundStartDelayedEffect(int newOccurance, SpellTraitEffectInfo info)
+    public void AddRoundStartDelayedEffect(int newOccurance, EffectInfo info)
     {
         info.occurance = newOccurance;
         roundStartInfos.Add(info);
     }
-    public void AddRoundEndDelayedEffect(int newOccurance, SpellTraitEffectInfo info)
+    public void AddRoundEndDelayedEffect(int newOccurance, EffectInfo info)
     {
         info.occurance = newOccurance;
         roundEndInfos.Add(info);
     }
-    public void AddNextRoundEndDelayedEffect(int newOccurance, SpellTraitEffectInfo info)
+    public void AddNextRoundEndDelayedEffect(int newOccurance, EffectInfo info)
     {
         info.occurance = newOccurance;
         nextRoundEndInfos.Add(info);
     }
+    public void AddAfterSpellOccursDelayedEffect(int newOccurance, EffectInfo info)
+    {
+        info.occurance = newOccurance;
+        afterSpellOccursInfos.Add(info);
+    }
+}
+public struct EffectInfo
+{
+    public string spellOrTraitName;
+
+    public int occurance;
+    public bool recast;
+
+    public Elemental caster;
+    public List<Elemental> targets;
+
+    public string hexType;
 }
 public struct SparkInfo
 {
