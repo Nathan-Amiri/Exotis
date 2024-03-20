@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -281,6 +280,31 @@ public class DelegationCore : MonoBehaviour
             submitButton.SetActive(true);
             cancelButton.SetActive(true);
         }
+        else if (packet.name == "Take Flight" && packet.targetSlots.Length == 1) // *Take Flight
+        {
+            List<int> availableSwapTargets = new();
+
+            int guestAdd = NetworkManager.Singleton.IsHost ? 0 : 2;
+            List<int> benchedSlots = new() { 4 + guestAdd, 5 + guestAdd };
+
+            foreach (int slot in benchedSlots)
+            {
+                Elemental benchedElemental = slotAssignment.Elementals[slot];
+                if (benchedElemental != null && benchedElemental.CanSwapIn())
+                    availableSwapTargets.Add(slot);
+            }
+
+            if (availableSwapTargets.Count == 2)
+            {
+                ResetScene();
+
+                targetManager.DisplayTargets(new List<int> { packet.casterSlot }, availableSwapTargets, true);
+
+                return;
+            }
+            else // 1 or 0
+                packet.targetSlots = new int[] { targetSlot, availableSwapTargets[0] };
+        }
 
         // Make Potion interactable if currentAction is a single-target damaging Spell
         potionButtons[packet.casterSlot].interactable = PotionInteractable();
@@ -288,7 +312,7 @@ public class DelegationCore : MonoBehaviour
         // Turn off unavailable target buttons
         targetManager.ResetCertainTargets(new List<int> { targetSlot });
 
-        if (packet.targetSlots.Length == GetMaxTargets(currentAction))
+        if (packet.targetSlots.Length >= GetMaxTargets(currentAction))
             targetManager.ResetAllTargets();
 
 

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -93,10 +92,10 @@ public class SlotAssignment : MonoBehaviour
         return availableTargets;
     }
 
-    public void Swap(int inPlaySlot, int benchedSlot)
+    public void Swap(Elemental inPlayElemental, Elemental benchedElemental)
     {
-        Elemental inPlayElemental = Elementals[inPlaySlot];
-        Elemental benchedElemental = Elementals[benchedSlot];
+        int inPlaySlot = GetSlot(inPlayElemental);
+        int benchedSlot = GetSlot(benchedElemental);
 
         // Swap board position
         (benchedElemental.transform.position, inPlayElemental.transform.position) = 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
@@ -58,7 +57,7 @@ public class Elemental : MonoBehaviour
 
         // Only true during SpellEffect when Spell is boosted by Potion/Frenzy
     [NonSerialized] public bool potionBoosting;
-    [NonSerialized] public bool frenzyBoosting;
+    [NonSerialized] public bool frenzyBoosting; // *Frenzy
 
         // Items
     public bool HasSpark { get; private set; }
@@ -80,6 +79,8 @@ public class Elemental : MonoBehaviour
     public int TrapStrength { get; private set; }
     public int PoisonStrength { get; private set; }
     public int WeakenStrength { get; private set; }
+
+    [NonSerialized] public bool cannotSwapIn; // *Mirage
 
     [NonSerialized] public bool hasCastSurge; // *Surge
     [NonSerialized] public bool hasCastHex; // *Hex
@@ -184,12 +185,15 @@ public class Elemental : MonoBehaviour
 
         isEmpowered = true;
 
-        HealthChange(-amount);
+        Health -= amount;
     }
 
-    public void HealthChange(int amount)
+    public void Heal(int amount)
     {
         Health += amount;
+    }
+    public void ApplyHealthChange()
+    {
         Health = Mathf.Clamp(Health, 0, MaxHealth);
 
         healthText.text = Health.ToString();
@@ -202,17 +206,30 @@ public class Elemental : MonoBehaviour
         healthText.text = "0";
     }
 
-    public bool CanSwap()
+    public bool CanSwapOut()
     {
         if (TrapStrength > 0)
             return false;
 
         // Check if any benched allies exist
         int guestAdd = NetworkManager.Singleton.IsHost ? 0 : 2;
-        if (slotAssignment.Elementals[4 + guestAdd] == null && slotAssignment.Elementals[5 + guestAdd] == null)
-            return false;
 
-        return true;
+        Elemental benchedElemental1 = slotAssignment.Elementals[4 + guestAdd];
+        if (benchedElemental1 != null && benchedElemental1.CanSwapIn())
+            return true;
+        Elemental benchedElemental2 = slotAssignment.Elementals[5 + guestAdd];
+        if (benchedElemental2 != null && benchedElemental2.CanSwapIn())
+            return true;
+
+        return false;
+    }
+    public bool CanSwapIn() // *Mirage
+    {
+        return !cannotSwapIn;
+    }
+    public bool AllyCanSwapOut() // Flurry
+    {
+        return slotAssignment.GetAlly(this).CanSwapOut();
     }
 
     public bool CanAct()

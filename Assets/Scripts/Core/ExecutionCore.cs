@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using static Unity.Networking.Transport.Utilities.ReliableUtility;
 
 public class ExecutionCore : MonoBehaviour
 {
@@ -121,7 +119,10 @@ public class ExecutionCore : MonoBehaviour
         {
             Elemental elemental = slotAssignment.Elementals[i];
             if (elemental.PoisonStrength > 0)
+            {
                 elemental.DealDamage(1, elemental, false);
+                elemental.ApplyHealthChange();
+            }
         }
 
         if (CheckForGameEnd())
@@ -346,7 +347,7 @@ public class ExecutionCore : MonoBehaviour
         if (packet.potion)
             debugMessage += ", potion";
 
-        if (packet.frenzy)
+        if (packet.frenzy) // *Frenzy
             debugMessage += ", frenzy";
 
         Debug.Log(debugMessage);
@@ -817,24 +818,29 @@ public class ExecutionCore : MonoBehaviour
         foreach (RelayPacket packet in packets)
             effectInfos.Add(ConvertToEffectInfo(packet));
 
-        if (packets[0].actionType == "Spell")
+        if (packets[0].actionType == "spell")
         {
             int newTimeScale = GetTimescale(packets[0]);
             clock.NewTimescale(newTimeScale);
 
-            foreach (RelayPacket packet in packets)
+            foreach (RelayPacket packet in packets) // *Frenzy
                 TogglePotionFrenzyBoosting(packet, true);
         }
 
         foreach (EffectInfo info in effectInfos)
             effectDelegate(info);
 
+        // Apply health changes after all Spells have occurred in case some targets overhealed before taking damage
+        foreach (Elemental elemental in slotAssignment.Elementals)
+            if (elemental != null)
+                elemental.ApplyHealthChange();
+
         if (CheckForGameEnd())
             return;
 
         if (packets[0].actionType == "spell")
         {
-            foreach (RelayPacket packet in packets)
+            foreach (RelayPacket packet in packets) // *Frenzy
                 TogglePotionFrenzyBoosting(packet, false);
 
             foreach (EffectInfo info in afterSpellOccursInfos)
@@ -871,7 +877,7 @@ public class ExecutionCore : MonoBehaviour
             hexType = packet.hexType
         };
     }
-    private void TogglePotionFrenzyBoosting(RelayPacket packet, bool on)
+    private void TogglePotionFrenzyBoosting(RelayPacket packet, bool on) // *Frenzy
     {
         slotAssignment.Elementals[packet.casterSlot].potionBoosting = on && packet.potion;
         slotAssignment.Elementals[packet.casterSlot].frenzyBoosting = on && packet.frenzy;
@@ -882,12 +888,14 @@ public class ExecutionCore : MonoBehaviour
         info.caster.currentActions -= 1;
         info.targets[0].ToggleArmored(true);
 
-        slotAssignment.Swap(slotAssignment.GetSlot(info.caster), slotAssignment.GetSlot(info.targets[0]));
+        slotAssignment.Swap(info.caster, info.targets[0]);
     }
 
     private void GemEffect(EffectInfo info)
     {
-        info.caster.HealthChange(2);
+        info.caster.Heal(2);
+        info.caster.ApplyHealthChange();
+
         info.caster.ToggleGem(false);
     }
 
@@ -947,6 +955,7 @@ public class ExecutionCore : MonoBehaviour
 
         Elemental target = slotAssignment.Elementals[flungSparks[0].targetSlot];
         target.DealDamage(1, flungSparks[0].caster, false);
+        target.ApplyHealthChange();
 
         CycleSparks();
     }
@@ -1065,6 +1074,39 @@ public class ExecutionCore : MonoBehaviour
     {
         info.occurance = newOccurance;
         afterSpellOccursInfos.Add(info);
+    }
+
+    public bool AllureAvailable(Elemental allureCaster) // *Allure
+    {
+        Elemental ally = slotAssignment.GetAlly(allureCaster);
+        int allySlot = slotAssignment.GetSlot(ally);
+
+        if (savedSinglePacket.Item1.actionType != null)
+            return savedSinglePacket.Item1.targetSlots.Contains(allySlot);
+        else if (allureCaster.isAlly)
+            return savedEnemyPacket.Item1.targetSlots.Contains(allySlot);
+        else
+            return savedAllyPacket.Item1.targetSlots.Contains(allySlot);
+    }
+    public void AllureRedirect(Elemental allureCaster, Elemental allureAlly) // *Allure
+    {
+        int redirectFrom = slotAssignment.GetSlot(allureAlly);
+        int redirectTo = slotAssignment.GetSlot(allureCaster);
+
+        if (savedSinglePacket.Item1.actionType != null)
+            savedSinglePacket.Item1 = ApplyRedirect(savedSinglePacket.Item1, redirectFrom, redirectTo);
+        else if (allureCaster.isAlly)
+            savedEnemyPacket.Item1 = ApplyRedirect(savedEnemyPacket.Item1, redirectFrom, redirectTo);
+        else
+            savedAllyPacket.Item1 = ApplyRedirect(savedAllyPacket.Item1, redirectFrom, redirectTo);
+    }
+    private RelayPacket ApplyRedirect(RelayPacket packet, int slotRedirectFrom, int slotRedirectTo) // *Allure
+    {
+        for (int i = 0; i < packet.targetSlots.Length; i++)
+            if (packet.targetSlots[i] == slotRedirectFrom)
+                packet.targetSlots[i] = slotRedirectTo;
+
+        return packet;
     }
 }
 public struct EffectInfo

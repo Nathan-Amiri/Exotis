@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -72,7 +70,7 @@ public class Retreat : MonoBehaviour, IDelegationAction
         if (ParentElemental.currentActions == 0)
             return false;
 
-        if (!ParentElemental.CanSwap())
+        if (!ParentElemental.CanSwapOut())
             return false;
 
         if (ParentElemental.DisengageStrength > 0)

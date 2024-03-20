@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -144,6 +142,13 @@ public class Spell : MonoBehaviour, IDelegationAction
 
             case Clock.RoundState.Timescale:
                 if (isCounter)
+                    return false;
+
+                if (Name == "Mirage" && !ParentElemental.CanSwapOut()) // *Mirage
+                    return false;
+                else if (Name == "Flurry" && !ParentElemental.AllyCanSwapOut()) // *Flurry
+                    return false;
+                else if (Name == "Allure" && !executionCore.AllureAvailable(ParentElemental)) // *Allure
                     return false;
 
                 return IsWild || Clock.CurrentTimescale >= Timescale;

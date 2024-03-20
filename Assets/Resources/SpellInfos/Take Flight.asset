@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementColor: 3
   timescale: 52
-  maxTargets: 1
+  maxTargets: 2
   canTargetSelf: 1
   canTargetAlly: 1
   canTargetEnemy: 1
   canTargetBenchedAlly: 0
   isDamaging: 1
   isWearying: 0
+  maxRecastTargets: 0
+  recastIsDamaging: 0

@@ -17,7 +17,7 @@
 11 Landslide 3 "I target all other Elementals in play. I deal 2 to each of the targets"
 
 12 Swoop 4 "I deal 2 to a target in play"
-13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap"
+13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap if I can"
 14 Whirlwind 3 "I deal 2 to a target in play. I'm Enraged, Weakened, and Wearied next round"
 15 Flurry C "My Ally Swaps"
 

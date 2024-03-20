@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,22 +26,16 @@ public class SpellTraitEffect : MonoBehaviour
         effectMethodIndex[info.spellOrTraitName](info);
     }
 
-    //.swap issue:
-    //.SWAPPING NEEDS TO HAPPEN AFTER SIMULTANEOUS SPELLS
-    //.my solution will be to convert all spell packets before calling any effect methods so that the elementals targeted
-    //.don't change from swapping
-    //.only an issue during spell ties
-
     private void Flow(EffectInfo info)
     {
         info.targets[0].DealDamage(2, info.caster);
-        info.caster.HealthChange(1);
+        info.caster.Heal(1);
     }
     private void Cleanse(EffectInfo info)
     {
         if (info.occurance == 0)
         {
-            info.targets[0].HealthChange(2);
+            info.targets[0].Heal(2);
 
             executionCore.AddRoundStartDelayedEffect(1, info);
             executionCore.AddNextRoundEndDelayedEffect(2, info);
@@ -54,14 +47,13 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Mirage(EffectInfo info)
     {
-        //.swap issue
         //.special treatment
     }
     private void TidalWave(EffectInfo info)
     {
         if (info.occurance == 0)
         {
-            info.targets[0].HealthChange(3);
+            info.targets[0].Heal(3);
             info.caster.ToggleWeakened(true);
 
             executionCore.AddNextRoundEndDelayedEffect(1, info);
@@ -76,7 +68,6 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Singe(EffectInfo info)
     {
-        //.swap issue
         //.special treatment
     }
     private void HeatUp(EffectInfo info)
@@ -152,7 +143,11 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void TakeFlight(EffectInfo info)
     {
-        //.swap issue
+        info.targets[0].DealDamage(1, info.caster);
+        info.caster.Heal(1);
+
+        if (info.targets[1] != null)
+            slotAssignment.Swap(info.caster, info.targets[1]);
     }
     private void Whirlwind(EffectInfo info)
     {
@@ -179,7 +174,7 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Flurry(EffectInfo info)
     {
-        //.swap issue
+        slotAssignment.Swap(slotAssignment.GetAlly(info.caster), info.targets[0]);
     }
     private void Surge(EffectInfo info)
     {
@@ -219,7 +214,7 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Recharge(EffectInfo info)
     {
-        info.targets[0].HealthChange(1);
+        info.targets[0].Heal(1);
         info.caster.ToggleSpark(true);
         slotAssignment.GetAlly(info.caster).ToggleSpark(true);
     }
@@ -322,11 +317,11 @@ public class SpellTraitEffect : MonoBehaviour
 
             if (!info.caster.hasCastHex)
             {
-                info.caster.HealthChange(2);
+                info.caster.Heal(2);
                 info.caster.hasCastHex = true;
             }
             else
-                info.caster.HealthChange(1);
+                info.caster.Heal(1);
 
             executionCore.AddRoundEndDelayedEffect(1, info);
         }
@@ -341,7 +336,7 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.occurance == 0)
         {
-            info.targets[0].HealthChange(2);
+            info.targets[0].Heal(2);
 
             executionCore.AddRoundStartDelayedEffect(1, info);
             executionCore.AddNextRoundEndDelayedEffect(2, info);
@@ -400,7 +395,7 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.occurance == 0)
         {
-            info.targets[0].HealthChange(2);
+            info.targets[0].Heal(2);
 
             executionCore.AddRoundStartDelayedEffect(1, info);
             executionCore.AddNextRoundEndDelayedEffect(2, info);
@@ -412,7 +407,7 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Allure(EffectInfo info)
     {
-        //.special treatment--consider all possible problematic interactions
+        executionCore.AllureRedirect(info.caster, slotAssignment.GetAlly(info.caster));
     }
     private void FairyDust(EffectInfo info)
     {
@@ -440,8 +435,7 @@ public class SpellTraitEffect : MonoBehaviour
 
 
 
-    // I'll need to add a lot more action available things, maybe--like hellhound's trait, and Gems....
-    // do I want to make Gems unusable if full hp but not do the same check for cleanse? That's fine, I just need to decide
+    // I'll need to add a lot more action available things, maybe--like hellhound's trait
 
 
 
