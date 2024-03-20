@@ -839,8 +839,11 @@ public class ExecutionCore : MonoBehaviour
 
         if (packets[0].actionType == "spell")
         {
-            int newTimeScale = GetTimescale(packets[0]);
-            clock.NewTimescale(newTimeScale);
+            if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
+            {
+                int newTimeScale = GetTimescale(packets[0]);
+                clock.NewTimescale(newTimeScale);
+            }
 
             foreach (RelayPacket packet in packets) // *Frenzy
                 TogglePotionFrenzyBoosting(packet, true);

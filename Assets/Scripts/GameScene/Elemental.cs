@@ -83,6 +83,7 @@ public class Elemental : MonoBehaviour
     [NonSerialized] public bool hasCastSurge; // *Surge
     [NonSerialized] public bool hasCastHex; // *Hex
 
+    [NonSerialized] public Elemental mirageRedirectTarget; // *Mirage, //.make into status condition
     [NonSerialized] public bool cannotSwapIn; // *Mirage, //.make into status condition
 
     [NonSerialized] public bool isEmpowered; // *Empower, //.make into status condition
@@ -152,6 +153,12 @@ public class Elemental : MonoBehaviour
 
     public void DealDamage(int amount, Elemental caster, bool spellDamage = true)
     {
+        if (mirageRedirectTarget != null) // *Mirage
+        {
+            mirageRedirectTarget.DealDamage(amount, caster, spellDamage);
+            return;
+        }
+
         if (EnrageStrength > 0)
             return;
 

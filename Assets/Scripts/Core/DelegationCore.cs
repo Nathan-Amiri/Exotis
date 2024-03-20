@@ -331,7 +331,7 @@ public class DelegationCore : MonoBehaviour
                     availableSwapTargets.Add(slot);
             }
 
-            if (availableSwapTargets.Count == 2)
+            if (availableSwapTargets.Count > 0)
             {
                 ResetScene();
 
@@ -339,7 +339,7 @@ public class DelegationCore : MonoBehaviour
 
                 return;
             }
-            else // 1 or 0
+            else
                 packet.targetSlots = new int[] { targetSlot, availableSwapTargets[0] };
         }
 

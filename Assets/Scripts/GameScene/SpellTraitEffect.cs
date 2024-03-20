@@ -48,7 +48,24 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Mirage(EffectInfo info)
     {
-        //.special treatment
+        if (info.occurance == 0)
+        {
+            info.caster.DealDamage(1, info.caster, false);
+            info.caster.currentActions += 1;
+
+            slotAssignment.Swap(info.caster, info.targets[0]);
+
+            info.targets[0].mirageRedirectTarget = info.caster;
+
+            info.caster.cannotSwapIn = true;
+
+            executionCore.AddRoundStartDelayedEffect(1, info);
+        }
+        else if (info.occurance == 1)
+        {
+            info.targets[0].mirageRedirectTarget = null;
+            info.caster.cannotSwapIn = false;
+        }
     }
     private void TidalWave(EffectInfo info)
     {
