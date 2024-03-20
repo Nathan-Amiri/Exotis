@@ -144,20 +144,9 @@ public class Spell : MonoBehaviour, IDelegationAction
                 if (isCounter)
                     return false;
 
-                if (Name == "Mirage" && !ParentElemental.CanSwapOut()) // *Mirage
-                    return false;
-                else if (Name == "Flurry" && !ParentElemental.AllyCanSwapOut()) // *Flurry
-                    return false;
-                else if (Name == "Allure" && !executionCore.AllureAvailable(ParentElemental)) // *Allure
-                    return false;
-
                 return IsWild || Clock.CurrentTimescale >= Timescale;
 
             case Clock.RoundState.Counter:
-
-                if (Name == "Block") // *Block
-                    return executionCore.GetCounteringSpell().IsDamaging;
-
                 return isCounter;
 
             default:
@@ -169,6 +158,7 @@ public class Spell : MonoBehaviour, IDelegationAction
     public void ToggleRecast(bool on)
     {
         readyForRecast = on;
+        IsDamaging = on;
 
         if (on)
             timescaleText.text = "2";

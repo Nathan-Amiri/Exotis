@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using static ElementalInfo;
 
 public class DelegationCore : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class DelegationCore : MonoBehaviour
 
     // SCENE REFERENCE:
     [SerializeField] private RelayCore relayCore;
+    [SerializeField] private ExecutionCore executionCore;
     [SerializeField] private SlotAssignment slotAssignment;
     [SerializeField] private Console console;
     [SerializeField] private TargetManager targetManager;
@@ -115,16 +117,14 @@ public class DelegationCore : MonoBehaviour
     {
         currentAction = action;
 
-        // Set packet info
         packet.actionType = currentAction.ActionType;
         packet.casterSlot = slotAssignment.GetSlot(currentAction.ParentElemental);
 
-        // Reset before proceeding
         ResetScene();
 
         if (currentAction is Spell spell)
         {
-            packet.name = spell.name;
+            packet.name = spell.Name;
 
             if (spell.IsWild && packet.wildTimescale == 0)
             {
@@ -138,7 +138,41 @@ public class DelegationCore : MonoBehaviour
 
                 return;
             }
-            else if (spell.name == "Hex" && packet.hexType == null) // *Hex
+            else if (spell.Name == "Landslide") // *Landslide
+            {
+                ResetScene();
+
+                List<int> targets = new();
+                for (int i = 0; i < 4; i++)
+                    if (i != packet.casterSlot && slotAssignment.CheckTargetAvailable(i))
+                        targets.Add(i);
+
+                packet.targetSlots = targets.ToArray();
+
+                cancelButton.SetActive(true);
+                submitButton.SetActive(true);
+            }
+            else if (spell.Name == "Numbing Cold") // *Numbing Cold
+            {
+                List<int> targets = new();
+                for (int i = 0; i < 4; i++)
+                    if (slotAssignment.CheckTargetAvailable(i) && slotAssignment.Elementals[i].Speed < currentAction.ParentElemental.Speed)
+                        targets.Add(i);
+
+                if (targets.Count == 0)
+                {
+                    WriteFailMessage("No available targets slower than the caster. Choose a different action");
+                    return;
+                }
+
+                targetManager.DisplayTargets(new List<int> { packet.casterSlot }, targets, true);
+
+                console.WriteConsoleMessage("Choose a target");
+                cancelButton.SetActive(true);
+
+                return;
+            }
+            else if (spell.Name == "Hex" && packet.hexType == null) // *Hex
             {
                 ResetScene();
 
@@ -149,19 +183,25 @@ public class DelegationCore : MonoBehaviour
 
                 return;
             }
-            else if (spell.name == "Landslide") // *Landslide
+            else if (spell.Name == "Mirage" && !currentAction.ParentElemental.CanSwapOut()) // *Mirage
             {
-                ResetScene();
-
-                List<int> availableTargets = new() { 0, 1, 2, 3 };
-                foreach (int target in availableTargets)
-                    if (target == packet.casterSlot || !slotAssignment.CheckTargetAvailable(target))
-                        availableTargets.Remove(target);
-
-                packet.targetSlots = availableTargets.ToArray();
-
-                cancelButton.SetActive(true);
-                submitButton.SetActive(true);
+                WriteFailMessage("The caster is unable to Swap. Choose a different action");
+                return;
+            }
+            else if (spell.name == "Block" && !spell.readyForRecast && !executionCore.GetCounteringSpell().IsDamaging) // *Block
+            {
+                WriteFailMessage("Block cannot counter a non-damaging Spell. Choose a different action");
+                return;
+            }
+            else if (spell.Name == "Flurry" && !currentAction.ParentElemental.AllyCanSwapOut()) // *Flurry
+            {
+                WriteFailMessage("The caster's Ally is unable to Swap. Choose a different action");
+                return;
+            }
+            else if (spell.Name == "Allure" && !executionCore.AllureAvailable(currentAction.ParentElemental)) // *Allure
+            {
+                WriteFailMessage("The caster's ally is not being targeted. Choose a different action");
+                return;
             }
         }
         else
@@ -169,7 +209,7 @@ public class DelegationCore : MonoBehaviour
 
         int maxTargets = GetMaxTargets(action);
 
-        // Check if the action is untargeted
+        // If the action is untargeted
         if (maxTargets == 0)
         {
             console.ResetConsole();
@@ -179,58 +219,56 @@ public class DelegationCore : MonoBehaviour
             return;
         }
 
-        // Get targetable slots
         List<int> availableTargetSlots = new();
 
         bool recast = spell != null && spell.readyForRecast;
 
-        Dictionary<string, int> potentialTargetSlots = slotAssignment.GetSlotDesignations(packet.casterSlot);
-
-        if (currentAction.CanTargetSelf)
+        if (currentAction.CanTargetSelf || recast)
             availableTargetSlots.Add(packet.casterSlot);
 
-        int allySlot = potentialTargetSlots["allySlot"];
+        int allySlot = packet.casterSlot % 2 == 0 ? packet.casterSlot + 1 : packet.casterSlot - 1;
         if ((currentAction.CanTargetAlly || recast) && slotAssignment.CheckTargetAvailable(allySlot))
             availableTargetSlots.Add(allySlot);
 
-        int enemy1Slot = potentialTargetSlots["enemy1Slot"];
+        int a = NetworkManager.Singleton.IsHost ? 0 : 2;
+
         if (currentAction.CanTargetEnemy || recast)
         {
-            if (slotAssignment.CheckTargetAvailable(enemy1Slot))
-                availableTargetSlots.Add(enemy1Slot);
-            // Enemy 2
-            if (slotAssignment.CheckTargetAvailable(enemy1Slot + 1))
-                availableTargetSlots.Add(enemy1Slot + 1);
+            if (slotAssignment.CheckTargetAvailable(2 - a))
+                availableTargetSlots.Add(2 - a);
+            if (slotAssignment.CheckTargetAvailable(3 - a))
+                availableTargetSlots.Add(3 - a);
         }
 
-        int benchedAlly1Slot = potentialTargetSlots["benchedAlly1Slot"];
         if (currentAction.CanTargetBenchedAlly)
         {
-            if (slotAssignment.CheckTargetAvailable(benchedAlly1Slot))
-                availableTargetSlots.Add(benchedAlly1Slot);
-            // Benched ally 2
-            if (slotAssignment.CheckTargetAvailable(benchedAlly1Slot + 1))
-                availableTargetSlots.Add(benchedAlly1Slot + 1);
+            if (slotAssignment.CheckTargetAvailable(4 + a))
+                availableTargetSlots.Add(4 + a);
+            if (slotAssignment.CheckTargetAvailable(5 + a))
+                availableTargetSlots.Add(5 + a);
         }
 
-        // Check if there's no available targets
         if (availableTargetSlots.Count == 0)
         {
-            packet = default;
-
-            console.WriteConsoleMessage("No available targets. Choose a different action", null, ConsoleOutput);
-
+            WriteFailMessage("No available targets. Choose a different action");
             return;
         }
 
         // *Singe check if targets can swap. If not, "No available targets that can Swap. Choose a different action"
 
-        // Turn on target buttons
         targetManager.DisplayTargets(new List<int> { packet.casterSlot }, availableTargetSlots, true);
 
         string message = maxTargets == 1 ? "Choose a target" : "Choose target(s)";
         console.WriteConsoleMessage(message);
         cancelButton.SetActive(true);
+    }
+    private void WriteFailMessage(string message)
+    {
+        packet = default;
+
+        console.WriteConsoleMessage(message, null, ConsoleOutput);
+
+        return;
     }
     private int GetMaxTargets(IDelegationAction action)
     {
@@ -261,7 +299,6 @@ public class DelegationCore : MonoBehaviour
 
     public void SelectTarget(int targetSlot)
     {
-        // Add value to packet's targetSlots array
         if (packet.targetSlots == null)
             packet.targetSlots = new int[] { targetSlot };
         else
@@ -284,13 +321,13 @@ public class DelegationCore : MonoBehaviour
         {
             List<int> availableSwapTargets = new();
 
-            int guestAdd = NetworkManager.Singleton.IsHost ? 0 : 2;
-            List<int> benchedSlots = new() { 4 + guestAdd, 5 + guestAdd };
+            int a = NetworkManager.Singleton.IsHost ? 0 : 2;
+            List<int> benchedSlots = new() { 4 + a, 5 + a };
 
             foreach (int slot in benchedSlots)
             {
                 Elemental benchedElemental = slotAssignment.Elementals[slot];
-                if (benchedElemental != null && benchedElemental.CanSwapIn())
+                if (benchedElemental != null && !benchedElemental.cannotSwapIn)
                     availableSwapTargets.Add(slot);
             }
 
@@ -306,7 +343,6 @@ public class DelegationCore : MonoBehaviour
                 packet.targetSlots = new int[] { targetSlot, availableSwapTargets[0] };
         }
 
-        // Make Potion interactable if currentAction is a single-target damaging Spell
         potionButtons[packet.casterSlot].interactable = PotionInteractable();
 
         // Turn off unavailable target buttons
@@ -316,11 +352,9 @@ public class DelegationCore : MonoBehaviour
             targetManager.ResetAllTargets();
 
 
-        // Remove console message if no more targets are available
         if (!targetManager.AnyTargetsAvailable())
             console.ResetConsole();
 
-        // Allow packet to be submitted
         submitButton.SetActive(true);
         cancelButton.SetActive(true);
     }
@@ -351,7 +385,6 @@ public class DelegationCore : MonoBehaviour
     {
         packet.potion = true;
 
-        // Turn off any remaining target buttons
         targetManager.ResetAllTargets();
 
         console.ResetConsole();
@@ -394,7 +427,6 @@ public class DelegationCore : MonoBehaviour
     private void Update() //.add customizable shortcuts eventually, don't allow cancel and submit to have the same key press
     {
         // Else if ensures priority order, so that the shortcut button doesn't trigger multiple things at once
-
         if (Input.GetKeyDown(KeyCode.Space) && consoleButton.activeSelf)
             console.SelectConsoleButton();
         else if (Input.GetKeyDown(KeyCode.Space) && passButton.activeSelf)

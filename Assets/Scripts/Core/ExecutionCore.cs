@@ -218,7 +218,6 @@ public class ExecutionCore : MonoBehaviour
     }
     private void RepopulateFromPacket(RelayPacket packet)
     {
-        // If checking guest player's slots, add 2
         int a = packet.player == 0 ? 0 : 2;
         int emptyInPlaySlot = slotAssignment.Elementals[0 + a] == null ? 0 + a : 1 + a;
 
@@ -681,6 +680,8 @@ public class ExecutionCore : MonoBehaviour
         // If it isn't already counter time, save packets
         if (Clock.CurrentRoundState != Clock.RoundState.Counter)
         {
+            RemoveActionsBeforeCounter();
+
             // Save packets before requesting new ones
             SavePackets();
 
@@ -723,6 +724,25 @@ public class ExecutionCore : MonoBehaviour
             }
             else
                 RequestPacket(allyCounterAvailable, enemyCounterAvailable);
+        }
+    }
+    private void RemoveActionsBeforeCounter()
+    {
+        RemoveAction(singlePacket);
+        RemoveAction(allyPacket);
+        RemoveAction(enemyPacket);
+    }
+    private void RemoveAction(RelayPacket packet)
+    {
+        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
+
+        if (packet.actionType == "retreat")
+            caster.currentActions -= 1;
+        else if (packet.actionType == "spell")
+        {
+            Spell spell = caster.GetSpell(packet.name);
+            if (!spell.readyForRecast)
+                caster.currentActions -= 1;
         }
     }
     private void SavePackets()
@@ -808,8 +828,7 @@ public class ExecutionCore : MonoBehaviour
             "retreat" => RetreatEffect,
             "gem" => GemEffect,
             "spark" => SparkEffect,
-            "trait" => TraitEffect,
-            _ => SpellEffect,
+            _ => SpellTraitEffect,
         };
 
         // Must convert all packets to infos before calling any effect methods
@@ -916,14 +935,8 @@ public class ExecutionCore : MonoBehaviour
         info.caster.ToggleSpark(false);
     }
 
-    private void TraitEffect(EffectInfo info)
+    private void SpellTraitEffect(EffectInfo info)
     {
-        spellTraitEffect.CallEffectMethod(info);
-    }
-
-    private void SpellEffect(EffectInfo info)
-    {
-        info.caster.currentActions -= 1;
         spellTraitEffect.CallEffectMethod(info);
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpellTraitEffect : MonoBehaviour
@@ -125,12 +126,16 @@ public class SpellTraitEffect : MonoBehaviour
 
             info.caster.GetSpell("Block").ToggleRecast(false);
         }
-        else
+        else if (info.occurance == 0)
         {
             info.caster.ToggleArmored(true);
 
             info.caster.GetSpell("Block").ToggleRecast(true);
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
         }
+        else // 1
+            info.caster.GetSpell("Block").ToggleRecast(false);
     }
     private void Landslide(EffectInfo info)
     {
@@ -265,7 +270,20 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void NumbingCold(EffectInfo info)
     {
-        //.special treatment
+        if (info.occurance == 0)
+        {
+            info.targets[0].isNumb = true;
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+            executionCore.AddRoundStartDelayedEffect(2, info);
+            executionCore.AddNextRoundEndDelayedEffect(3, info);
+        }
+        else if (info.occurance == 1)
+            info.targets[0].isNumb = false;
+        else if (info.occurance == 2)
+            info.caster.ToggleWearied(true);
+        else // 2
+            info.caster.ToggleWearied(false);
     }
     private void Enchain(EffectInfo info)
     {
@@ -353,18 +371,25 @@ public class SpellTraitEffect : MonoBehaviour
     private void PoisonCloud(EffectInfo info)
     {
         if (info.recast)
+        {
             info.targets[0].DealDamage(2, info.caster);
+
+            info.caster.GetSpell("Poison Cloud").ToggleRecast(false);
+        }
         else if (info.occurance == 0)
         {
             info.caster.inPoisonCloud = true;
 
-            info.caster.GetSpell("Poison Cloud").readyForRecast = true;
+            info.caster.GetSpell("Poison Cloud").ToggleRecast(true);
 
             executionCore.AddRoundEndDelayedEffect(1, info);
         }
         else // 1
         {
             info.caster.inPoisonCloud = false;
+
+            info.caster.GetSpell("Poison Cloud").ToggleRecast(false);
+
             foreach (Elemental elemental in info.caster.poisonedByPoisonCloud)
                 elemental.TogglePoisoned(false);
         }
