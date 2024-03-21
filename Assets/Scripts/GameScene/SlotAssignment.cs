@@ -15,7 +15,11 @@ public class SlotAssignment : MonoBehaviour
     private void Awake()
     {
         Elementals = assignedElementals;
+    }
 
+    public void ElementalSetupCompleted()
+    {
+        // This method occurs after guest player's Elementals have flipped their y positions
         foreach (Elemental elemental in Elementals)
             boardPositions.Add(elemental.transform.position);
     }

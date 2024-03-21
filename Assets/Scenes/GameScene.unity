@@ -10933,6 +10933,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6161256475bc29243bb91134af42b609, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slotAssignment: {fileID: 1265245691}
   hostSceneElementals:
   - {fileID: 8136956925640811516}
   - {fileID: 1795908584}

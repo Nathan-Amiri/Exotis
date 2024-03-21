@@ -210,13 +210,6 @@ public class Elemental : MonoBehaviour
         healthText.text = Health.ToString();
     }
 
-    public void Eliminate()
-    {
-        Health = 0;
-
-        healthText.text = "0";
-    }
-
     public bool CanSwapOut()
     {
         if (TrapStrength > 0)
@@ -280,6 +273,12 @@ public class Elemental : MonoBehaviour
     {
         foreach (Spell spell in spells)
             spell.cannotCastUntilSwap = false;
+    }
+
+    public void Eliminate() // Hellfire
+    {
+        // Ensure that CheckForGameEnd will eliminate this Elemental after all SpellTraitEffects have occurred
+        Health = -100;
     }
 
     // Item:

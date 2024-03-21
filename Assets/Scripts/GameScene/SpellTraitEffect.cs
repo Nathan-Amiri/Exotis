@@ -180,7 +180,6 @@ public class SpellTraitEffect : MonoBehaviour
         if (info.occurance == 0)
         {
             info.targets[0].DealDamage(2, info.caster, true);
-            info.caster.ToggleDisengaged(true);
 
             executionCore.AddRoundStartDelayedEffect(1, info);
             executionCore.AddNextRoundEndDelayedEffect(2, info);
@@ -229,7 +228,7 @@ public class SpellTraitEffect : MonoBehaviour
         else if (info.caster != null) // 1
             info.caster.ToggleEnraged(false);
     }
-        private void Defuse(EffectInfo info)
+    private void Defuse(EffectInfo info)
     {
         if (info.occurance == 0)
         {

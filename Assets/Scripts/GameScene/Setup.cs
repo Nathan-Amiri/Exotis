@@ -10,6 +10,8 @@ public class Setup : NetworkBehaviour
     public static event GuestSwitchAction GuestSwitch;
 
     // SCENE REFERENCE:
+    [SerializeField] private SlotAssignment slotAssignment;
+
     [SerializeField] private List<Elemental> hostSceneElementals = new();
     [SerializeField] private List<Spell> hostSceneSpells = new();
 
@@ -72,6 +74,8 @@ public class Setup : NetworkBehaviour
             hostSceneSpells[i].Setup(hostSpellNames[i].containedString);
             guestSceneSpells[i].Setup(guestSpellNames[i].containedString);
         }
+
+        slotAssignment.ElementalSetupCompleted();
 
         executionCore.RoundStart();
     }

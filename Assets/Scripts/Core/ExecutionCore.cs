@@ -136,7 +136,8 @@ public class ExecutionCore : MonoBehaviour
         nextRoundEndInfos.Clear();
 
         foreach (Elemental elemental in slotAssignment.Elementals)
-            elemental.OnRoundEnd();
+            if (elemental != null)
+                elemental.OnRoundEnd();
 
         Repopulation();
     }
@@ -174,16 +175,16 @@ public class ExecutionCore : MonoBehaviour
         if (!slotIsEmpty[0] && !slotIsEmpty[1])
             return false;
 
-        if (slotIsEmpty[4] && slotIsEmpty[5])
+        if (slotIsEmpty[2] && slotIsEmpty[3])
             return false;
 
         // If both in play slots are empty, repopulate automatically
         if (slotIsEmpty[0] && slotIsEmpty[1])
         {
-            if (!slotIsEmpty[4])
+            if (!slotIsEmpty[2])
             {
                 slotAssignment.Repopulate(0 + a, 4 + a);
-                if (!slotIsEmpty[5])
+                if (!slotIsEmpty[3])
                     slotAssignment.Repopulate(1 + a, 5 + a);
             }
             else
@@ -193,10 +194,10 @@ public class ExecutionCore : MonoBehaviour
         }
 
         // If either benched slot is missing, repopulate automatically
-        if (slotIsEmpty[4] || slotIsEmpty[5])
+        if (slotIsEmpty[2] || slotIsEmpty[3])
         {
             int inPlaySlot = slotIsEmpty[0] ? 0 + a : 1 + a;
-            int benchedSlot = !slotIsEmpty[4] ? 4 + a : 5 + a;
+            int benchedSlot = !slotIsEmpty[2] ? 4 + a : 5 + a;
             slotAssignment.Repopulate(inPlaySlot, benchedSlot);
 
             return false;
@@ -368,7 +369,10 @@ public class ExecutionCore : MonoBehaviour
         // If both players Retreated
         else if (allyPacket.actionType == "retreat" && enemyPacket.actionType == "retreat")
         {
-            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, new List<int> { allyPacket.targetSlots[0], enemyPacket.targetSlots[0] }, false);
+            RemoveActions();
+
+            targetManager.DisplayTargets(new List<int> { allyPacket.casterSlot, enemyPacket.casterSlot }, 
+                new List<int> { allyPacket.targetSlots[0], enemyPacket.targetSlots[0] }, false);
             console.WriteConsoleMessage("Your " + allyCaster.name + " and the enemy's " + enemyCaster.name + " will Retreat", null, CallEffectMethod);
         }
 
@@ -532,10 +536,32 @@ public class ExecutionCore : MonoBehaviour
         singlePacket = newSinglePacket;
     }
 
+    private void RemoveActions()
+    {
+        RemoveActionFromPacket(singlePacket);
+        RemoveActionFromPacket(allyPacket);
+        RemoveActionFromPacket(enemyPacket);
+    }
+    private void RemoveActionFromPacket(RelayPacket packet)
+    {
+        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
+
+        if (packet.actionType == "retreat")
+            caster.currentActions -= 1;
+        else if (packet.actionType == "spell")
+        {
+            Spell spell = caster.GetSpell(packet.name);
+            if (!spell.readyForRecast)
+                caster.currentActions -= 1;
+        }
+    }
 
     // ActionMessage methods:
     public void WriteActionMessage()
     {
+        // Remove actions here, regardless of RoundState, after Tiebreaker had the opportunity to isolate a packet
+        RemoveActions();
+
         // If there's one packet to write, write it and prepare the correct output method
         if (singlePacket.actionType != null)
         {
@@ -680,12 +706,9 @@ public class ExecutionCore : MonoBehaviour
         // If it isn't already counter time, save packets
         if (Clock.CurrentRoundState != Clock.RoundState.Counter)
         {
-            RemoveActionsBeforeCounter();
-
-            // Save packets before requesting new ones
             SavePackets();
 
-            // Switch to counter roundState before calling CheckForAvailableActions
+            // Must switch to counter roundState before calling CheckForAvailableActions
             clock.NewRoundState(Clock.RoundState.Counter);
         }
         // If a counter effect has already occurred, reset packets before requesting new ones
@@ -696,7 +719,6 @@ public class ExecutionCore : MonoBehaviour
         int allyPlayerNumber = isHost ? 0 : 1;
         int enemyPlayerNumber = isHost ? 1 : 0;
 
-        // If single counter
         if (savedSinglePacket.Item1.actionType != null)
         {
             bool isCounteringPlayer = !IsAllyPacket(savedSinglePacket.Item1);
@@ -724,25 +746,6 @@ public class ExecutionCore : MonoBehaviour
             }
             else
                 RequestPacket(allyCounterAvailable, enemyCounterAvailable);
-        }
-    }
-    private void RemoveActionsBeforeCounter()
-    {
-        RemoveAction(singlePacket);
-        RemoveAction(allyPacket);
-        RemoveAction(enemyPacket);
-    }
-    private void RemoveAction(RelayPacket packet)
-    {
-        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
-
-        if (packet.actionType == "retreat")
-            caster.currentActions -= 1;
-        else if (packet.actionType == "spell")
-        {
-            Spell spell = caster.GetSpell(packet.name);
-            if (!spell.readyForRecast)
-                caster.currentActions -= 1;
         }
     }
     private void SavePackets()
@@ -865,10 +868,13 @@ public class ExecutionCore : MonoBehaviour
             foreach (RelayPacket packet in packets) // *Frenzy
                 TogglePotionFrenzyBoosting(packet, false);
 
-            foreach (EffectInfo info in afterSpellOccursInfos)
-                spellTraitEffect.CallEffectMethod(info);
+            if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
+            {
+                foreach (EffectInfo info in afterSpellOccursInfos)
+                    spellTraitEffect.CallEffectMethod(info);
 
-            afterSpellOccursInfos.Clear();
+                afterSpellOccursInfos.Clear();
+            }
         }
 
         if (Clock.CurrentRoundState == Clock.RoundState.Counter)
@@ -907,7 +913,6 @@ public class ExecutionCore : MonoBehaviour
 
     private void RetreatEffect(EffectInfo info)
     {
-        info.caster.currentActions -= 1;
         info.targets[0].ToggleArmored(true);
 
         slotAssignment.Swap(info.caster, info.targets[0]);
@@ -930,7 +935,7 @@ public class ExecutionCore : MonoBehaviour
         SparkInfo sparkInfo = new()
         {
             caster = info.caster,
-            targetSlot = slotAssignment.GetSlot(info.caster),
+            targetSlot = slotAssignment.GetSlot(info.targets[0]),
             message = sparkMessage
         };
         flungSparks.Add(sparkInfo);
@@ -1007,10 +1012,10 @@ public class ExecutionCore : MonoBehaviour
 
     private bool CheckForGameEnd()
     {
-        // Eliminate Elementals at 0 health
+        // Eliminate Elementals at 0 or less health (Hellfire can reduce Elementals below 0)
         foreach (Elemental elemental in slotAssignment.Elementals)
-            if (elemental.Health == 0)
-                Destroy(elemental);
+            if (elemental != null && elemental.Health <= 0) // *Hellfire
+                Destroy(elemental.gameObject);
 
         // Check if game has ended
         List<int> allySlots = new() { 0, 1, 4, 5 };
@@ -1020,10 +1025,10 @@ public class ExecutionCore : MonoBehaviour
 
         for (int i = 0; i < slotAssignment.Elementals.Count; i++)
         {
-            // If an ally Elemental is not Eliminated, enemy has not won, and vice versa
             if (slotAssignment.Elementals[i] == null)
                 continue;
 
+            // If an ally Elemental is not Eliminated, enemy has not won, and vice versa
             if (allySlots.Contains(i))
                 allAllyElementalsEliminated = false;
             else

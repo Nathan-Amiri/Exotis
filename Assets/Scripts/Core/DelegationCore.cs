@@ -67,7 +67,6 @@ public class DelegationCore : MonoBehaviour
             else
                 targetManager.DisplayTargets(new List<int> { }, new List<int> { 6, 7 }, true);
 
-
             return;
         }
 
@@ -318,6 +317,8 @@ public class DelegationCore : MonoBehaviour
 
             submitButton.SetActive(true);
             cancelButton.SetActive(true);
+
+            return;
         }
         else if (packet.name == "Take Flight" && packet.targetSlots.Length == 1) // *Take Flight
         {

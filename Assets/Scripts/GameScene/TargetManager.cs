@@ -13,6 +13,9 @@ public class TargetManager : MonoBehaviour
 
         foreach (int targetSlot in targetSlots)
         {
+            if (slotAssignment.Elementals[targetSlot] == null)
+                continue;
+
             Button targetButton = slotAssignment.Elementals[targetSlot].targetButton;
             targetButton.gameObject.SetActive(true);
             targetButton.interactable = interactable;
@@ -20,7 +23,7 @@ public class TargetManager : MonoBehaviour
 
         // Dim all non-casters
         for (int i = 0; i < slotAssignment.Elementals.Count; i++)
-            if (!casterSlots.Contains(i))
+            if (slotAssignment.Elementals[i] != null && !casterSlots.Contains(i))
                 slotAssignment.Elementals[i].icon.color = Color.black;
     }
 
@@ -40,6 +43,9 @@ public class TargetManager : MonoBehaviour
     {
         foreach (Elemental elemental in slotAssignment.Elementals)
         {
+            if (elemental == null)
+                continue;
+
             elemental.targetButton.gameObject.SetActive(false);
             elemental.targetButton.interactable = false;
 
@@ -50,7 +56,7 @@ public class TargetManager : MonoBehaviour
     public bool AnyTargetsAvailable()
     {
         foreach (Elemental elemental in slotAssignment.Elementals)
-            if (elemental.targetButton.gameObject.activeSelf)
+            if (elemental != null && elemental.targetButton.gameObject.activeSelf)
                 return true;
 
         return false;

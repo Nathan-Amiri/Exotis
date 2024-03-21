@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Hellfire
   m_EditorClassIdentifier: 
   elementColor: 1
-  timescale: 50
+  timescale: 51
   maxTargets: 1
   canTargetSelf: 1
   canTargetAlly: 1
@@ -21,3 +21,5 @@ MonoBehaviour:
   canTargetBenchedAlly: 0
   isDamaging: 1
   isWearying: 0
+  maxRecastTargets: 0
+  recastIsDamaging: 0
