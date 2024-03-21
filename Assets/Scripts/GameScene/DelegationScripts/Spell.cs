@@ -41,6 +41,7 @@ public class Spell : MonoBehaviour, IDelegationAction
     [NonSerialized] public bool recastIsDamaging;
 
     [NonSerialized] public bool cannotCastUntilSwap;
+    [NonSerialized] public bool hasBeenCast;
 
 
     private void OnEnable()
@@ -130,6 +131,9 @@ public class Spell : MonoBehaviour, IDelegationAction
             return false;
 
         if (cannotCastUntilSwap)
+            return false;
+
+        if (Name == "Mirage" && hasBeenCast) // *Mirage
             return false;
 
         switch (Clock.CurrentRoundState)

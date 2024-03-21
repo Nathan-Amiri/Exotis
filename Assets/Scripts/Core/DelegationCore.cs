@@ -297,8 +297,10 @@ public class DelegationCore : MonoBehaviour
         RequestDelegation();
     }
 
-    public void SelectTarget(int targetSlot)
+    public void SelectTarget(Elemental targetedElemental)
     {
+        int targetSlot = slotAssignment.GetSlot(targetedElemental);
+
         if (packet.targetSlots == null)
             packet.targetSlots = new int[] { targetSlot };
         else
@@ -325,11 +327,8 @@ public class DelegationCore : MonoBehaviour
             List<int> benchedSlots = new() { 4 + a, 5 + a };
 
             foreach (int slot in benchedSlots)
-            {
-                Elemental benchedElemental = slotAssignment.Elementals[slot];
-                if (benchedElemental != null && !benchedElemental.cannotSwapIn)
+                if (slotAssignment.Elementals[slot] != null)
                     availableSwapTargets.Add(slot);
-            }
 
             if (availableSwapTargets.Count > 0)
             {

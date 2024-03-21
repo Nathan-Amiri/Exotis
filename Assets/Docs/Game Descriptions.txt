@@ -3,7 +3,7 @@
 
 0 Flow 3 "I deal 2 to a target in play. I heal 1"
 1 Cleanse ? "I heal myself or my ally 2. I'm Wearied next round"
-2 Mirage 7 "I deal 1 to myself and gain an action. I Swap. When my replacement is dealt damage this round, the damage redirects to me if I'm alive. I can't re-enter play this round"
+2 Mirage 7 "I Swap. My replacement gains an action and is Trapped this round. When it's dealt damage this round, the damage redirects to me if I'm alive. I can't cast this Spell again"
 3 Tidal Wave 2 "I deal 3 to a target in play. Then, I'm Weakened until the end of next round"
 
 4 Erupt 3 "I deal 3 to a target in play. I deal 1 to myself"
@@ -126,7 +126,7 @@
 	ITEMS:
 
 Gem "At any time or at counter speed, I can activate my Gem to heal 2"
-Potion "If I'm casting a damaging Spell that has one target, I can drink my Potion to deal +1 damage with that Spell"
+Potion "If I'm casting a damaging Spell that has one target, I can drink my Potion to deal +1 damage to the target with that Spell"
 Spark "At counter speed, I can fling my Spark at a target in play. After the enemy Spell I'm countering has occurred, I deal 1 to the target even if I'm Eliminated or no longer in play"
 
 
@@ -135,7 +135,7 @@ Spark "At counter speed, I can fling my Spark at a target in play. After the ene
 Wearied "I can't cast any Spells that contain the word "Wearied"
 	(Spells that could be used to infinitely stall the game will make the caster "Wearied" next round, preventing them from casting any of those Spells next round)"
 Enraged "I'm immune to damage"
-Armored "If I would take damage from an enemy spell, I take -1 damage and am no longer Armored"
+Armored "If I would take damage from a spell, I take -1 damage and am no longer Armored"
 Disengaged "I'm immune to damage, I can't be targeted or affected by anything, and I can't act (I can't cast or recast Spells, use Items, cast my Trait, or Retreat)"
 Stunned "I can't cast or recast Spells"
 Slowed "I'm slower than non-Slowed Elementals"

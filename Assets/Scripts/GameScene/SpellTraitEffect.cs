@@ -1,3 +1,4 @@
+using Mono.Cecil.Cil;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -29,7 +30,7 @@ public class SpellTraitEffect : MonoBehaviour
 
     private void Flow(EffectInfo info)
     {
-        info.targets[0].DealDamage(2, info.caster);
+        info.targets[0].DealDamage(2, info.caster, true);
         info.caster.Heal(1);
     }
     private void Cleanse(EffectInfo info)
@@ -41,6 +42,8 @@ public class SpellTraitEffect : MonoBehaviour
             executionCore.AddRoundStartDelayedEffect(1, info);
             executionCore.AddNextRoundEndDelayedEffect(2, info);
         }
+        else if (info.caster == null)
+            return;
         else if (info.occurance == 1)
             info.caster.ToggleWearied(true);
         else // 2
@@ -50,39 +53,40 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.occurance == 0)
         {
-            info.caster.DealDamage(1, info.caster, false);
-            info.caster.currentActions += 1;
-
             slotAssignment.Swap(info.caster, info.targets[0]);
+
+            info.targets[0].currentActions += 1;
+            info.targets[0].ToggleTrapped(true);
 
             info.targets[0].mirageRedirectTarget = info.caster;
 
-            info.caster.cannotSwapIn = true;
+            info.caster.GetSpell("Mirage").hasBeenCast = true;
 
             executionCore.AddRoundStartDelayedEffect(1, info);
         }
-        else if (info.occurance == 1)
+        else if (info.targets[0] != null) // 1
         {
+            info.targets[0].ToggleTrapped(false);
+
             info.targets[0].mirageRedirectTarget = null;
-            info.caster.cannotSwapIn = false;
         }
     }
     private void TidalWave(EffectInfo info)
     {
         if (info.occurance == 0)
         {
-            info.targets[0].Heal(3);
+            info.targets[0].DealDamage(3, info.caster, true);
             info.caster.ToggleWeakened(true);
 
             executionCore.AddNextRoundEndDelayedEffect(1, info);
         }
-        else if (info.occurance == 1)
-            info.targets[0].ToggleWeakened(false);
+        else if (info.caster != null) // 1
+            info.caster.ToggleWeakened(false);
     }
     private void Erupt(EffectInfo info)
     {
-        info.targets[0].DealDamage(3, info.caster);
-        info.caster.DealDamage(1, info.caster);
+        info.targets[0].DealDamage(3, info.caster, true);
+        info.caster.DealDamage(1, info.caster, true, true);
     }
     private void Singe(EffectInfo info)
     {
@@ -99,14 +103,12 @@ public class SpellTraitEffect : MonoBehaviour
 
             info.caster.GetSpell("Heat Up").cannotCastUntilSwap = true;
         }
-        else // 1
-        {
+        else if (info.caster != null) // 1
             info.caster.ToggleEnraged(false);
-        }
     }
     private void Hellfire(EffectInfo info)
     {
-        info.targets[0].DealDamage(4, info.caster);
+        info.targets[0].DealDamage(4, info.caster, true);
         info.caster.Eliminate();
     }
     private void Empower(EffectInfo info)
@@ -127,6 +129,8 @@ public class SpellTraitEffect : MonoBehaviour
             executionCore.AddRoundStartDelayedEffect(2, info);
             executionCore.AddNextRoundEndDelayedEffect(3, info);
         }
+        else if (info.caster == null)
+            return;
         else if (info.occurance == 1)
             info.caster.ToggleDisengaged(false);
         else if (info.occurance == 2)
@@ -151,21 +155,21 @@ public class SpellTraitEffect : MonoBehaviour
 
             executionCore.AddRoundEndDelayedEffect(1, info);
         }
-        else // 1
+        else if (info.caster != null) // 1
             info.caster.GetSpell("Block").ToggleRecast(false);
     }
     private void Landslide(EffectInfo info)
     {
         foreach (Elemental target in info.targets)
-            target.DealDamage(2, info.caster);
+            target.DealDamage(2, info.caster, true);
     }
     private void Swoop(EffectInfo info)
     {
-        info.targets[0].DealDamage(2, info.caster);
+        info.targets[0].DealDamage(2, info.caster, true);
     }
     private void TakeFlight(EffectInfo info)
     {
-        info.targets[0].DealDamage(1, info.caster);
+        info.targets[0].DealDamage(1, info.caster, true);
         info.caster.Heal(1);
 
         if (info.targets[1] != null)
@@ -175,12 +179,14 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.occurance == 0)
         {
-            info.targets[0].DealDamage(2, info.caster);
+            info.targets[0].DealDamage(2, info.caster, true);
             info.caster.ToggleDisengaged(true);
 
             executionCore.AddRoundStartDelayedEffect(1, info);
             executionCore.AddNextRoundEndDelayedEffect(2, info);
         }
+        else if (info.caster == null)
+            return;
         else if (info.occurance == 1)
         {
             info.caster.ToggleEnraged(true);
@@ -200,11 +206,13 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Surge(EffectInfo info)
     {
-        info.targets[0].DealDamage(2, info.caster);
-        if (!info.caster.hasCastSurge)
+        info.targets[0].DealDamage(2, info.caster, true);
+
+        Spell spell = info.caster.GetSpell("Surge");
+        if (!spell.hasBeenCast)
         {
             info.caster.ToggleSpark(true);
-            info.caster.hasCastSurge = true;
+            spell.hasBeenCast = true;
         }
     }
     private void Blink(EffectInfo info)
@@ -218,7 +226,7 @@ public class SpellTraitEffect : MonoBehaviour
 
             info.caster.GetSpell("Blink").cannotCastUntilSwap = true;
         }
-        else // 1
+        else if (info.caster != null) // 1
             info.caster.ToggleEnraged(false);
     }
         private void Defuse(EffectInfo info)
@@ -231,7 +239,7 @@ public class SpellTraitEffect : MonoBehaviour
 
             info.caster.GetSpell("Defuse").cannotCastUntilSwap = true;
         }
-        else // 1
+        else if (info.targets[0] != null) // 1
             info.targets[0].ToggleStunned(false);
     }
     private void Recharge(EffectInfo info)
@@ -244,12 +252,12 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.occurance == 0)
         {
-            info.targets[0].DealDamage(2, info.caster);
+            info.targets[0].DealDamage(2, info.caster, true);
             info.targets[0].ToggleSlowed(true);
 
             executionCore.AddNextRoundEndDelayedEffect(1, info);
         }
-        else // 1
+        else if (info.targets[0] != null) // 1
             info.targets[0].ToggleSlowed(false);
     }
     private void Hail(EffectInfo info)
@@ -258,7 +266,7 @@ public class SpellTraitEffect : MonoBehaviour
         {
             foreach (Elemental target in info.targets)
             {
-                target.DealDamage(1, info.caster);
+                target.DealDamage(1, info.caster, true);
                 target.ToggleSlowed(true);
             }
 
@@ -266,7 +274,8 @@ public class SpellTraitEffect : MonoBehaviour
         }
         else // 1
             foreach (Elemental target in info.targets)
-                target.ToggleSlowed(false);
+                if (target != null)
+                    target.ToggleSlowed(false);
     }
     private void Freeze(EffectInfo info)
     {
@@ -281,8 +290,10 @@ public class SpellTraitEffect : MonoBehaviour
         }
         else // 1
         {
-            info.targets[0].ToggleDisengaged(false);
-            info.caster.ToggleDisengaged(false);
+            if (info.targets[0] != null)
+                info.targets[0].ToggleDisengaged(false);
+            if (info.caster != null)
+                info.caster.ToggleDisengaged(false);
         }
     }
     private void NumbingCold(EffectInfo info)
@@ -295,8 +306,10 @@ public class SpellTraitEffect : MonoBehaviour
             executionCore.AddRoundStartDelayedEffect(2, info);
             executionCore.AddNextRoundEndDelayedEffect(3, info);
         }
-        else if (info.occurance == 1)
+        else if (info.occurance == 1 && info.targets[0] != null)
             info.targets[0].isNumb = false;
+        else if (info.caster == null)
+            return;
         else if (info.occurance == 2)
             info.caster.ToggleWearied(true);
         else // 2
@@ -306,12 +319,12 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.occurance == 0)
         {
-            info.targets[0].DealDamage(2, info.caster);
+            info.targets[0].DealDamage(2, info.caster, true);
             info.targets[0].ToggleTrapped(true);
 
             executionCore.AddNextRoundEndDelayedEffect(1, info);
         }
-        else // 1
+        else if (info.targets[0] != null) // 1
             info.targets[0].ToggleTrapped(false);
     }
     private void Animate(EffectInfo info)
@@ -333,13 +346,17 @@ public class SpellTraitEffect : MonoBehaviour
         }
         else if (info.occurance == 1)
         {
-            info.targets[0].ToggleStunned(true);
-            info.caster.ToggleWearied(true);
+            if (info.targets[0] != null)
+                info.targets[0].ToggleStunned(true);
+            if (info.caster != null)
+                info.caster.ToggleWearied(true);
         }
         else // 2
         {
-            info.targets[0].ToggleStunned(false);
-            info.caster.ToggleWearied(false);
+            if (info.targets[0] != null)
+                info.targets[0].ToggleStunned(false);
+            if (info.caster != null)
+                info.caster.ToggleWearied(false);
         }
     }
     private void Hex(EffectInfo info)
@@ -350,17 +367,18 @@ public class SpellTraitEffect : MonoBehaviour
             else if (info.hexType == "poison") info.targets[0].TogglePoisoned(true);
             else if (info.hexType == "weaken") info.targets[0].ToggleWeakened(true);
 
-            if (!info.caster.hasCastHex)
+            Spell spell = info.caster.GetSpell("Hex");
+            if (!spell.hasBeenCast)
             {
                 info.caster.Heal(2);
-                info.caster.hasCastHex = true;
+                spell.hasBeenCast = true;
             }
             else
                 info.caster.Heal(1);
 
             executionCore.AddRoundEndDelayedEffect(1, info);
         }
-        else // 1
+        else if (info.targets[0] != null) // 1
         {
             if (info.hexType == "slow") info.targets[0].ToggleSlowed(false);
             else if (info.hexType == "poison") info.targets[0].TogglePoisoned(false);
@@ -371,11 +389,13 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.occurance == 0)
         {
-            info.targets[0].Heal(2);
+            info.targets[0].DealDamage(2, info.caster, true);
 
             executionCore.AddRoundStartDelayedEffect(1, info);
             executionCore.AddNextRoundEndDelayedEffect(2, info);
         }
+        else if (info.targets[0] == null)
+            return;
         else if (info.occurance == 1)
             info.targets[0].TogglePoisoned(true);
         else // 2
@@ -389,7 +409,7 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.recast)
         {
-            info.targets[0].DealDamage(2, info.caster);
+            info.targets[0].DealDamage(2, info.caster, true);
 
             info.caster.GetSpell("Poison Cloud").ToggleRecast(false);
         }
@@ -403,12 +423,16 @@ public class SpellTraitEffect : MonoBehaviour
         }
         else // 1
         {
-            info.caster.inPoisonCloud = false;
+            if (info.caster != null)
+            {
+                info.caster.inPoisonCloud = false;
 
-            info.caster.GetSpell("Poison Cloud").ToggleRecast(false);
+                info.caster.GetSpell("Poison Cloud").ToggleRecast(false);
+            }
 
             foreach (Elemental elemental in info.caster.poisonedByPoisonCloud)
-                elemental.TogglePoisoned(false);
+                if (elemental != null)
+                    elemental.TogglePoisoned(false);
         }
     }
     private void Cripple(EffectInfo info)
@@ -431,17 +455,20 @@ public class SpellTraitEffect : MonoBehaviour
         }
         else // 1
             foreach (Elemental target in info.targets)
-                target.ToggleSlowed(false);
+                if (target != null)
+                    target.ToggleSlowed(false);
     }
     private void Sparkle(EffectInfo info)
     {
         if (info.occurance == 0)
         {
-            info.targets[0].Heal(2);
+            info.targets[0].DealDamage(2, info.caster, true);
 
             executionCore.AddRoundStartDelayedEffect(1, info);
             executionCore.AddNextRoundEndDelayedEffect(2, info);
         }
+        else if (info.targets[0] == null)
+            return;
         else if (info.occurance == 1)
             info.targets[0].ToggleWeakened(true);
         else // 2
@@ -457,7 +484,8 @@ public class SpellTraitEffect : MonoBehaviour
             executionCore.AddRoundStartDelayedEffect(1, info);
         else // 1
             foreach (Elemental target in info.targets)
-                target.TogglePotion(true);
+                if (target != null)
+                    target.TogglePotion(true);
     }
     private void Gift(EffectInfo info)
     {
@@ -468,10 +496,12 @@ public class SpellTraitEffect : MonoBehaviour
         }
         else if (info.occurance == 1)
         {
-            info.targets[0].ToggleGem(true);
-            info.caster.ToggleWearied(true);
+            if (info.targets[0] != null)
+                info.targets[0].ToggleGem(true);
+            if (info.caster != null)
+                info.caster.ToggleWearied(true);
         }
-        else // 2
+        else if (info.caster != null) // 2
             info.caster.ToggleWearied(false);
     }
 

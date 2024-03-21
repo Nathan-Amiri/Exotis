@@ -80,11 +80,7 @@ public class Elemental : MonoBehaviour
     public int PoisonStrength { get; private set; }
     public int WeakenStrength { get; private set; }
 
-    [NonSerialized] public bool hasCastSurge; // *Surge
-    [NonSerialized] public bool hasCastHex; // *Hex
-
     [NonSerialized] public Elemental mirageRedirectTarget; // *Mirage, //.make into status condition
-    [NonSerialized] public bool cannotSwapIn; // *Mirage, //.make into status condition
 
     [NonSerialized] public bool isEmpowered; // *Empower, //.make into status condition
 
@@ -151,7 +147,7 @@ public class Elemental : MonoBehaviour
     }
 
 
-    public void DealDamage(int amount, Elemental caster, bool spellDamage = true)
+    public void DealDamage(int amount, Elemental caster, bool spellDamage = true, bool eruptRecoil = false)
     {
         if (mirageRedirectTarget != null) // *Mirage
         {
@@ -170,7 +166,7 @@ public class Elemental : MonoBehaviour
             if (caster.isNumb)
                 return;
 
-            if (caster.potionBoosting)
+            if (caster.potionBoosting && !eruptRecoil)
             {
                 amount += 1;
                 caster.TogglePotion(false);
@@ -229,11 +225,9 @@ public class Elemental : MonoBehaviour
         // Check if any benched allies exist
         int a = NetworkManager.Singleton.IsHost ? 0 : 2;
 
-        Elemental benchedElemental1 = slotAssignment.Elementals[4 + a];
-        if (benchedElemental1 != null && !benchedElemental1.cannotSwapIn)
+        if (slotAssignment.Elementals[4 + a] != null)
             return true;
-        Elemental benchedElemental2 = slotAssignment.Elementals[5 + a];
-        if (benchedElemental2 != null && !benchedElemental2.cannotSwapIn)
+        if (slotAssignment.Elementals[5 + a] != null)
             return true;
 
         return false;

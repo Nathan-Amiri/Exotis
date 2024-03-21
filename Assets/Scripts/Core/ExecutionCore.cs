@@ -132,7 +132,7 @@ public class ExecutionCore : MonoBehaviour
         foreach (EffectInfo info in roundEndInfos)
             spellTraitEffect.CallEffectMethod(info);
 
-        roundEndInfos = nextRoundEndInfos;
+        roundEndInfos = new(nextRoundEndInfos);
         nextRoundEndInfos.Clear();
 
         foreach (Elemental elemental in slotAssignment.Elementals)
