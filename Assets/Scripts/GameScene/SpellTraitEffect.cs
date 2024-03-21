@@ -332,8 +332,6 @@ public class SpellTraitEffect : MonoBehaviour
 
         info.caster.ToggleArmored(true);
 
-        executionCore.AddNextRoundEndDelayedEffect(1, info);
-
         info.caster.GetSpell("Animate").cannotCastUntilSwap = true;
     }
     private void Nightmare(EffectInfo info)

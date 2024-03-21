@@ -99,7 +99,7 @@ public class ExecutionCore : MonoBehaviour
             else if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
             {
                 clock.NewRoundState(Clock.RoundState.Timescale);
-                console.WriteConsoleMessage("Neither player has any available actions. Round will end", null, NewCycle);
+                console.WriteConsoleMessage("Neither player has any available actions. The round will end", null, NewCycle);
             }
             // If neither player can act at RoundEnd, do not write
             else
@@ -160,7 +160,6 @@ public class ExecutionCore : MonoBehaviour
     }
     private bool CheckIfRepopulationDelegationNeeded(bool checkHostPlayer)
     {
-        // If checking guest player's slots, add 2
         int a = checkHostPlayer ? 0 : 2;
 
         List<bool> slotIsEmpty = new()
@@ -653,7 +652,7 @@ public class ExecutionCore : MonoBehaviour
         else if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
         {
             clock.NewRoundState(Clock.RoundState.RoundEnd);
-            console.WriteConsoleMessage("Both players have passed. Round will end", null, NewCycle);
+            console.WriteConsoleMessage("Both players have passed. The round will end", null, NewCycle);
         }
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
         {
@@ -665,6 +664,7 @@ public class ExecutionCore : MonoBehaviour
     }
     private void SinglePass()
     {
+        bool allyPassed = IsAllyPacket(singlePacket);
         ResetPackets();
 
         if (Clock.CurrentRoundState == Clock.RoundState.RoundStart)
@@ -676,18 +676,17 @@ public class ExecutionCore : MonoBehaviour
         {
             clock.NewRoundState(Clock.RoundState.RoundEnd);
 
-            // If you passed, don't write message
-            if (IsAllyPacket(singlePacket))
-                NewCycle();
+            if (allyPassed)
+                console.WriteConsoleMessage("The round will end", null, NewCycle);
             else
-                console.WriteConsoleMessage("The enemy has passed. Round will end", null, NewCycle);
+                console.WriteConsoleMessage("The enemy has passed. The round will end", null, NewCycle);
         }
         else if (Clock.CurrentRoundState == Clock.RoundState.Counter)
         {
             clock.NewRoundState(Clock.RoundState.Timescale);
 
             // If you passed, don't write message
-            if (!IsAllyPacket(singlePacket))
+            if (allyPassed)
                 WriteSpellEffectMessage();
             else
                 console.WriteConsoleMessage("The enemy has passed", null, WriteSpellEffectMessage);
@@ -1003,6 +1002,10 @@ public class ExecutionCore : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Elemental elemental = slotAssignment.Elementals[i];
+
+            if (elemental == null)
+                continue;
+
             if ((elemental.isAlly == isAlly) && elemental.CanAct())
                 return true;
         }
