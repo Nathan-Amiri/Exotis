@@ -1019,11 +1019,10 @@ public class ExecutionCore : MonoBehaviour
 
     private bool CheckForGameEnd()
     {
-        // Eliminate Elementals at 0 or less health (Hellfire can reduce Elementals below 0)
         List<Elemental> elementalsToEliminate = new();
 
         foreach (Elemental elemental in slotAssignment.Elementals)
-            if (elemental != null && elemental.Health <= 0) // *Hellfire
+            if (elemental != null && (elemental.Health == 0 || elemental.readyForElimination))
                 elementalsToEliminate.Add(elemental);
 
         foreach (Elemental elementalToEliminate in elementalsToEliminate)

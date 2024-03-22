@@ -19,7 +19,8 @@ MonoBehaviour:
   traitCanTargetAlly: 0
   traitCanTargetEnemy: 1
   traitCanTargetBenchedAlly: 0
+  traitOncePerGame: 1
   usableRoundStart: 1
   usableRoundEnd: 0
   usableCounterSpeed: 0
-  usableDuringTimeScaleSpeeds: 0
+  usableDuringTimescaleSpeeds: 0

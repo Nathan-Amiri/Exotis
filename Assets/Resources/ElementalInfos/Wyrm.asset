@@ -14,8 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   traitName: Rancid Aura
-  traitIsTargeted: 0
+  traitMaxTargets: 0
+  traitCanTargetSelf: 0
+  traitCanTargetAlly: 0
+  traitCanTargetEnemy: 0
+  traitCanTargetBenchedAlly: 0
+  traitOncePerGame: 1
   usableRoundStart: 0
   usableRoundEnd: 0
   usableCounterSpeed: 1
-  usableDuringTimeScaleSpeeds: 0
+  usableDuringTimescaleSpeeds: 0

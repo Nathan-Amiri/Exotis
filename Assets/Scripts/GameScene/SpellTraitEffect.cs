@@ -28,6 +28,7 @@ public class SpellTraitEffect : MonoBehaviour
         effectMethodIndex[info.spellOrTraitName](info);
     }
 
+    // Spells:
     private void Flow(EffectInfo info)
     {
         info.targets[0].DealDamage(2, info.caster, true);
@@ -111,7 +112,7 @@ public class SpellTraitEffect : MonoBehaviour
     private void Hellfire(EffectInfo info)
     {
         info.targets[0].DealDamage(4, info.caster, true);
-        info.caster.PrepareToEliminate();
+        info.caster.readyForElimination = true;
     }
     private void Empower(EffectInfo info)
     {
@@ -439,7 +440,7 @@ public class SpellTraitEffect : MonoBehaviour
         if (info.occurance == 0)
         {
             foreach (Elemental availableTarget in slotAssignment.GetAllAvailableTargets(info.caster, true))
-                if (availableTarget.PoisonStrength > 0)
+                if (availableTarget.isAlly != info.caster.isAlly && availableTarget.PoisonStrength > 0)
                 {
                     info.targets.Add(availableTarget);
 
@@ -504,10 +505,53 @@ public class SpellTraitEffect : MonoBehaviour
             info.caster.ToggleWearied(false);
     }
 
+    // Traits:
+    private void Dive(EffectInfo info)
+    {
+        if (info.occurance == 0)
+        {
+            info.caster.trait.hasOccurredThisGame = true;
 
+            info.caster.Heal(1);
+            info.caster.ToggleEnraged(true);
 
-    // I'll need to add a lot more action available things, maybe--like hellhound's trait
+            executionCore.AddAfterSpellOccursDelayedEffect(1, info);
+        }
+        else // 1
+            info.caster.ToggleEnraged(false);
+    }
+    private void Eclipse(EffectInfo info)
+    {
+        if (info.occurance == 0)
+        {
+            info.caster.trait.hasOccurredThisGame = true;
 
+            executionCore.AddRoundStartDelayedEffect(1, info);
+            executionCore.AddNextRoundEndDelayedEffect(2, info);
+        }
+        else if (info.occurance == 1)
+        {
+            foreach (Elemental availableTarget in slotAssignment.GetAllAvailableTargets(info.caster, true))
+            {
+                info.targets.Add(availableTarget);
+
+                availableTarget.ToggleEnraged(true);
+            }
+        }
+        else // 2
+            foreach (Elemental target in info.targets)
+                if (target != null)
+                    target.ToggleEnraged(false);
+    }
+    private void Scourge(EffectInfo info)
+    {
+        info.caster.DealDamage(1, info.caster, false);
+        info.targets[0].DealDamage(1, info.caster, false);
+    }
+    private void Burrow(EffectInfo info)
+    {
+        slotAssignment.Swap(info.caster, info.targets[0]);
+    }
 
 
     // Run in Awake
@@ -549,5 +593,10 @@ public class SpellTraitEffect : MonoBehaviour
         effectMethodIndex.Add("Allure", Allure);
         effectMethodIndex.Add("Fairy Dust", FairyDust);
         effectMethodIndex.Add("Gift", Gift);
+
+        effectMethodIndex.Add("Dive", Dive);
+        effectMethodIndex.Add("Eclipse", Eclipse);
+        effectMethodIndex.Add("Scourge", Scourge);
+        effectMethodIndex.Add("Burrow", Burrow);
     }
 }

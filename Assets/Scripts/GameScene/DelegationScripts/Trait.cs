@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +27,12 @@ public class Trait : MonoBehaviour, IDelegationAction
     public bool CanTargetBenchedAlly { get; private set; }
     public string Name { get; private set; }
 
+    public bool OncePerGame { get; private set; }
+
+    [NonSerialized] public bool hasOccurredThisGame;
+    [NonSerialized] public bool hasOccurredSinceSwap;
+    [NonSerialized] public bool hasOccurredThisRound;
+
 
     private bool usableRoundStart;
     private bool usableRoundEnd;
@@ -51,6 +58,8 @@ public class Trait : MonoBehaviour, IDelegationAction
         CanTargetEnemy = info.traitCanTargetEnemy;
         CanTargetBenchedAlly = info.traitCanTargetBenchedAlly;
         Name = info.traitName;
+
+        OncePerGame = info.traitOncePerGame;
 
         usableRoundStart = info.usableRoundStart;
         usableRoundEnd = info.usableRoundEnd;
@@ -84,6 +93,9 @@ public class Trait : MonoBehaviour, IDelegationAction
     public bool ActionAvailable()
     {
         if (ParentElemental.DisengageStrength > 0)
+            return false;
+
+        if (OncePerGame && hasOccurredThisGame)
             return false;
 
         return Clock.CurrentRoundState switch

@@ -2,7 +2,7 @@
 	SPELLS:
 
 0 Flow 3 "I deal 2 to a target in play. I heal 1"
-1 Cleanse ? "I heal myself or my ally 2. I'm Wearied next round"
+1 Cleanse ? "I heal myself or my partner 2. I'm Wearied next round"
 2 Mirage 7 "I Swap. My replacement gains an action and is Trapped this round. When it's dealt damage this round, the damage redirects to me if I'm alive. I can't cast this Spell again"
 3 Tidal Wave 2 "I deal 3 to a target in play. Then, I'm Weakened until the end of next round"
 
@@ -12,19 +12,19 @@
 7 Hellfire 3 "I deal 4 to a target in play. Then, I'm Eliminated"
 
 8 Empower 2 "I deal 2 to a target in play. If I lost health this round, I deal 3 instead"
-9 Fortify 7 "This round, I'm Disengaged and my ally is Armored. I'm Wearied next round"
+9 Fortify 7 "This round, I'm Disengaged and my partner is Armored. I'm Wearied next round"
 10 Block C "I'm Armored this round. I can recast this Spell at 2:00 to deal 1 to any targets in play. This Spell can't counter a non-damaging Spell."
 11 Landslide 3 "I target all other Elementals in play. I deal 2 to each of the targets"
 
 12 Swoop 4 "I deal 2 to a target in play"
 13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap if I can"
 14 Whirlwind 3 "I deal 2 to a target in play. I'm Enraged, Weakened, and Wearied next round"
-15 Flurry C "My Ally Swaps"
+15 Flurry C "My partner Swaps"
 
 16 Surge 3 "I deal 2 to a target in play. The first time I cast this Spell, I gain a Spark"
 17 Blink C "I gain a Spark. I'm Enraged until the Spell I'm countering has occurred. I can’t cast this Spell again until I Swap"
 18 Defuse 6 "I Stun a target in play this round. I can’t cast this Spell again until I Swap"
-19 Recharge 1 "I heal myself or my ally 1. My ally and I each gain a Spark"
+19 Recharge 1 "I heal myself or my partner 1. My partner and I each gain a Spark"
 
 20 Icy Breath 3 "I deal 2 to a target in play and Slow it until the end of next round"
 21 Hail 4 "I deal 1 to any targets in play and Slow them until the end of next round"
@@ -32,7 +32,7 @@
 23 Numbing Cold 6 "I target an Elemental in play that is slower than me. The target’s Spells deal 0 damage this round. I'm Wearied next round"
 
 24 Enchain 3 "I deal 2 to a target in play and Trap it until the end of next round"
-25 Animate 5 "My ally gains an action. (If they already have one, they gain a second) I'm Armored this round. I can’t cast this Spell again until I Swap"
+25 Animate 5 "My partner gains an action. (If they already have one, they gain a second) I'm Armored this round. I can’t cast this Spell again until I Swap"
 26 Nightmare ? "I target an Elemental in play. Next round, it's Stunned and I'm Wearied"
 27 Hex 5 "I Slow, Poison, or Weaken a target in play this round. I heal myself 1. The first time I cast this Spell, I heal 2 instead"
 
@@ -42,15 +42,15 @@
 31 Cripple 5 "I Slow all Poisoned enemies this round, even ones not in play. I gain an action. I can't cast this Spell again until I Swap"
 
 32 Sparkle 3 "I deal 2 to a target in play. It's Weakened next round"
-33 Allure C "If the Spell I'm countering is targeting my ally, it targets me instead"
-34 Fairy Dust 1 "I target up to any two allies, even ones not in play. (I can target myself) At the beginning of next round, they each gain a Potion"
-35 Gift ? "I target myself or any ally, even one not in play. At the beginning of next round, the target gains a Gem. I'm Wearied next round"
+33 Allure C "If the Spell I'm countering is targeting my partner, it targets me instead"
+34 Fairy Dust 1 "I target up to any two allied Elementals. (I can target myself) At the beginning of next round, they each gain a Potion"
+35 Gift ? "I target myself or any allied Elemental. At the beginning of next round, the target gains a Gem. I'm Wearied next round"
 
 
 	ELEMENTALS/TRAITS:
 
 0 Will-o'-Wisp 6m Water/Flame
-	Carefree "Whenever my ally deals damage to me, I’m immune to that damage"
+	Carefree "Whenever my partner deals damage to me, I’m immune to that damage"
 1 Selkie 7s Earth/Water
 	Blubber "When I would take damage, I don't lose health until the end of this round"
 2 Nymph 6m Water/Wind
@@ -58,7 +58,7 @@
 3 Kraken 5f Water/Lightning
 	Reservoir "At the beginning of the game, I gain a Gem"
 4 Leviathan 6m Frost/Water
-	Majestic "Once per game, immediately after I enter play, I can heal myself or my ally 2"
+	Majestic "Once per game, immediately after I enter play, I can heal myself or my partner 2"
 5 Hydra 7s Water/Shadow
 	Eclipse "Once per game, at the end of a round, I can Enrage all Elementals next round, even ones not in play"
 6 Siren 7s Water/Venom
@@ -74,7 +74,7 @@
 11 Wizard 5f Frost/Flame
 	Astonish "The first time I’m in play at the beginning of a round, I'm Enraged that round"
 12 Hellhound 6m Shadow/Flame
-	Berserk "At the end of each round, If my ally isn't Disengaged, I can deal 1 to it and gain a Potion. I can't use this effect next round"
+	Berserk "At the end of each round, If my partner isn't Disengaged, I can deal 1 to it and gain a Potion. I can't use this effect next round"
 13 Chimera 5f Flame/Venom
 	Sizzle "If I’m casting or recasting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell. I can’t use this effect next round"
 14 Genie 6m Jewel/Flame
@@ -90,7 +90,7 @@
 19 Scorpio 7s Earth/Venom
 	Paralyze "Once per game, at the beginning of a round, I can Trap an enemy in play until I Swap or am Eliminated"
 20 Dwarf 6m Earth/Jewel
-	Inspire "Once per game, at the beginning of a round, I can Enrage myself or my ally this round"
+	Inspire "Once per game, at the beginning of a round, I can Enrage myself or my partner this round"
 21 Griffin 5f Wind/Lightning
 	Nimble "The first time I would take damage from a non-Spell source each round, I’m immune to that damage"
 22 Ghost 6m Wind/Frost
@@ -102,23 +102,23 @@
 25 Fairy 6m Wind/Jewel
 	Serenade "At the end of each round, if I have not healed this round, I heal 1"
 26 Thunderbird 6m Frost/Lightning
-	Sacrifice "I'm permanently Weakened. When I’m Eliminated, I can immediately fully heal any ally, even one not in play. I can Eliminate myself at any time or at counter speed"
+	Sacrifice "I'm permanently Weakened. When I’m Eliminated, I can immediately fully heal any allied Elemental. I can Eliminate myself at any time or at counter speed"
 27 Gargoyle 6m Shadow/Lightning
 	Scavenger "When I Eliminate an enemy, I gain a Potion"
 28 Abomination 6m Lightning/Venom
-	Freak "When I enter play due to a Swap, my ally can immediately Swap."
+	Freak "When I enter play due to a Swap, my partner can immediately Swap."
 29 Angel 7s Lightning/Jewel
 	Smite "Each round, the first time I take damage from a Spell, I gain a Spark"
 30 Werewolf 5f Shadow/Frost
-	Shapeshift "Once per game, at the beginning of a round, I can choose any ally, even one not in play. My Spells are replaced with its Spells this round"
+	Shapeshift "Once per game, at the beginning of a round, I can choose any allied Elemental. My Spells are replaced with its Spells this round"
 31 Wyrm 6m Venom/Frost
 	Rancid Aura "Once per game, at counter speed, I can Weaken all Elementals, even ones not in play, until the end of next round"
 32 Unicorn 5f Frost/Jewel
 	Adorn "When I cast a non-damaging Spell, I become Armored this round"
 33 Witch 6m Shadow/Venom
-	Deceive "At counter speed, I can target any ally, even one not in play. If the Spell I'm countering would deal damage to me, the damage redirects to the target"
+	Deceive "At counter speed, I can target any allied Elemental. If the Spell I'm countering would deal damage to me, the damage redirects to the target"
 34 Shaman 6m Jewel/Shadow
-	Mystic Arts "At any time, I can become Disengaged until the end of next round. Despite being Disengaged, I can recast this Trait at any time or at counter speed to end this effect early"
+	Mystic Arts "Once per game, at any time, I can become Disengaged until the end of next round. Despite being Disengaged, I can recast this Trait at any time or at counter speed to end this effect early"
 35 Basilisk 6m Venom/Jewel
 	Stony Gaze "Once per game, at the beginning of a round, I can Stun and Trap myself and an enemy in play this round"
 

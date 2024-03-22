@@ -55,6 +55,8 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public int currentActions;
 
+    [NonSerialized] public bool readyForElimination;
+
         // Only true during SpellEffect when Spell is boosted by Potion/Frenzy
     [NonSerialized] public bool potionBoosting;
     [NonSerialized] public bool frenzyBoosting; // *Frenzy
@@ -150,6 +152,9 @@ public class Elemental : MonoBehaviour
 
     public void DealDamage(int amount, Elemental caster, bool spellDamage = true, bool eruptRecoil = false)
     {
+        if (name == "Will=o'-Wisp" && slotAssignment.GetAlly(this) == caster) // *Carefree
+            return;
+
         if (mirageRedirectTarget != null) // *Mirage
         {
             mirageRedirectTarget.DealDamage(amount, caster, spellDamage);
@@ -164,7 +169,7 @@ public class Elemental : MonoBehaviour
 
         if (spellDamage)
         {
-            if (caster.NumbStrength > 0)
+            if (caster.NumbStrength > 0) // *Numbing Cold
                 return;
 
             if (caster.potionBoosting && !eruptRecoil)
@@ -185,7 +190,7 @@ public class Elemental : MonoBehaviour
             if (caster.WeakenStrength > 0)
                 amount -= 1;
 
-            if (inPoisonCloud && amount > 0) // *Poison Cloud
+            if (inPoisonCloud && amount > 0 && caster.isAlly != isAlly) // *Poison Cloud
             {
                 caster.TogglePoisoned(true);
                 poisonedByPoisonCloud.Add(caster);
@@ -195,9 +200,22 @@ public class Elemental : MonoBehaviour
         if (amount <= 0)
             return;
 
-        ToggleEmpowered(true);
+        if (caster.name == "Dragon" && spellDamage && caster.isAlly != isAlly && !caster.trait.hasOccurredThisRound) // *Devour
+        {
+            caster.trait.hasOccurredThisRound = true;
+            caster.Heal(1);
+        }
+
+        ToggleEmpowered(true); // *Empower
 
         Health -= amount;
+
+        if (name == "Phoenix" && Health <= 0 && !trait.hasOccurredThisGame) // *Rebirth
+        {
+            trait.hasOccurredThisGame = true;
+            Health = 1;
+            ToggleWeakened(true);
+        }
     }
 
     public void Heal(int amount)
@@ -211,11 +229,6 @@ public class Elemental : MonoBehaviour
         healthText.text = Health.ToString();
     }
 
-    public void PrepareToEliminate() // Hellfire
-    {
-        // Ensure that CheckForGameEnd will eliminate this Elemental after all SpellTraitEffects have occurred
-        Health = -100;
-    }
     public void Eliminate()
     {
         // Remove this from Elementals manually since Destroy doesn't occur until the end of the frame
@@ -279,6 +292,12 @@ public class Elemental : MonoBehaviour
 
     public void OnRoundStart()
     {
+        if (name == "Kraken" && !trait.hasOccurredThisGame) // Reservoir
+        {
+            ToggleGem(true);
+            trait.hasOccurredThisGame = true;
+        }
+
         ToggleEmpowered(false);
     }
     public void OnRoundEnd()

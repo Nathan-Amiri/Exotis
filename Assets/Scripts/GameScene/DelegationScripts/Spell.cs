@@ -151,6 +151,9 @@ public class Spell : MonoBehaviour, IDelegationAction
                 return IsWild || Clock.CurrentTimescale >= Timescale;
 
             case Clock.RoundState.Counter:
+                if (ParentElemental.name == "Mermaid" && !IsDamaging) // *Slippery
+                    return true;
+
                 return isCounter;
 
             default:
