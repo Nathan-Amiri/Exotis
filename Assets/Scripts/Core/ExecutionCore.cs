@@ -118,7 +118,7 @@ public class ExecutionCore : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Elemental elemental = slotAssignment.Elementals[i];
-            if (elemental.PoisonStrength > 0)
+            if (elemental != null && elemental.PoisonStrength > 0)
             {
                 elemental.DealDamage(1, elemental, false);
                 elemental.ApplyHealthChange();
@@ -906,8 +906,12 @@ public class ExecutionCore : MonoBehaviour
     }
     private void TogglePotionFrenzyBoosting(RelayPacket packet, bool on) // *Frenzy
     {
-        slotAssignment.Elementals[packet.casterSlot].potionBoosting = on && packet.potion;
-        slotAssignment.Elementals[packet.casterSlot].frenzyBoosting = on && packet.frenzy;
+        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
+        if (caster == null)
+            return;
+
+        caster.potionBoosting = on && packet.potion;
+        caster.frenzyBoosting = on && packet.frenzy;
     }
 
     private void RetreatEffect(EffectInfo info)
@@ -1016,9 +1020,14 @@ public class ExecutionCore : MonoBehaviour
     private bool CheckForGameEnd()
     {
         // Eliminate Elementals at 0 or less health (Hellfire can reduce Elementals below 0)
+        List<Elemental> elementalsToEliminate = new();
+
         foreach (Elemental elemental in slotAssignment.Elementals)
             if (elemental != null && elemental.Health <= 0) // *Hellfire
-                Destroy(elemental.gameObject);
+                elementalsToEliminate.Add(elemental);
+
+        foreach (Elemental elementalToEliminate in elementalsToEliminate)
+            elementalToEliminate.Eliminate();
 
         // Check if game has ended
         List<int> allySlots = new() { 0, 1, 4, 5 };

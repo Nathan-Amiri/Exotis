@@ -210,6 +210,21 @@ public class Elemental : MonoBehaviour
         healthText.text = Health.ToString();
     }
 
+    public void PrepareToEliminate() // Hellfire
+    {
+        // Ensure that CheckForGameEnd will eliminate this Elemental after all SpellTraitEffects have occurred
+        Health = -100;
+    }
+    public void Eliminate()
+    {
+        // Remove this from Elementals manually since Destroy doesn't occur until the end of the frame
+        for (int i = 0; i < slotAssignment.Elementals.Count; i++)
+            if (slotAssignment.Elementals[i] == this)
+                slotAssignment.Elementals[i] = null;
+
+        Destroy(gameObject);
+    }
+
     public bool CanSwapOut()
     {
         if (TrapStrength > 0)
@@ -273,12 +288,6 @@ public class Elemental : MonoBehaviour
     {
         foreach (Spell spell in spells)
             spell.cannotCastUntilSwap = false;
-    }
-
-    public void Eliminate() // Hellfire
-    {
-        // Ensure that CheckForGameEnd will eliminate this Elemental after all SpellTraitEffects have occurred
-        Health = -100;
     }
 
     // Item:

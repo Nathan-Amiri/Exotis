@@ -109,7 +109,7 @@ public class SpellTraitEffect : MonoBehaviour
     private void Hellfire(EffectInfo info)
     {
         info.targets[0].DealDamage(4, info.caster, true);
-        info.caster.Eliminate();
+        info.caster.PrepareToEliminate();
     }
     private void Empower(EffectInfo info)
     {
