@@ -415,7 +415,7 @@ public class SpellTraitEffect : MonoBehaviour
         }
         else if (info.occurance == 0)
         {
-            info.caster.inPoisonCloud = true;
+            info.caster.ToggleClouded(true);
 
             info.caster.GetSpell("Poison Cloud").ToggleRecast(true);
 
@@ -425,7 +425,7 @@ public class SpellTraitEffect : MonoBehaviour
         {
             if (info.caster != null)
             {
-                info.caster.inPoisonCloud = false;
+                info.caster.ToggleClouded(false);
 
                 info.caster.GetSpell("Poison Cloud").ToggleRecast(false);
             }
@@ -517,7 +517,7 @@ public class SpellTraitEffect : MonoBehaviour
 
             executionCore.AddAfterSpellOccursDelayedEffect(1, info);
         }
-        else // 1
+        else if (info.caster != null) // 1
             info.caster.ToggleEnraged(false);
     }
     private void Eclipse(EffectInfo info)
@@ -551,6 +551,32 @@ public class SpellTraitEffect : MonoBehaviour
     private void Burrow(EffectInfo info)
     {
         slotAssignment.Swap(info.caster, info.targets[0]);
+    }
+    private void Astonish(EffectInfo info)
+    {
+        // This info created manually from Elemental's OnRoundStart
+        info.caster.ToggleEnraged(false);
+    }
+    private void BestWishes(EffectInfo info)
+    {
+        if (info.occurance == 0)
+        {
+            info.caster.trait.hasOccurredThisGame = true;
+
+            info.caster.currentActions += 1;
+            info.caster.ToggleWished(true);
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+        }
+        else if (info.caster != null) // 1
+            info.caster.ToggleWished(false);
+    }
+    private void Screech(EffectInfo info)
+    {
+        info.caster.trait.hasOccurredThisGame = true;
+
+        foreach (Elemental target in info.targets)
+            target.DealDamage(1, info.caster, false);
     }
 
 
@@ -598,5 +624,8 @@ public class SpellTraitEffect : MonoBehaviour
         effectMethodIndex.Add("Eclipse", Eclipse);
         effectMethodIndex.Add("Scourge", Scourge);
         effectMethodIndex.Add("Burrow", Burrow);
+        effectMethodIndex.Add("Astonish", Astonish);
+        effectMethodIndex.Add("Best Wishes", BestWishes);
+        effectMethodIndex.Add("Screech", Screech);
     }
 }

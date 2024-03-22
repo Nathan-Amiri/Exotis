@@ -150,6 +150,8 @@ public class DelegationCore : MonoBehaviour
 
                 cancelButton.SetActive(true);
                 submitButton.SetActive(true);
+
+                return;
             }
             else if (spell.Name == "Numbing Cold") // *Numbing Cold
             {
@@ -204,7 +206,26 @@ public class DelegationCore : MonoBehaviour
             }
         }
         else
+        {
             spell = null;
+
+            if (action is Trait trait && trait.ParentElemental.name == "Roc") // *Screech
+            {
+                ResetScene();
+
+                List<int> targets = new();
+                for (int i = 0; i < 8; i++)
+                    if (i != packet.casterSlot && slotAssignment.CheckTargetAvailable(i))
+                        targets.Add(i);
+
+                packet.targetSlots = targets.ToArray();
+
+                cancelButton.SetActive(true);
+                submitButton.SetActive(true);
+
+                return;
+            }
+        }
 
         int maxTargets = GetMaxTargets(action);
 

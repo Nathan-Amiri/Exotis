@@ -33,6 +33,8 @@ public class StatusIcon : MonoBehaviour
         ("MI", StaticLibrary.gameColors["water"]), // *Mirage
         ("EM", StaticLibrary.gameColors["earth"]), // *Empower
         ("NU", StaticLibrary.gameColors["frost"]), // *Numbing Cold
+        ("BE", StaticLibrary.gameColors["jewel"]), // *Best Wishes
+        ("PO", StaticLibrary.gameColors["venom"]), // *Poison Cloud
     };
 
     public void AddIcon(int statusNumber = 0)

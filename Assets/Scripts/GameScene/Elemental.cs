@@ -41,6 +41,7 @@ public class Elemental : MonoBehaviour
 
     // SCENE REFERENCE:
     [SerializeField] private SlotAssignment slotAssignment;
+    [SerializeField] private ExecutionCore executionCore;
 
     [SerializeField] private Transform inPlayParent;
     [SerializeField] private Transform benchParent;
@@ -84,12 +85,12 @@ public class Elemental : MonoBehaviour
 
     public int MirageStrength { get; private set; } // *Mirage
     public int EmpowerStrength { get; private set; } // *Empower
-    public int NumbStrength { get; private set; } // *Numb
+    public int NumbStrength { get; private set; } // *Numb // *Best Wishes
+    public int CloudStrength { get; private set; } // *Poison Cloud
 
 
-    [NonSerialized] public Elemental mirageRedirectTarget; // *Mirage, //.make into status condition
+    [NonSerialized] public Elemental mirageRedirectTarget; // *Mirage
 
-    [NonSerialized] public bool inPoisonCloud; // *Poison Cloud, //.make into status condition
     public readonly List<Elemental> poisonedByPoisonCloud = new();
 
     public void Setup(string elementalName) // Called by Setup
@@ -190,7 +191,7 @@ public class Elemental : MonoBehaviour
             if (caster.WeakenStrength > 0)
                 amount -= 1;
 
-            if (inPoisonCloud && amount > 0 && caster.isAlly != isAlly) // *Poison Cloud
+            if (CloudStrength > 0 && amount > 0 && caster.isAlly != isAlly) // *Poison Cloud
             {
                 caster.TogglePoisoned(true);
                 poisonedByPoisonCloud.Add(caster);
@@ -206,7 +207,12 @@ public class Elemental : MonoBehaviour
             caster.Heal(1);
         }
 
-        ToggleEmpowered(true); // *Empower
+        foreach (Spell spell in spells)
+            if (spell.Name == "Empower")
+            {
+                ToggleEmpowered(true);
+                break;
+            }
 
         Health -= amount;
 
@@ -292,10 +298,26 @@ public class Elemental : MonoBehaviour
 
     public void OnRoundStart()
     {
+        trait.occurredLastRound = trait.hasOccurredThisRound;
+        trait.hasOccurredThisRound = false;
+
         if (name == "Kraken" && !trait.hasOccurredThisGame) // Reservoir
         {
-            ToggleGem(true);
             trait.hasOccurredThisGame = true;
+
+            ToggleGem(true);
+        }
+        else if (name == "Wizard" && slotAssignment.GetSlot(this) < 4 && !trait.hasOccurredThisGame) // *Astonish
+        {
+            trait.hasOccurredThisGame = true;
+
+            ToggleEnraged(true);
+            EffectInfo info = new()
+            {
+                spellOrTraitName = "Astonish",
+                caster = this
+            };
+            executionCore.AddRoundEndDelayedEffect(0, info);
         }
 
         ToggleEmpowered(false);
@@ -306,6 +328,8 @@ public class Elemental : MonoBehaviour
     }
     public void OnSwapIntoPlay()
     {
+        trait.hasOccurredSinceSwap = false;
+
         foreach (Spell spell in spells)
             spell.cannotCastUntilSwap = false;
     }
@@ -398,10 +422,21 @@ public class Elemental : MonoBehaviour
         UpdateStatusIcons(10, EmpowerStrength, becomeEmpowered);
         EmpowerStrength += becomeEmpowered ? 1 : -1;
     }
-    public void ToggleNumb(bool becomeNumb) // *Numb
+    public void ToggleNumb(bool becomeNumb) // *Numbing Cold
     {
         UpdateStatusIcons(11, NumbStrength, becomeNumb);
         NumbStrength += becomeNumb ? 1 : -1;
+    }
+    public void ToggleWished(bool becomeWished) // *Best Wishes
+    {
+        // Use NumbStrength since the effect is identical
+        UpdateStatusIcons(12, NumbStrength, becomeWished);
+        NumbStrength += becomeWished ? 1 : -1;
+    }
+    public void ToggleClouded(bool becomeClouded) // *Numbing Cold
+    {
+        UpdateStatusIcons(13, CloudStrength, becomeClouded);
+        CloudStrength += becomeClouded ? 1 : -1;
     }
 
     // Update Status Icons:
