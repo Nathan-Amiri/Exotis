@@ -68,7 +68,7 @@
 8 Salamander 5f Flame/Earth
 	Burrow "At any time, I can Swap."
 9 Phoenix 5f Wind/Flame
-	Rebirth "The first time I take lethal damage, I retain 1 health and am Weakened for the rest of the game"
+	Rebirth "The first time I would be Eliminated, I retain 1 health and am Weakened for the rest of the game"
 10 Dragon 6m Flame/Lightning
 	Devour "Each round, the first time I damage an enemy with a Spell, I heal 1"
 11 Wizard 5f Frost/Flame

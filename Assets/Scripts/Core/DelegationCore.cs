@@ -162,7 +162,7 @@ public class DelegationCore : MonoBehaviour
 
                 if (targets.Count == 0)
                 {
-                    WriteFailMessage("No available targets slower than the caster. Choose a different action");
+                    WriteFailMessage("There are no available targets slower than the caster. Choose a different action");
                     return;
                 }
 
@@ -209,22 +209,49 @@ public class DelegationCore : MonoBehaviour
         {
             spell = null;
 
-            if (action is Trait trait && trait.ParentElemental.name == "Roc") // *Screech
+            if (action is Trait trait)
             {
-                ResetScene();
+                if (trait.ParentElemental.name == "Roc") // *Screech
+                {
+                    ResetScene();
 
-                List<int> targets = new();
-                for (int i = 0; i < 8; i++)
-                    if (i != packet.casterSlot && slotAssignment.CheckTargetAvailable(i))
-                        targets.Add(i);
+                    List<int> targets = new();
+                    for (int i = 0; i < 8; i++)
+                        if (i != packet.casterSlot && slotAssignment.CheckTargetAvailable(i))
+                            targets.Add(i);
 
-                packet.targetSlots = targets.ToArray();
+                    packet.targetSlots = targets.ToArray();
 
-                cancelButton.SetActive(true);
-                submitButton.SetActive(true);
+                    cancelButton.SetActive(true);
+                    submitButton.SetActive(true);
 
-                return;
+                    return;
+                }
+                else if (trait.ParentElemental.name == "Yeti") // *Chill
+                {
+                    List<int> targets = new();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Elemental target = slotAssignment.Elementals[i];
+                        if (slotAssignment.CheckTargetAvailable(i) && target.isAlly != trait.ParentElemental.isAlly && target.SlowStrength > 0)
+                            targets.Add(i);
+                    }
+
+                    if (targets.Count == 0)
+                    {
+                        WriteFailMessage("There are no Slowed enemies available to target. Choose a different action");
+                        return;
+                    }
+
+                    targetManager.DisplayTargets(new List<int> { packet.casterSlot }, targets, true);
+
+                    console.WriteConsoleMessage("Choose a target");
+                    cancelButton.SetActive(true);
+
+                    return;
+                }
             }
+
         }
 
         int maxTargets = GetMaxTargets(action);

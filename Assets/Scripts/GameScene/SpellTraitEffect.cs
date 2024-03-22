@@ -255,7 +255,7 @@ public class SpellTraitEffect : MonoBehaviour
         if (info.occurance == 0)
         {
             info.targets[0].DealDamage(2, info.caster, true);
-            info.targets[0].ToggleSlowed(true);
+            info.targets[0].ToggleSlowed(true, info.caster.name == "Ghost"); // *Icy Touch
 
             executionCore.AddNextRoundEndDelayedEffect(1, info);
         }
@@ -269,7 +269,7 @@ public class SpellTraitEffect : MonoBehaviour
             foreach (Elemental target in info.targets)
             {
                 target.DealDamage(1, info.caster, true);
-                target.ToggleSlowed(true);
+                info.targets[0].ToggleSlowed(true, info.caster.name == "Ghost"); // *Icy Touch
             }
 
             executionCore.AddNextRoundEndDelayedEffect(1, info);
@@ -531,7 +531,7 @@ public class SpellTraitEffect : MonoBehaviour
         }
         else if (info.occurance == 1)
         {
-            foreach (Elemental availableTarget in slotAssignment.GetAllAvailableTargets(info.caster, true))
+            foreach (Elemental availableTarget in slotAssignment.GetAllAvailableTargets(null, true))
             {
                 info.targets.Add(availableTarget);
 
@@ -578,6 +578,82 @@ public class SpellTraitEffect : MonoBehaviour
         foreach (Elemental target in info.targets)
             target.DealDamage(1, info.caster, false);
     }
+    private void Chill(EffectInfo info)
+    {
+        if (info.occurance == 0)
+        {
+            info.caster.trait.hasOccurredThisGame = true;
+
+            executionCore.AddRoundStartDelayedEffect(1, info);
+            executionCore.AddNextRoundEndDelayedEffect(2, info);
+        }
+        else if (info.targets[0] == null)
+            return;
+        else if (info.occurance == 1)
+            info.targets[0].ToggleDisengaged(true);
+        else // 2
+            info.targets[0].ToggleDisengaged(false);
+    }
+    private void Paralyze(EffectInfo info)
+    {
+        info.caster.trait.hasOccurredThisGame = true;
+
+        info.targets[0].ToggleTrapped(true);
+        info.caster.trappedByParalyze = info.targets[0];
+    }
+    private void Inspire(EffectInfo info)
+    {
+        if (info.occurance == 0)
+        {
+            info.caster.trait.hasOccurredThisGame = true;
+
+            info.targets[0].ToggleEnraged(true);
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+        }
+        else if (info.targets[0] != null) // 1
+            info.targets[0].ToggleEnraged(false);
+    }
+    private void RancidAura(EffectInfo info)
+    {
+        if (info.occurance == 0)
+        {
+            info.caster.trait.hasOccurredThisGame = true;
+
+            foreach (Elemental availableTarget in slotAssignment.GetAllAvailableTargets(null, true))
+            {
+                info.targets.Add(availableTarget);
+
+                availableTarget.ToggleWeakened(true);
+            }
+
+            executionCore.AddNextRoundEndDelayedEffect(1, info);
+        }
+        else // 2
+            foreach (Elemental target in info.targets)
+                if (target != null)
+                    target.ToggleWeakened(false);
+    }
+    //private void StonyGaze(EffectInfo info)
+    //{
+    //    if (info.occurance == 0)
+    //    {
+    //        info.caster.trait.hasOccurredThisGame = true;
+
+    //        foreach (Elemental availableTarget in slotAssignment.GetAllAvailableTargets(null, true))
+    //        {
+    //            info.targets.Add(availableTarget);
+
+    //            availableTarget.ToggleWeakened(true);
+    //        }
+
+    //        executionCore.AddNextRoundEndDelayedEffect(1, info);
+    //    }
+    //    else // 2
+    //        foreach (Elemental target in info.targets)
+    //            if (target != null)
+    //                target.ToggleWeakened(false);
+    //}
 
 
     // Run in Awake
@@ -627,5 +703,10 @@ public class SpellTraitEffect : MonoBehaviour
         effectMethodIndex.Add("Astonish", Astonish);
         effectMethodIndex.Add("Best Wishes", BestWishes);
         effectMethodIndex.Add("Screech", Screech);
+        effectMethodIndex.Add("Chill", Chill);
+        effectMethodIndex.Add("Paralyze", Paralyze);
+        effectMethodIndex.Add("Inspire", Inspire);
+        effectMethodIndex.Add("Rancid Aura", RancidAura);
+        //effectMethodIndex.Add("Stony Gaze", StonyGaze);
     }
 }

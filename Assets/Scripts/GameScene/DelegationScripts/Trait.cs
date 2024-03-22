@@ -30,7 +30,6 @@ public class Trait : MonoBehaviour, IDelegationAction
     public bool OncePerGame { get; private set; }
 
     [NonSerialized] public bool hasOccurredThisGame;
-    [NonSerialized] public bool hasOccurredSinceSwap;
     [NonSerialized] public bool hasOccurredThisRound;
     [NonSerialized] public bool occurredLastRound;
 

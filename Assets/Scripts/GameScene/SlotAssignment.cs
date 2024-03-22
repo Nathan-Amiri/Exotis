@@ -68,7 +68,7 @@ public class SlotAssignment : MonoBehaviour
             if (!CheckTargetAvailable(i))
                 continue;
 
-            if (i == GetSlot(caster))
+            if (caster != null && i == GetSlot(caster))
                 continue;
 
             availableTargets.Add(Elementals[i]);

@@ -112,17 +112,28 @@ public class ExecutionCore : MonoBehaviour
     public void RoundEnd()
     {
         //.blubber first
-        //.high voltage second, right before poison
+
+        // All Golems in play damage all other Elementals in play
+        List<Elemental> golemsInPlay = new(); // *High Voltage
+        for (int i = 0; i < 4; i++)
+        {
+            Elemental elemental = slotAssignment.Elementals[i];
+            if (elemental != null && elemental.DisengageStrength == 0 && elemental.name == "Golem")
+                golemsInPlay.Add(elemental);
+        }
+        foreach (Elemental golem in golemsInPlay)
+        {
+            List<Elemental> targets = slotAssignment.GetAllAvailableTargets(golem, false);
+            foreach (Elemental target in targets)
+                target.DealDamage(1, golem, false);
+        }
 
         // Deal Poison damage to all Elementals in play
         for (int i = 0; i < 4; i++)
         {
             Elemental elemental = slotAssignment.Elementals[i];
             if (elemental != null && elemental.PoisonStrength > 0)
-            {
                 elemental.DealDamage(1, elemental, false);
-                elemental.ApplyHealthChange();
-            }
         }
 
         if (CheckForGameEnd())
@@ -847,25 +858,20 @@ public class ExecutionCore : MonoBehaviour
                 clock.NewTimescale(newTimeScale);
             }
 
-            foreach (RelayPacket packet in packets) // *Frenzy
-                TogglePotionFrenzyBoosting(packet, true);
+            foreach (RelayPacket packet in packets)
+                ToggleBoosting(packet, true);
         }
 
         foreach (EffectInfo info in effectInfos)
             effectDelegate(info);
-
-        // Apply health changes after all Spells have occurred in case some targets overhealed before taking damage
-        foreach (Elemental elemental in slotAssignment.Elementals)
-            if (elemental != null)
-                elemental.ApplyHealthChange();
 
         if (CheckForGameEnd())
             return;
 
         if (packets[0].actionType == "spell")
         {
-            foreach (RelayPacket packet in packets) // *Frenzy
-                TogglePotionFrenzyBoosting(packet, false);
+            foreach (RelayPacket packet in packets)
+                ToggleBoosting(packet, false);
 
             if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
             {
@@ -874,6 +880,10 @@ public class ExecutionCore : MonoBehaviour
 
                 afterSpellOccursInfos.Clear();
             }
+
+            foreach (EffectInfo info in effectInfos) // *Adorn
+                if (info.caster != null && info.caster.name == "Unicorn" && !info.caster.GetSpell(info.spellOrTraitName).IsDamaging)
+                    info.caster.ToggleArmored(true);
         }
 
         if (Clock.CurrentRoundState == Clock.RoundState.Counter)
@@ -904,14 +914,15 @@ public class ExecutionCore : MonoBehaviour
             hexType = packet.hexType
         };
     }
-    private void TogglePotionFrenzyBoosting(RelayPacket packet, bool on) // *Frenzy
+    private void ToggleBoosting(RelayPacket packet, bool on)
     {
         Elemental caster = slotAssignment.Elementals[packet.casterSlot];
         if (caster == null)
             return;
 
         caster.potionBoosting = on && packet.potion;
-        caster.frenzyBoosting = on && packet.frenzy;
+        caster.frenzyBoosting = on && packet.frenzy; // *Frenzy
+        caster.juggernautBoosting = on && caster.name == "Ogre" && packet.targetSlots.Length == 1; // *Juggernaut
     }
 
     private void RetreatEffect(EffectInfo info)
@@ -979,7 +990,6 @@ public class ExecutionCore : MonoBehaviour
 
         Elemental target = slotAssignment.Elementals[flungSparks[0].targetSlot];
         target.DealDamage(1, flungSparks[0].caster, false);
-        target.ApplyHealthChange();
 
         CycleSparks();
     }
@@ -1019,6 +1029,9 @@ public class ExecutionCore : MonoBehaviour
 
     private bool CheckForGameEnd()
     {
+        foreach (Elemental elemental in slotAssignment.Elementals)
+            elemental.ApplyHealthChange();
+
         List<Elemental> elementalsToEliminate = new();
 
         foreach (Elemental elemental in slotAssignment.Elementals)

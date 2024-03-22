@@ -61,6 +61,7 @@ public class Elemental : MonoBehaviour
         // Only true during SpellEffect when Spell is boosted by Potion/Frenzy
     [NonSerialized] public bool potionBoosting;
     [NonSerialized] public bool frenzyBoosting; // *Frenzy
+    [NonSerialized] public bool juggernautBoosting; // *Juggernaut
 
         // Items
     public bool HasSpark { get; private set; }
@@ -90,8 +91,10 @@ public class Elemental : MonoBehaviour
 
 
     [NonSerialized] public Elemental mirageRedirectTarget; // *Mirage
-
     public readonly List<Elemental> poisonedByPoisonCloud = new();
+    [NonSerialized] public Elemental trappedByParalyze; // *Paralyze
+    [NonSerialized] public bool permanentlySlowed; // *Icy Touch
+    [NonSerialized] public Elemental gargoyleDamager; // *Scavenger
 
     public void Setup(string elementalName) // Called by Setup
     {
@@ -148,12 +151,14 @@ public class Elemental : MonoBehaviour
 
         if (!benched)
             OnSwapIntoPlay();
+        else
+            OnSwapOutOfPlay();
     }
 
 
     public void DealDamage(int amount, Elemental caster, bool spellDamage = true, bool eruptRecoil = false)
     {
-        if (name == "Will=o'-Wisp" && slotAssignment.GetAlly(this) == caster) // *Carefree
+        if (name == "Will-o'-Wisp" && slotAssignment.GetAlly(this) == caster) // *Carefree
             return;
 
         if (mirageRedirectTarget != null) // *Mirage
@@ -182,6 +187,9 @@ public class Elemental : MonoBehaviour
             if (caster.frenzyBoosting) // *Frenzy
                 amount += 1;
 
+            if (caster.juggernautBoosting) // *Juggernaut
+                amount += 1;
+
             if (ArmorStrength > 0)
             {
                 amount -= 1;
@@ -201,43 +209,72 @@ public class Elemental : MonoBehaviour
         if (amount <= 0)
             return;
 
-        if (caster.name == "Dragon" && spellDamage && caster.isAlly != isAlly && !caster.trait.hasOccurredThisRound) // *Devour
+        if (name == "Griffin" && !spellDamage && !trait.hasOccurredThisRound) // *Nimble
+        {
+            trait.hasOccurredThisRound = true;
+
+            return;
+        }
+        else if (caster.name == "Dragon" && spellDamage && caster.isAlly != isAlly && !caster.trait.hasOccurredThisRound) // *Devour
         {
             caster.trait.hasOccurredThisRound = true;
+
             caster.Heal(1);
         }
+        else if (name == "Angel" && spellDamage && !trait.hasOccurredThisRound) // *Smite
+        {
+            trait.hasOccurredThisRound = true;
 
-        foreach (Spell spell in spells)
+            ToggleSpark(true);
+        }
+        else if (caster.name == "Gargoyle" && caster.isAlly != isAlly) // *Scavenger
+            gargoyleDamager = caster;
+
+        foreach (Spell spell in spells) // *Empower
             if (spell.Name == "Empower")
-            {
                 ToggleEmpowered(true);
-                break;
-            }
 
         Health -= amount;
-
-        if (name == "Phoenix" && Health <= 0 && !trait.hasOccurredThisGame) // *Rebirth
-        {
-            trait.hasOccurredThisGame = true;
-            Health = 1;
-            ToggleWeakened(true);
-        }
     }
 
     public void Heal(int amount)
     {
         Health += amount;
+
+        if (name == "Fairy") // *Serenade
+            trait.hasOccurredThisRound = true;
     }
     public void ApplyHealthChange()
     {
         Health = Mathf.Clamp(Health, 0, MaxHealth);
 
         healthText.text = Health.ToString();
+
+        if (gargoyleDamager != null) // *Scavenger
+        {
+            if (Health == 0)
+                gargoyleDamager.TogglePotion(true);
+
+            gargoyleDamager = null;
+        }
     }
 
     public void Eliminate()
     {
-        // Remove this from Elementals manually since Destroy doesn't occur until the end of the frame
+        if (name == "Phoenix" && !trait.hasOccurredThisGame) // *Rebirth
+        {
+            trait.hasOccurredThisGame = true;
+            Health = 1;
+            ToggleWeakened(true);
+            return;
+        }
+        else if (name == "Scorpio" && trappedByParalyze != null) // *Paralyze
+        {
+            trappedByParalyze.ToggleTrapped(false);
+            trappedByParalyze = null;
+        }
+
+        // Remove from Elementals manually since Destroy doesn't occur until the end of the frame
         for (int i = 0; i < slotAssignment.Elementals.Count; i++)
             if (slotAssignment.Elementals[i] == this)
                 slotAssignment.Elementals[i] = null;
@@ -319,19 +356,37 @@ public class Elemental : MonoBehaviour
             };
             executionCore.AddRoundEndDelayedEffect(0, info);
         }
+        else if (name == "Ogre" && !trait.hasOccurredThisGame) // *Juggernaut
+        {
+            trait.hasOccurredThisGame = true;
+
+            ToggleSlowed(true);
+        }
 
         ToggleEmpowered(false);
     }
     public void OnRoundEnd()
     {
         ToggleArmored(false);
+
+        if (name == "Fairy" && !trait.hasOccurredThisRound) // *Serenade
+        {
+            Heal(1);
+            ApplyHealthChange();
+        }
     }
     public void OnSwapIntoPlay()
     {
-        trait.hasOccurredSinceSwap = false;
-
         foreach (Spell spell in spells)
             spell.cannotCastUntilSwap = false;
+    }
+    public void OnSwapOutOfPlay()
+    {
+        if (name == "Scorpio" && trappedByParalyze != null) // *Paralyze
+        {
+            trappedByParalyze.ToggleTrapped(false);
+            trappedByParalyze = null;
+        }
     }
 
     // Item:
@@ -383,8 +438,13 @@ public class Elemental : MonoBehaviour
         UpdateStatusIcons(4, StunStrength, becomeStunned);
         StunStrength += becomeStunned ? 1 : -1;
     }
-    public void ToggleSlowed(bool becomeSlowed)
+    public void ToggleSlowed(bool becomeSlowed, bool icyTouchSlow = false) // *Icy Touch
     {
+        if (permanentlySlowed)
+            return;
+        else if (icyTouchSlow)
+            permanentlySlowed = true;
+
         if (becomeSlowed && SlowStrength == 0)
             Speed -= 3;
         else if (!becomeSlowed && SlowStrength > 0)
