@@ -8,6 +8,7 @@ public class Trait : MonoBehaviour, IDelegationAction
     [SerializeField] private Elemental parentReference;
 
     [SerializeField] private Button button;
+
         // Accessed by Elemental
     public TMP_Text nameText;
 

@@ -80,11 +80,12 @@ public class Elemental : MonoBehaviour
     public int PoisonStrength { get; private set; }
     public int WeakenStrength { get; private set; }
 
+    public int MirageStrength { get; private set; } // *Mirage
+    public int EmpowerStrength { get; private set; } // *Empower
+    public int NumbStrength { get; private set; } // *Numb
+
+
     [NonSerialized] public Elemental mirageRedirectTarget; // *Mirage, //.make into status condition
-
-    [NonSerialized] public bool isEmpowered; // *Empower, //.make into status condition
-
-    [NonSerialized] public bool isNumb; // *Numbing Cold, //.make into status condition
 
     [NonSerialized] public bool inPoisonCloud; // *Poison Cloud, //.make into status condition
     public readonly List<Elemental> poisonedByPoisonCloud = new();
@@ -163,7 +164,7 @@ public class Elemental : MonoBehaviour
 
         if (spellDamage)
         {
-            if (caster.isNumb)
+            if (caster.NumbStrength > 0)
                 return;
 
             if (caster.potionBoosting && !eruptRecoil)
@@ -194,7 +195,7 @@ public class Elemental : MonoBehaviour
         if (amount <= 0)
             return;
 
-        isEmpowered = true;
+        ToggleEmpowered(true);
 
         Health -= amount;
     }
@@ -278,7 +279,7 @@ public class Elemental : MonoBehaviour
 
     public void OnRoundStart()
     {
-        isEmpowered = false;
+        ToggleEmpowered(false);
     }
     public void OnRoundEnd()
     {
@@ -363,6 +364,25 @@ public class Elemental : MonoBehaviour
     {
         UpdateStatusIcons(8, WeakenStrength, becomeWeakened);
         WeakenStrength += becomeWeakened ? 1 : -1;
+    }
+
+    public void ToggleMiraged(bool becomeMiraged) // *Mirage
+    {
+        UpdateStatusIcons(9, MirageStrength, becomeMiraged);
+        MirageStrength += becomeMiraged ? 1 : -1;
+    }
+    public void ToggleEmpowered(bool becomeEmpowered) // *Empower
+    {
+        if (EmpowerStrength == 0 && !becomeEmpowered)
+            return;
+
+        UpdateStatusIcons(10, EmpowerStrength, becomeEmpowered);
+        EmpowerStrength += becomeEmpowered ? 1 : -1;
+    }
+    public void ToggleNumb(bool becomeNumb) // *Numb
+    {
+        UpdateStatusIcons(11, NumbStrength, becomeNumb);
+        NumbStrength += becomeNumb ? 1 : -1;
     }
 
     // Update Status Icons:

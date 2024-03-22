@@ -15,7 +15,10 @@ public class StatusIcon : MonoBehaviour
     // 6 = Trap
     // 7 = Poison
     // 8 = Weaken
-    //.other statuses here
+
+    // 9 = Mirage
+    // 10 = Empower
+    // 11 = Numb
 
     // PREFAB REFERENCE:
     public Image iconImage;
@@ -25,20 +28,24 @@ public class StatusIcon : MonoBehaviour
     [SerializeField] private List<Sprite> statusSprites = new();
 
     // CONSTANT:
-    private readonly List<string> statusStrings = new()
+    private readonly List<(string, Color)> statusStrings = new()
     {
-        "frenzy"//.example
+        ("MI", StaticLibrary.gameColors["water"]), // *Mirage
+        ("EM", StaticLibrary.gameColors["earth"]), // *Empower
+        ("NU", StaticLibrary.gameColors["frost"]), // *Numbing Cold
     };
 
     public void AddIcon(int statusNumber = 0)
     {
         gameObject.SetActive(true);
 
-        if (statusNumber > 9)
+        if (statusNumber > 8)
         {
             iconImage.enabled = false;
 
-            initialsText.text = statusStrings[statusNumber - 9];
+            (string, Color) initials = statusStrings[statusNumber - 9];
+            initialsText.text = initials.Item1;
+            initialsText.color = initials.Item2;
         }
         else
         {

@@ -58,6 +58,7 @@ public class SpellTraitEffect : MonoBehaviour
             info.targets[0].currentActions += 1;
             info.targets[0].ToggleTrapped(true);
 
+            info.targets[0].ToggleMiraged(true);
             info.targets[0].mirageRedirectTarget = info.caster;
 
             info.caster.GetSpell("Mirage").hasBeenCast = true;
@@ -68,6 +69,7 @@ public class SpellTraitEffect : MonoBehaviour
         {
             info.targets[0].ToggleTrapped(false);
 
+            info.targets[0].ToggleMiraged(false);
             info.targets[0].mirageRedirectTarget = null;
         }
     }
@@ -113,7 +115,7 @@ public class SpellTraitEffect : MonoBehaviour
     }
     private void Empower(EffectInfo info)
     {
-        int damage = info.caster.isEmpowered ? 3 : 2;
+        int damage = info.caster.EmpowerStrength > 0 ? 3 : 2;
         info.targets[0].DealDamage(damage, info.caster, true);
     }
     private void Fortify(EffectInfo info)
@@ -299,14 +301,14 @@ public class SpellTraitEffect : MonoBehaviour
     {
         if (info.occurance == 0)
         {
-            info.targets[0].isNumb = true;
+            info.targets[0].ToggleNumb(true);
 
             executionCore.AddRoundEndDelayedEffect(1, info);
             executionCore.AddRoundStartDelayedEffect(2, info);
             executionCore.AddNextRoundEndDelayedEffect(3, info);
         }
         else if (info.occurance == 1 && info.targets[0] != null)
-            info.targets[0].isNumb = false;
+            info.targets[0].ToggleNumb(false);
         else if (info.caster == null)
             return;
         else if (info.occurance == 2)
