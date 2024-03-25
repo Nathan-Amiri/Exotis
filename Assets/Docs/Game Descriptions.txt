@@ -1,46 +1,55 @@
 
 	SPELLS:
 
+   Water:
 0 Flow 3 "I deal 2 to a target in play. I heal 1"
 1 Cleanse ? "I heal myself or my partner 2. I'm Wearied next round"
 2 Mirage 7 "I Swap. My replacement gains an action and is Trapped this round. When it's dealt damage this round, the damage redirects to me if I'm alive. I can't cast this Spell again"
 3 Tidal Wave 2 "I deal 3 to a target in play. Then, I'm Weakened until the end of next round"
 
+   Flame:
 4 Erupt 3 "I deal 3 to a target in play. I deal 1 to myself"
 5 Singe 6 "I force an enemy in play to Swap. I can recast this Spell at 2:00 to deal 2 to a target in play"
 6 Heat Up 5 "I gain a Potion. I'm Enraged this round. I can't cast this Spell again until I Swap"
 7 Hellfire 3 "I deal 4 to a target in play. Then, I'm Eliminated"
 
+   Earth:
 8 Empower 2 "I deal 2 to a target in play. If I lost health this round, I deal 3 instead"
 9 Fortify 7 "This round, I'm Disengaged and my partner is Armored. I'm Wearied next round"
 10 Block C "I'm Armored this round. I can recast this Spell at 2:00 to deal 1 to any targets in play. This Spell can't counter a non-damaging Spell."
 11 Landslide 3 "I target all other Elementals in play. I deal 2 to each of the targets"
 
+   Wind:
 12 Swoop 4 "I deal 2 to a target in play"
 13 Take Flight 4 "I deal 1 to a target in play. I heal 1. I Swap if I can"
 14 Whirlwind 3 "I deal 2 to a target in play. I'm Enraged, Weakened, and Wearied next round"
 15 Flurry C "My partner Swaps"
 
+   Lightning:
 16 Surge 3 "I deal 2 to a target in play. The first time I cast this Spell, I gain a Spark"
 17 Blink C "I gain a Spark. I'm Enraged until the Spell I'm countering has occurred. I can’t cast this Spell again until I Swap"
 18 Defuse 6 "I Stun a target in play this round. I can’t cast this Spell again until I Swap"
 19 Recharge 1 "I heal myself or my partner 1. My partner and I each gain a Spark"
 
+   Frost:
 20 Icy Breath 3 "I deal 2 to a target in play and Slow it until the end of next round"
 21 Hail 4 "I deal 1 to any targets in play and Slow them until the end of next round"
 22 Freeze 6 "I target an enemy. The target and I are Disengaged until the end of next round. I can't cast this Spell again until I Swap"
 23 Numbing Cold 6 "I target an Elemental in play that is slower than me. The target’s Spells deal 0 damage this round. I'm Wearied next round"
 
+   Shadow:
 24 Enchain 3 "I deal 2 to a target in play and Trap it until the end of next round"
 25 Animate 5 "My partner gains an action. (If they already have one, they gain a second) I'm Armored this round. I can’t cast this Spell again until I Swap"
 26 Nightmare ? "I target an Elemental in play. Next round, it's Stunned and I'm Wearied"
 27 Hex 5 "I Slow, Poison, or Weaken a target in play this round. I heal myself 1. The first time I cast this Spell, I heal 2 instead"
 
+   Venom:
 28 Fanged Bite 3 "I deal 2 to a target in play. It's Poisoned next round"
 29 Infect ? "I Poison a target in play for the rest of the game"
 30 Poison Cloud 5 "This round, when I'm damaged by an enemy Spell, I Poison the Spell's caster this round. I can recast this Spell at 2:00 to deal 2 to a target in play"
 31 Cripple 5 "I Slow all Poisoned enemies this round, even ones not in play. I gain an action. I can't cast this Spell again until I Swap"
 
+   Jewel:
 32 Sparkle 3 "I deal 2 to a target in play. It's Weakened next round"
 33 Allure C "If the Spell I'm countering is targeting my partner, it targets me instead"
 34 Fairy Dust 1 "I target up to any two allied Elementals. (I can target myself) At the beginning of next round, they each gain a Potion"

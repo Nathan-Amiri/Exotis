@@ -98,7 +98,7 @@ public class ExecutionCore : MonoBehaviour
             // If neither player can act at timescale, write and prepare to request RoundEnd delegations
             else if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
             {
-                clock.NewRoundState(Clock.RoundState.Timescale);
+                clock.NewRoundState(Clock.RoundState.RoundEnd);
                 console.WriteConsoleMessage("Neither player has any available actions. The round will end", null, NewCycle);
             }
             // If neither player can act at RoundEnd, do not write
