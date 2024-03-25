@@ -85,16 +85,19 @@ public class Elemental : MonoBehaviour
     public int WeakenStrength { get; private set; }
 
     public int MirageStrength { get; private set; } // *Mirage
+    public int DeceiveStrength { get; private set; } // *Deceive
     public int EmpowerStrength { get; private set; } // *Empower
     public int NumbStrength { get; private set; } // *Numb // *Best Wishes
     public int CloudStrength { get; private set; } // *Poison Cloud
 
 
     [NonSerialized] public Elemental mirageRedirectTarget; // *Mirage
+    [NonSerialized] public Elemental deceiveRedirectTarget; // *Deceive
     public readonly List<Elemental> poisonedByPoisonCloud = new();
     [NonSerialized] public Elemental trappedByParalyze; // *Paralyze
     [NonSerialized] public bool permanentlySlowed; // *Icy Touch
     [NonSerialized] public Elemental gargoyleDamager; // *Scavenger
+    [NonSerialized] public bool mysticArtsActive; // *Mystic Arts
 
     public void Setup(string elementalName) // Called by Setup
     {
@@ -160,6 +163,12 @@ public class Elemental : MonoBehaviour
     {
         if (name == "Will-o'-Wisp" && slotAssignment.GetAlly(this) == caster) // *Carefree
             return;
+
+        if (deceiveRedirectTarget != null) // *Deceive
+        {
+            mirageRedirectTarget.DealDamage(amount, caster, spellDamage);
+            return;
+        }
 
         if (mirageRedirectTarget != null) // *Mirage
         {
@@ -474,28 +483,33 @@ public class Elemental : MonoBehaviour
         UpdateStatusIcons(9, MirageStrength, becomeMiraged);
         MirageStrength += becomeMiraged ? 1 : -1;
     }
+    public void ToggleDeceived(bool becomeDeceived) // *Deceive
+    {
+        UpdateStatusIcons(10, DeceiveStrength, becomeDeceived);
+        DeceiveStrength += becomeDeceived ? 1 : -1;
+    }
     public void ToggleEmpowered(bool becomeEmpowered) // *Empower
     {
         if (EmpowerStrength == 0 && !becomeEmpowered)
             return;
 
-        UpdateStatusIcons(10, EmpowerStrength, becomeEmpowered);
+        UpdateStatusIcons(11, EmpowerStrength, becomeEmpowered);
         EmpowerStrength += becomeEmpowered ? 1 : -1;
     }
     public void ToggleNumb(bool becomeNumb) // *Numbing Cold
     {
-        UpdateStatusIcons(11, NumbStrength, becomeNumb);
+        UpdateStatusIcons(12, NumbStrength, becomeNumb);
         NumbStrength += becomeNumb ? 1 : -1;
     }
     public void ToggleWished(bool becomeWished) // *Best Wishes
     {
         // Use NumbStrength since the effect is identical
-        UpdateStatusIcons(12, NumbStrength, becomeWished);
+        UpdateStatusIcons(13, NumbStrength, becomeWished);
         NumbStrength += becomeWished ? 1 : -1;
     }
     public void ToggleClouded(bool becomeClouded) // *Numbing Cold
     {
-        UpdateStatusIcons(13, CloudStrength, becomeClouded);
+        UpdateStatusIcons(14, CloudStrength, becomeClouded);
         CloudStrength += becomeClouded ? 1 : -1;
     }
 

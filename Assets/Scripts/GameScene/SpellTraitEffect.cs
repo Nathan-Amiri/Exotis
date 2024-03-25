@@ -1,6 +1,4 @@
-using Mono.Cecil.Cil;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpellTraitEffect : MonoBehaviour
@@ -634,26 +632,73 @@ public class SpellTraitEffect : MonoBehaviour
                 if (target != null)
                     target.ToggleWeakened(false);
     }
-    //private void StonyGaze(EffectInfo info)
-    //{
-    //    if (info.occurance == 0)
-    //    {
-    //        info.caster.trait.hasOccurredThisGame = true;
+    private void Deceive(EffectInfo info)
+    {
+        if (info.occurance == 0)
+        {
+            info.caster.trait.hasOccurredThisGame = true;
 
-    //        foreach (Elemental availableTarget in slotAssignment.GetAllAvailableTargets(null, true))
-    //        {
-    //            info.targets.Add(availableTarget);
+            info.caster.ToggleDeceived(true);
+            info.caster.deceiveRedirectTarget = info.targets[0];
 
-    //            availableTarget.ToggleWeakened(true);
-    //        }
+            executionCore.AddAfterSpellOccursDelayedEffect(1, info);
+        }
+        else // 1
+        {
+            info.caster.trait.hasOccurredThisGame = false;
 
-    //        executionCore.AddNextRoundEndDelayedEffect(1, info);
-    //    }
-    //    else // 2
-    //        foreach (Elemental target in info.targets)
-    //            if (target != null)
-    //                target.ToggleWeakened(false);
-    //}
+            info.caster.ToggleDeceived(false);
+            info.caster.deceiveRedirectTarget = null;
+        }
+    }
+    private void MysticArts(EffectInfo info)
+    {
+        if (info.caster == null)
+            return;
+
+        if (info.caster.mysticArtsActive) // 1 or recast
+        {
+            info.caster.mysticArtsActive = false;
+            info.caster.ToggleDisengaged(false);
+
+            info.caster.trait.hasOccurredThisGame = true;
+        }
+        else if (info.occurance == 0)
+        {
+            info.caster.mysticArtsActive = true;
+            info.caster.ToggleDisengaged(true);
+
+            executionCore.AddNextRoundEndDelayedEffect(1, info);
+        }
+    }
+    private void StonyGaze(EffectInfo info)
+    {
+        if (info.occurance == 0)
+        {
+            info.caster.trait.hasOccurredThisGame = true;
+
+            info.caster.ToggleStunned(true);
+            info.caster.ToggleTrapped(true);
+            info.targets[0].ToggleStunned(true);
+            info.targets[0].ToggleTrapped(true);
+
+            executionCore.AddRoundEndDelayedEffect(1, info);
+        }
+        else // 1
+        {
+            if (info.caster != null)
+            {
+                info.caster.ToggleStunned(false);
+                info.caster.ToggleTrapped(false);
+            }
+
+            if (info.targets[0] != null)
+            {
+                info.targets[0].ToggleStunned(false);
+                info.targets[0].ToggleTrapped(false);
+            }
+        }
+    }
 
 
     // Run in Awake
@@ -707,6 +752,8 @@ public class SpellTraitEffect : MonoBehaviour
         effectMethodIndex.Add("Paralyze", Paralyze);
         effectMethodIndex.Add("Inspire", Inspire);
         effectMethodIndex.Add("Rancid Aura", RancidAura);
-        //effectMethodIndex.Add("Stony Gaze", StonyGaze);
+        effectMethodIndex.Add("Deceive", Deceive);
+        effectMethodIndex.Add("Mystic Arts", MysticArts);
+        effectMethodIndex.Add("Stony Gaze", StonyGaze);
     }
 }

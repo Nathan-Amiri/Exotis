@@ -92,7 +92,7 @@ public class Trait : MonoBehaviour, IDelegationAction
     // Called by Elemental
     public bool ActionAvailable()
     {
-        if (ParentElemental.DisengageStrength > 0)
+        if (ParentElemental.DisengageStrength > 0 && !ParentElemental.mysticArtsActive) // *Mystic Arts
             return false;
 
         if (OncePerGame && hasOccurredThisGame)
@@ -103,7 +103,7 @@ public class Trait : MonoBehaviour, IDelegationAction
             Clock.RoundState.RoundStart => usableRoundStart,
             Clock.RoundState.RoundEnd => usableRoundEnd,
             Clock.RoundState.Timescale => usableDuringTimescaleSpeeds,
-            Clock.RoundState.Counter => usableCounterSpeed,
+            Clock.RoundState.Counter => usableCounterSpeed || ParentElemental.mysticArtsActive, // *Mystic Arts
             _ => true //.immediate. What to do here?
         };
     }

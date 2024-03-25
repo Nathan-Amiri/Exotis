@@ -23,4 +23,4 @@ MonoBehaviour:
   usableRoundStart: 0
   usableRoundEnd: 0
   usableCounterSpeed: 0
-  usableDuringTimescaleSpeeds: 0
+  usableDuringTimescaleSpeeds: 1

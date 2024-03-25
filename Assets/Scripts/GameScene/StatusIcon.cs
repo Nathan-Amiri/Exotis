@@ -31,6 +31,7 @@ public class StatusIcon : MonoBehaviour
     private readonly List<(string, Color)> statusStrings = new()
     {
         ("MI", StaticLibrary.gameColors["water"]), // *Mirage
+        ("DE", StaticLibrary.gameColors["shadow"]), // *Deceive
         ("EM", StaticLibrary.gameColors["earth"]), // *Empower
         ("NU", StaticLibrary.gameColors["frost"]), // *Numbing Cold
         ("BE", StaticLibrary.gameColors["jewel"]), // *Best Wishes
