@@ -21,7 +21,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private Button joinLobbyButton;
 
     [SerializeField] private TMP_InputField usernameField;
-    //[SerializeField] private TMP_InputField lobbyCodeField;
+    [SerializeField] private TMP_InputField lobbyCodeField;
 
     [SerializeField] private TMP_Text errorText;
 
@@ -39,10 +39,10 @@ public class GameManager : NetworkBehaviour
     {
         PlayerPrefs.SetString("Username", usernameField.text);
     }
-    //public void OnLobbyCodeChange()
-    //{
-    //    PlayerPrefs.SetString("LobbyCode", lobbyCodeField.text);
-    //}
+    public void OnLobbyCodeChange()
+    {
+        PlayerPrefs.SetString("LobbyCode", lobbyCodeField.text);
+    }
 
     private IEnumerator ErrorMessage(string newMessage)
     {
@@ -99,7 +99,7 @@ public class GameManager : NetworkBehaviour
         createLobbyButton.interactable = on;
         joinLobbyButton.interactable = on;
         usernameField.interactable = on;
-        //lobbyCodeField.interactable = on;
+        lobbyCodeField.interactable = on;
     }
 
 
@@ -149,8 +149,8 @@ public class GameManager : NetworkBehaviour
 
             if (queryResponse.Results.Count != 0)
             {
-                //StartCoroutine(ErrorMessage("A lobby with that code already exists. Please choose another code"));
-                StartCoroutine(ErrorMessage("The old game lobby is still being deleted. Try again in a few seconds"));
+                StartCoroutine(ErrorMessage("A lobby with that code already exists. Please choose another code"));
+                //StartCoroutine(ErrorMessage("The old game lobby is still being deleted. Try again in a few seconds"));
                 return;
             }
 
