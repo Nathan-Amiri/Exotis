@@ -130,6 +130,17 @@ public class GameManager : NetworkBehaviour
         return false;
     }
 
+    private bool LobbyCodeError()
+    {
+        if (lobbyCodeField.text == string.Empty)
+        {
+            StartCoroutine(ErrorMessage("Must choose a room name!"));
+            return true;
+        }
+
+        return false;
+    }
+
 
     public async void CreateLobby()
     {
