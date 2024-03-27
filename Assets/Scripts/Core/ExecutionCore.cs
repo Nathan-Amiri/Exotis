@@ -125,7 +125,10 @@ public class ExecutionCore : MonoBehaviour
         {
             List<Elemental> targets = slotAssignment.GetAllAvailableTargets(golem, false);
             foreach (Elemental target in targets)
-                target.DealDamage(1, golem, false);
+            {
+                EffectInfo info = new() { caster = golem };
+                target.DealDamage(1, info);
+            }
         }
 
         // Deal Poison damage to all Elementals in play
@@ -133,7 +136,10 @@ public class ExecutionCore : MonoBehaviour
         {
             Elemental elemental = slotAssignment.Elementals[i];
             if (elemental != null && elemental.PoisonStrength > 0)
-                elemental.DealDamage(1, elemental, false);
+            {
+                EffectInfo info = new() { caster = elemental };
+                elemental.DealDamage(1, info);
+            }
         }
 
         if (CheckForGameEnd())
@@ -850,17 +856,8 @@ public class ExecutionCore : MonoBehaviour
         foreach (RelayPacket packet in packets)
             effectInfos.Add(ConvertToEffectInfo(packet));
 
-        if (packets[0].actionType == "spell")
-        {
-            if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
-            {
-                int newTimeScale = GetTimescale(packets[0]);
-                clock.NewTimescale(newTimeScale);
-            }
-
-            foreach (RelayPacket packet in packets)
-                ToggleBoosting(packet, true);
-        }
+        if (packets[0].actionType == "spell" && Clock.CurrentRoundState == Clock.RoundState.Timescale)
+            clock.NewTimescale(GetTimescale(packets[0]));
 
         foreach (EffectInfo info in effectInfos)
             effectDelegate(info);
@@ -870,9 +867,6 @@ public class ExecutionCore : MonoBehaviour
 
         if (packets[0].actionType == "spell")
         {
-            foreach (RelayPacket packet in packets)
-                ToggleBoosting(packet, false);
-
             if (Clock.CurrentRoundState == Clock.RoundState.Timescale)
             {
                 foreach (EffectInfo info in afterSpellOccursInfos)
@@ -900,29 +894,36 @@ public class ExecutionCore : MonoBehaviour
         foreach (int targetSlot in packet.targetSlots)
             newTargets.Add(slotAssignment.Elementals[targetSlot]);
 
-        bool recast = false;
-        if (packet.actionType == "spell")
-            recast = caster.GetSpell(packet.name).readyForRecast;
+        bool isSpell = packet.actionType == "spell";
+        string spellOrTraitName = isSpell ? packet.name : caster.trait.Name;
+        bool recast = isSpell && caster.GetSpell(packet.name).readyForRecast;
+
+        bool potionBoosting = packet.potion;
+
+        bool traitBoosting = false;
+
+        if (!isSpell)
+            traitBoosting = false;
+        else if (packet.frenzy) // *Frenzy
+            traitBoosting = true;
+        else if (caster.name == "Ogre" && !caster.trait.hasOccurredThisRound && packet.targetSlots.Length == 1) // *Juggernaut
+        {
+            traitBoosting = true;
+            caster.trait.hasOccurredThisRound = true;
+        }
 
         return new EffectInfo()
         {
+            isSpell = isSpell,
+            spellOrTraitName = spellOrTraitName,
             occurance = 0,
             recast = recast,
-            spellOrTraitName = packet.name,
+            potionBoosting = potionBoosting,
+            traitBoosting = traitBoosting,
             caster = caster,
             targets = newTargets,
             hexType = packet.hexType
         };
-    }
-    private void ToggleBoosting(RelayPacket packet, bool on)
-    {
-        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
-        if (caster == null)
-            return;
-
-        caster.potionBoosting = on && packet.potion;
-        caster.frenzyBoosting = on && packet.frenzy; // *Frenzy
-        caster.juggernautBoosting = on && caster.name == "Ogre" && packet.targetSlots.Length == 1; // *Juggernaut
     }
 
     private void RetreatEffect(EffectInfo info)
@@ -989,7 +990,8 @@ public class ExecutionCore : MonoBehaviour
         targetManager.ResetAllTargets();
 
         Elemental target = slotAssignment.Elementals[flungSparks[0].targetSlot];
-        target.DealDamage(1, flungSparks[0].caster, false);
+        EffectInfo info = new() { caster = flungSparks[0].caster };
+        target.DealDamage(1, info);
 
         CycleSparks();
     }
@@ -1030,7 +1032,8 @@ public class ExecutionCore : MonoBehaviour
     private bool CheckForGameEnd()
     {
         foreach (Elemental elemental in slotAssignment.Elementals)
-            elemental.ApplyHealthChange();
+            if (elemental != null)
+                elemental.ApplyHealthChange();
 
         List<Elemental> elementalsToEliminate = new();
 
@@ -1156,10 +1159,14 @@ public class ExecutionCore : MonoBehaviour
 }
 public struct EffectInfo
 {
+    public bool isSpell;
     public string spellOrTraitName;
 
     public int occurance;
     public bool recast;
+
+    public bool potionBoosting;
+    public bool traitBoosting;
 
     public Elemental caster;
     public List<Elemental> targets;

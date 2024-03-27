@@ -15,6 +15,7 @@ public class Trait : MonoBehaviour, IDelegationAction
 
     // SCENE REFERENCE:
     [SerializeField] private DelegationCore delegationCore;
+    [SerializeField] private SlotAssignment slotAssignment;
 
     // DYNAMIC:
         // IDelegationAction fields:
@@ -28,6 +29,7 @@ public class Trait : MonoBehaviour, IDelegationAction
     public string Name { get; private set; }
 
     public bool OncePerGame { get; private set; }
+    public bool OncePerRound { get; private set; }
 
     [NonSerialized] public bool hasOccurredThisGame;
     [NonSerialized] public bool hasOccurredThisRound;
@@ -60,6 +62,7 @@ public class Trait : MonoBehaviour, IDelegationAction
         Name = info.traitName;
 
         OncePerGame = info.traitOncePerGame;
+        OncePerRound = info.traitOncePerRound;
 
         usableRoundStart = info.usableRoundStart;
         usableRoundEnd = info.usableRoundEnd;
@@ -97,6 +100,16 @@ public class Trait : MonoBehaviour, IDelegationAction
 
         if (OncePerGame && hasOccurredThisGame)
             return false;
+
+        if (OncePerRound && hasOccurredThisRound)
+            return false;
+
+        if (ParentElemental.name == "Hellhound") // *Ravenous
+        {
+            Elemental ally = slotAssignment.GetAlly(ParentElemental);
+            if (ally == null || ally.DisengageStrength > 0 || ally.EnrageStrength > 0)
+                return false;
+        }
 
         return Clock.CurrentRoundState switch
         {

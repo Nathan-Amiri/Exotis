@@ -58,11 +58,6 @@ public class Elemental : MonoBehaviour
 
     [NonSerialized] public bool readyForElimination;
 
-        // Only true during SpellEffect when Spell is boosted by Potion/Frenzy
-    [NonSerialized] public bool potionBoosting;
-    [NonSerialized] public bool frenzyBoosting; // *Frenzy
-    [NonSerialized] public bool juggernautBoosting; // *Juggernaut
-
         // Items
     public bool HasSpark { get; private set; }
     public bool HasGem { get; private set; }
@@ -110,19 +105,19 @@ public class Elemental : MonoBehaviour
         if (info.speed == ElementalInfo.Speed.fast)
         {
             speedColorBackground.color = StaticLibrary.gameColors["fastHealthBack"];
-            MaxHealth = 5;
+            MaxHealth = 6;
             Speed = 3;
         }
         else if (info.speed == ElementalInfo.Speed.medium)
         {
             speedColorBackground.color = StaticLibrary.gameColors["mediumHealthBack"];
-            MaxHealth = 6;
+            MaxHealth = 7;
             Speed = 2;
         }
         else // If slow
         {
             speedColorBackground.color = StaticLibrary.gameColors["slowHealthBack"];
-            MaxHealth = 7;
+            MaxHealth = 8;
             Speed = 1;
         }
 
@@ -159,20 +154,22 @@ public class Elemental : MonoBehaviour
     }
 
 
-    public void DealDamage(int amount, Elemental caster, bool spellDamage = true, bool eruptRecoil = false)
+    public void DealDamage(int amount, EffectInfo info, bool eruptRecoil = false)
     {
-        if (name == "Will-o'-Wisp" && slotAssignment.GetAlly(this) == caster) // *Carefree
+        bool spellDamage = info.isSpell;
+
+        if (name == "Will-o'-Wisp" && slotAssignment.GetAlly(this) == info.caster) // *Carefree
             return;
 
         if (deceiveRedirectTarget != null) // *Deceive
         {
-            mirageRedirectTarget.DealDamage(amount, caster, spellDamage);
+            deceiveRedirectTarget.DealDamage(amount, info);
             return;
         }
 
         if (mirageRedirectTarget != null) // *Mirage
         {
-            mirageRedirectTarget.DealDamage(amount, caster, spellDamage);
+            mirageRedirectTarget.DealDamage(amount, info);
             return;
         }
 
@@ -184,19 +181,16 @@ public class Elemental : MonoBehaviour
 
         if (spellDamage)
         {
-            if (caster.NumbStrength > 0) // *Numbing Cold
+            if (info.caster.NumbStrength > 0) // *Numbing Cold // *Best Wishes
                 return;
 
-            if (caster.potionBoosting && !eruptRecoil)
+            if (info.potionBoosting && !eruptRecoil) // *Erupt
             {
                 amount += 1;
-                caster.TogglePotion(false);
+                info.caster.TogglePotion(false);
             }
 
-            if (caster.frenzyBoosting) // *Frenzy
-                amount += 1;
-
-            if (caster.juggernautBoosting) // *Juggernaut
+            if (info.traitBoosting && !eruptRecoil)
                 amount += 1;
 
             if (ArmorStrength > 0)
@@ -205,13 +199,13 @@ public class Elemental : MonoBehaviour
                 ToggleArmored(false);
             }
 
-            if (caster.WeakenStrength > 0)
+            if (info.caster.WeakenStrength > 0)
                 amount -= 1;
 
-            if (CloudStrength > 0 && amount > 0 && caster.isAlly != isAlly) // *Poison Cloud
+            if (CloudStrength > 0 && amount > 0 && info.caster.isAlly != isAlly) // *Poison Cloud
             {
-                caster.TogglePoisoned(true);
-                poisonedByPoisonCloud.Add(caster);
+                info.caster.TogglePoisoned(true);
+                poisonedByPoisonCloud.Add(info.caster);
             }
         }
 
@@ -224,24 +218,28 @@ public class Elemental : MonoBehaviour
 
             return;
         }
-        else if (caster.name == "Dragon" && spellDamage && caster.isAlly != isAlly && !caster.trait.hasOccurredThisRound) // *Devour
-        {
-            caster.trait.hasOccurredThisRound = true;
 
-            caster.Heal(1);
+        if (info.caster.name == "Dragon" && spellDamage && info.caster.isAlly != isAlly && !info.caster.trait.hasOccurredThisRound) // *Devour
+        {
+            info.caster.trait.hasOccurredThisRound = true;
+
+            info.caster.Heal(1);
         }
-        else if (name == "Angel" && spellDamage && !trait.hasOccurredThisRound) // *Smite
+        
+        if (name == "Angel" && spellDamage && !trait.hasOccurredThisRound) // *Smite
         {
             trait.hasOccurredThisRound = true;
 
             ToggleSpark(true);
         }
-        else if (caster.name == "Gargoyle" && caster.isAlly != isAlly) // *Scavenger
-            gargoyleDamager = caster;
 
-        foreach (Spell spell in spells) // *Empower
-            if (spell.Name == "Empower")
-                ToggleEmpowered(true);
+        if (info.caster.name == "Gargoyle" && info.caster.isAlly != isAlly) // *Scavenger
+            gargoyleDamager = info.caster;
+
+        if (EmpowerStrength == 0 && Clock.CurrentRoundState != Clock.RoundState.RoundEnd)
+            foreach (Spell spell in spells) // *Empower
+                if (spell.Name == "Empower")
+                    ToggleEmpowered(true);
 
         Health -= amount;
     }
@@ -261,7 +259,7 @@ public class Elemental : MonoBehaviour
 
         if (gargoyleDamager != null) // *Scavenger
         {
-            if (Health == 0)
+            if (Health == 0 && (name != "Phoenix" || trait.hasOccurredThisGame)) // *Rebirth
                 gargoyleDamager.TogglePotion(true);
 
             gargoyleDamager = null;
@@ -273,15 +271,16 @@ public class Elemental : MonoBehaviour
         if (name == "Phoenix" && !trait.hasOccurredThisGame) // *Rebirth
         {
             trait.hasOccurredThisGame = true;
+
             Health = 1;
+            healthText.text = "1";
+
             ToggleWeakened(true);
             return;
         }
-        else if (name == "Scorpio" && trappedByParalyze != null) // *Paralyze
-        {
+        
+        if (name == "Scorpio" && trappedByParalyze != null) // *Paralyze
             trappedByParalyze.ToggleTrapped(false);
-            trappedByParalyze = null;
-        }
 
         // Remove from Elementals manually since Destroy doesn't occur until the end of the frame
         for (int i = 0; i < slotAssignment.Elementals.Count; i++)

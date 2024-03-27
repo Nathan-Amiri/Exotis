@@ -15,6 +15,7 @@ public class ElementalInfo : ScriptableObject
     public bool traitCanTargetBenchedAlly;
 
     public bool traitOncePerGame;
+    public bool traitOncePerRound;
 
     public bool usableRoundStart;
     public bool usableRoundEnd;

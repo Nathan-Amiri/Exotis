@@ -75,7 +75,7 @@
 7 Mermaid 7s Water/Jewel
 	Slippery "I can cast non-damaging Spells at counter speed"
 8 Salamander 5f Flame/Earth
-	Burrow "At any time, I can Swap."
+	Burrow "Once per round, at any time, I can Swap."
 9 Phoenix 5f Wind/Flame
 	Rebirth "The first time I would be Eliminated, I retain 1 health and am Weakened for the rest of the game"
 10 Dragon 6m Flame/Lightning
@@ -83,11 +83,11 @@
 11 Wizard 5f Frost/Flame
 	Astonish "The first time I’m in play at the beginning of a round, I'm Enraged that round"
 12 Hellhound 6m Shadow/Flame
-	Berserk "At the end of each round, If my partner isn't Disengaged, I can deal 1 to it and gain a Potion. I can't use this effect next round"
+	Ravenous "At the end of each round, If my partner isn't Eliminated, Disengaged, or Enraged, I can deal 2 to it, heal 1, and gain a Potion"
 13 Chimera 5f Flame/Venom
-	Sizzle "If I’m casting or recasting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell. I can’t use this effect next round"
+	Sizzle "If I’m casting or recasting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell"
 14 Genie 6m Jewel/Flame
-	Best Wishes "Once per game, at any time, I can gain an action. (If I already have one, I gain a second) My Spells deal 0 damage this round."
+	Best Wishes "Once per game, at any time, I can gain an action. (If I already have one, I gain a second) My Spells deal 0 damage this round"
 15 Roc 6m Wind/Earth
 	Screech "Once per game, at any time, I can deal 1 to all other Elementals, even ones not in play"
 16 Golem 6m Lightning/Earth
@@ -95,7 +95,7 @@
 17 Yeti 7s Frost/Earth
 	Chill "Once per game, at the end of a round, I can target a Slowed enemy in play. It's Disengaged next round"
 18 Ogre 6m Shadow/Earth
-	Juggernaut "I'm permanently Slowed. My damaging Spells that have one target deal +1 damage"
+	Juggernaut "I'm permanently Slowed. Each round, the first time I cast a damaging Spell that has one target, it deals +1 damage"
 19 Scorpio 7s Earth/Venom
 	Paralyze "Once per game, at the beginning of a round, I can Trap an enemy in play until I Swap or am Eliminated"
 20 Dwarf 6m Earth/Jewel
@@ -136,7 +136,7 @@
 
 Gem "At any time or at counter speed, I can activate my Gem to heal 2"
 Potion "If I'm casting a damaging Spell that has one target, I can drink my Potion to deal +1 damage to the target with that Spell"
-Spark "At counter speed, I can fling my Spark at a target in play. After the enemy Spell I'm countering has occurred, I deal 1 to the target even if I'm Eliminated or no longer in play"
+Spark "At counter speed, I can fling my Spark at a target in play. After the Spell I'm countering has occurred, I deal 1 to the target even if I'm Eliminated or no longer in play"
 
 
 	STATUS:

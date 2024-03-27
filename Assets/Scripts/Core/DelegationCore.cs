@@ -125,7 +125,7 @@ public class DelegationCore : MonoBehaviour
         {
             packet.name = spell.Name;
 
-            if (spell.IsWild && packet.wildTimescale == 0)
+            if (spell.IsWild && packet.wildTimescale == 0 && Clock.CurrentRoundState != Clock.RoundState.Counter) // *Slippery
             {
                 ResetScene();
 
@@ -379,7 +379,18 @@ public class DelegationCore : MonoBehaviour
                 if (slotAssignment.Elementals[slot] != null)
                     availableSwapTargets.Add(slot);
 
-            if (availableSwapTargets.Count > 0)
+            if (slotAssignment.Elementals[packet.casterSlot].TrapStrength > 0 || availableSwapTargets.Count == 0)
+            {
+                targetManager.ResetAllTargets();
+
+                console.ResetConsole();
+
+                submitButton.SetActive(true);
+                cancelButton.SetActive(true);
+
+                return;
+            }
+            else
             {
                 ResetScene();
 
@@ -387,8 +398,6 @@ public class DelegationCore : MonoBehaviour
 
                 return;
             }
-            else
-                packet.targetSlots = new int[] { targetSlot, availableSwapTargets[0] };
         }
 
         potionButtons[packet.casterSlot].interactable = PotionInteractable();
@@ -398,7 +407,6 @@ public class DelegationCore : MonoBehaviour
 
         if (packet.targetSlots.Length >= GetMaxTargets(currentAction))
             targetManager.ResetAllTargets();
-
 
         if (!targetManager.AnyTargetsAvailable())
             console.ResetConsole();
@@ -434,6 +442,9 @@ public class DelegationCore : MonoBehaviour
         packet.potion = true;
 
         targetManager.ResetAllTargets();
+        foreach (Button button in potionButtons)
+            if (button != null)
+                button.interactable = false;
 
         console.ResetConsole();
     }
@@ -458,6 +469,10 @@ public class DelegationCore : MonoBehaviour
         submitButton.SetActive(false);
 
         targetManager.ResetAllTargets();
+
+        foreach (Button button in potionButtons)
+            if (button != null)
+                button.interactable = false;
 
         foreach (GameObject button in wildButtons)
             button.SetActive(false);

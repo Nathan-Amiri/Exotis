@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: Hellhound
   m_EditorClassIdentifier: 
   speed: 1
-  traitName: Berserk
+  traitName: Ravenous
   traitMaxTargets: 0
   traitCanTargetSelf: 0
   traitCanTargetAlly: 0
   traitCanTargetEnemy: 0
   traitCanTargetBenchedAlly: 0
+  traitOncePerGame: 0
+  traitOncePerRound: 1
   usableRoundStart: 0
   usableRoundEnd: 1
   usableCounterSpeed: 0
-  usableDuringTimeScaleSpeeds: 0
+  usableDuringTimescaleSpeeds: 0
