@@ -31,6 +31,8 @@ public class GameManager : NetworkBehaviour
     {
         if (PlayerPrefs.HasKey("Username"))
             usernameField.text = PlayerPrefs.GetString("Username");
+        if (PlayerPrefs.HasKey("LobbyCode"))
+            lobbyCodeField.text = PlayerPrefs.GetString("LobbyCode");
 
         _ = ConnectToRelay();
     }
@@ -105,7 +107,7 @@ public class GameManager : NetworkBehaviour
 
     public void SelectCreateLobby()
     {
-        if (UsernameLobbyError())
+        if (UsernameLobbyError() || LobbyCodeError())
             return;
 
         CreateLobby();
@@ -113,7 +115,7 @@ public class GameManager : NetworkBehaviour
 
     public void SelectJoinLobby()
     {
-        if (UsernameLobbyError())
+        if (UsernameLobbyError() || LobbyCodeError())
             return;
 
         JoinLobby();
@@ -153,7 +155,7 @@ public class GameManager : NetworkBehaviour
                 Count = 50,
                 Filters = new List<QueryFilter>()
                 {
-                    new(field: QueryFilter.FieldOptions.S2, op: QueryFilter.OpOptions.EQ, value: "tempLobbyCode") //lobbyCodeField.text)
+                    new(field: QueryFilter.FieldOptions.S2, op: QueryFilter.OpOptions.EQ, value: lobbyCodeField.text)
                 }
             };
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
@@ -161,7 +163,6 @@ public class GameManager : NetworkBehaviour
             if (queryResponse.Results.Count != 0)
             {
                 StartCoroutine(ErrorMessage("A lobby with that code already exists. Please choose another code"));
-                //StartCoroutine(ErrorMessage("The old game lobby is still being deleted. Try again in a few seconds"));
                 return;
             }
 

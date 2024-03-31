@@ -370,12 +370,12 @@ public class Elemental : MonoBehaviour
 
             ToggleSlowed(true);
         }
-
-        ToggleEmpowered(false);
     }
     public void OnRoundEnd()
     {
         ToggleArmored(false);
+
+        ToggleEmpowered(false);
 
         if (name == "Fairy" && !trait.hasOccurredThisRound) // *Serenade
         {

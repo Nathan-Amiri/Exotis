@@ -58,77 +58,77 @@
 
 	ELEMENTALS/TRAITS:
 
-0 Will-o'-Wisp 6m Water/Flame
+0 Will-o'-Wisp 7m Water/Flame
 	Carefree "Whenever my partner deals damage to me, I’m immune to that damage"
-1 Selkie 7s Earth/Water
+1 Selkie 8s Earth/Water
 	Blubber "When I would take damage, I don't lose health until the end of this round"
-2 Nymph 6m Water/Wind
+2 Nymph 7m Water/Wind
 	Dive "Once per game, at counter speed, I can heal 1 and become Enraged until the Spell I'm countering has occurred"
-3 Kraken 5f Water/Lightning
+3 Kraken 6f Water/Lightning
 	Reservoir "At the beginning of the game, I gain a Gem"
-4 Leviathan 6m Frost/Water
+4 Leviathan 7m Frost/Water
 	Majestic "Once per game, immediately after I enter play, I can heal myself or my partner 2"
-5 Hydra 7s Water/Shadow
+5 Hydra 8s Water/Shadow
 	Eclipse "Once per game, at the end of a round, I can Enrage all Elementals next round, even ones not in play"
-6 Siren 7s Water/Venom
+6 Siren 8s Water/Venom
 	Scourge "At the end of each round, I can target another Elemental in play. I deal 1 to myself and 1 to the target"
-7 Mermaid 7s Water/Jewel
+7 Mermaid 8s Water/Jewel
 	Slippery "I can cast non-damaging Spells at counter speed"
-8 Salamander 5f Flame/Earth
+8 Salamander 6f Flame/Earth
 	Burrow "Once per round, at any time, I can Swap."
-9 Phoenix 5f Wind/Flame
+9 Phoenix 6f Wind/Flame
 	Rebirth "The first time I would be Eliminated, I retain 1 health and am Weakened for the rest of the game"
-10 Dragon 6m Flame/Lightning
+10 Dragon 7m Flame/Lightning
 	Devour "Each round, the first time I damage an enemy with a Spell, I heal 1"
-11 Wizard 5f Frost/Flame
+11 Wizard 6f Frost/Flame
 	Astonish "The first time I’m in play at the beginning of a round, I'm Enraged that round"
-12 Hellhound 6m Shadow/Flame
+12 Hellhound 7m Shadow/Flame
 	Ravenous "At the end of each round, If my partner isn't Eliminated, Disengaged, or Enraged, I can deal 2 to it, heal 1, and gain a Potion"
-13 Chimera 5f Flame/Venom
+13 Chimera 6f Flame/Venom
 	Sizzle "If I’m casting or recasting a damaging Spell onto a Poisoned target, I can deal +1 damage with that Spell"
-14 Genie 6m Jewel/Flame
+14 Genie 7m Jewel/Flame
 	Best Wishes "Once per game, at any time, I can gain an action. (If I already have one, I gain a second) My Spells deal 0 damage this round"
-15 Roc 6m Wind/Earth
+15 Roc 7m Wind/Earth
 	Screech "Once per game, at any time, I can deal 1 to all other Elementals, even ones not in play"
-16 Golem 6m Lightning/Earth
+16 Golem 7m Lightning/Earth
 	High Voltage "At the end of each round, I deal 1 to all other Elementals in play"
-17 Yeti 7s Frost/Earth
+17 Yeti 8s Frost/Earth
 	Chill "Once per game, at the end of a round, I can target a Slowed enemy in play. It's Disengaged next round"
-18 Ogre 6m Shadow/Earth
+18 Ogre 7m Shadow/Earth
 	Juggernaut "I'm permanently Slowed. Each round, the first time I cast a damaging Spell that has one target, it deals +1 damage"
-19 Scorpio 7s Earth/Venom
+19 Scorpio 8s Earth/Venom
 	Paralyze "Once per game, at the beginning of a round, I can Trap an enemy in play until I Swap or am Eliminated"
-20 Dwarf 6m Earth/Jewel
+20 Dwarf 7m Earth/Jewel
 	Inspire "Once per game, at the beginning of a round, I can Enrage myself or my partner this round"
-21 Griffin 5f Wind/Lightning
+21 Griffin 6f Wind/Lightning
 	Nimble "The first time I would take damage from a non-Spell source each round, I’m immune to that damage"
-22 Ghost 6m Wind/Frost
+22 Ghost 7m Wind/Frost
 	Icy Touch "Slows I inflict last forever"
-23 Wraith 5f Shadow/Wind
+23 Wraith 6f Shadow/Wind
 	Silence "I can't target myself. Immediately after I’m Eliminated, I can Eliminate the enemy in play with the lowest Health. If they're tied, I choose which to Eliminate"
-24 Strix 5f Wind/Venom
+24 Strix 6f Wind/Venom
 	Frenzy "Once per game, if I’m casting or recasting a damaging Spell, I can deal +1 damage with that Spell. I can’t cast a different Spell until I Swap"
-25 Fairy 6m Wind/Jewel
+25 Fairy 7m Wind/Jewel
 	Serenade "At the end of each round, if I have not healed this round, I heal 1"
-26 Thunderbird 6m Frost/Lightning
+26 Thunderbird 7m Frost/Lightning
 	Sacrifice "I'm permanently Weakened. When I’m Eliminated, I can immediately fully heal any allied Elemental. I can Eliminate myself at any time or at counter speed"
-27 Gargoyle 6m Shadow/Lightning
+27 Gargoyle 7m Shadow/Lightning
 	Scavenger "When I Eliminate an enemy, I gain a Potion"
-28 Abomination 6m Lightning/Venom
+28 Abomination 7m Lightning/Venom
 	Freak "When I enter play due to a Swap, my partner can immediately Swap."
-29 Angel 7s Lightning/Jewel
+29 Angel 8s Lightning/Jewel
 	Smite "Each round, the first time I take damage from a Spell, I gain a Spark"
-30 Werewolf 5f Shadow/Frost
+30 Werewolf 6f Shadow/Frost
 	Shapeshift "Once per game, at the beginning of a round, I can choose any allied Elemental. My Spells are replaced with its Spells this round"
-31 Wyrm 6m Venom/Frost
+31 Wyrm 7m Venom/Frost
 	Rancid Aura "Once per game, at counter speed, I can Weaken all Elementals, even ones not in play, until the end of next round"
-32 Unicorn 5f Frost/Jewel
+32 Unicorn 6f Frost/Jewel
 	Adorn "When I cast a non-damaging Spell, I become Armored this round"
-33 Witch 6m Shadow/Venom
+33 Witch 7m Shadow/Venom
 	Deceive "At counter speed, I can target any allied Elemental. If the Spell I'm countering would deal damage to me, the damage redirects to the target"
-34 Shaman 6m Jewel/Shadow
+34 Shaman 7m Jewel/Shadow
 	Mystic Arts "Once per game, at any time, I can become Disengaged until the end of next round. Despite being Disengaged, I can recast this Trait at any time or at counter speed to end this effect early"
-35 Basilisk 6m Venom/Jewel
+35 Basilisk 7m Venom/Jewel
 	Stony Gaze "Once per game, at the beginning of a round, I can Stun and Trap myself and an enemy in play this round"
 
 

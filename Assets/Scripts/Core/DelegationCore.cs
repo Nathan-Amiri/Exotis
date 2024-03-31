@@ -3,7 +3,6 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
-using static ElementalInfo;
 
 public class DelegationCore : MonoBehaviour
 {
