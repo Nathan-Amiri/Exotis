@@ -19,7 +19,7 @@ No communication occurs between players outside of RelayCore packets.
 
 ExecutionCore acts upon the packet(s) it receives, then either requests a new packet from DelegationCore or instructs the player to wait for the enemy player's next packet.
 
-Some effects, such as item effects (Gem/Spark/Potion effects), are handled by ExecutionCore. Spell and Trait effects are handled by the SpellTraitEffect class--an index of all unique Spell/Trait effects.
+Simple effects, such as item effects (Gem/Spark/Potion effects), are handled by ExecutionCore. Spell and Trait effects are handled by the SpellTraitEffect class--an index of all unique Spell/Trait effects.
 
 Due to the wide variety of unique effects in the game, many of these Spells/Traits have specific logic scattered throughout the Core classes.
 Any specific logic is marked with the following comment for searchability: <// *spellOrTraitName>
