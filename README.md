@@ -10,9 +10,7 @@ Exotis uses Unity's Lobby, Relay, and Netcode for Gameobjects networking systems
 
 The GameManager class handles lobby connection code.
 
-The in-game logic is handled primarily by three classes: DelegationCore, RelayCore, and ExecutionCore.
-
-These classes can only impact each other in one direction: DelegationCore > RelayCore > ExecutionCore.
+The in-game logic is handled primarily by three classes, which can only impact each other in one direction: DelegationCore > RelayCore > ExecutionCore.
 
 DelegationCore prompts the player to delegate (choose) an action, handling all relevant ui logic. It then places that action's data into a packet, sending it to RelayCore.
 
