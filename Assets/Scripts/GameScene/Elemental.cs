@@ -305,7 +305,7 @@ public class Elemental : MonoBehaviour
 
         return false;
     }
-    public bool AllyCanSwapOut() // Flurry
+    public bool AllyCanSwapOut() // *Flurry
     {
         return slotAssignment.GetAlly(this).CanSwapOut();
     }
@@ -346,7 +346,7 @@ public class Elemental : MonoBehaviour
         trait.occurredLastRound = trait.hasOccurredThisRound;
         trait.hasOccurredThisRound = false;
 
-        if (name == "Kraken" && !trait.hasOccurredThisGame) // Reservoir
+        if (name == "Kraken" && !trait.hasOccurredThisGame) // *Reservoir
         {
             trait.hasOccurredThisGame = true;
 
