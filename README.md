@@ -1,5 +1,7 @@
 Exotis is a competitive online PvP strategy game, emphasizing outside-the-box creativity
 
+Character art by Tony Wojnar
+
 Exotis is currently in development. A playable demo is coming soon!
 
 Created in Unity and coded in C#
