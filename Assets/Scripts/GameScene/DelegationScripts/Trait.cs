@@ -120,4 +120,9 @@ public class Trait : MonoBehaviour, IDelegationAction
             _ => true //.immediate. What to do here?
         };
     }
+
+    public void TraitBoostInteractable()
+    {
+
+    }
 }

@@ -363,8 +363,8 @@ public class ExecutionCore : MonoBehaviour
         if (packet.potion)
             debugMessage += ", potion";
 
-        if (packet.frenzy) // *Frenzy
-            debugMessage += ", frenzy";
+        if (packet.traitBoost)
+            debugMessage += ", traitBoost";
 
         Debug.Log(debugMessage);
     }
@@ -642,12 +642,12 @@ public class ExecutionCore : MonoBehaviour
         // If counter, counter spell will occur before checking for counter again
         Console.OutputMethod spellOutputMethod = Clock.CurrentRoundState == Clock.RoundState.Timescale ? NewCounterCycle : CallEffectMethod;
 
-        if (packet.frenzy) // *Frenzy
+        if (packet.traitBoost)
         {
             if (packet.potion)
-                return (caster + " will activate Frenzy and drink its Potion, then cast " + packet.name, spellOutputMethod);
+                return (caster + " will activate its Trait and drink its Potion, then cast " + packet.name, spellOutputMethod);
 
-            return (caster + " will activate Frenzy, then cast " + packet.name, spellOutputMethod);
+            return (caster + " will activate its Trait, then cast " + packet.name, spellOutputMethod);
         }
 
         if (packet.potion)
@@ -904,7 +904,7 @@ public class ExecutionCore : MonoBehaviour
 
         if (!isSpell)
             traitBoosting = false;
-        else if (packet.frenzy) // *Frenzy
+        else if (packet.traitBoost)
             traitBoosting = true;
         else if (caster.name == "Ogre" && !caster.trait.hasOccurredThisRound && packet.targetSlots.Length == 1) // *Juggernaut
         {

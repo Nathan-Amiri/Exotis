@@ -347,6 +347,8 @@ public class DelegationCore : MonoBehaviour
     {
         int targetSlot = slotAssignment.GetSlot(targetedElemental);
 
+        Elemental caster = slotAssignment.Elementals[packet.casterSlot];
+
         if (packet.targetSlots == null)
             packet.targetSlots = new int[] { targetSlot };
         else
@@ -378,7 +380,7 @@ public class DelegationCore : MonoBehaviour
                 if (slotAssignment.Elementals[slot] != null)
                     availableSwapTargets.Add(slot);
 
-            if (slotAssignment.Elementals[packet.casterSlot].TrapStrength > 0 || availableSwapTargets.Count == 0)
+            if (caster.TrapStrength > 0 || availableSwapTargets.Count == 0)
             {
                 targetManager.ResetAllTargets();
 
@@ -400,6 +402,7 @@ public class DelegationCore : MonoBehaviour
         }
 
         potionButtons[packet.casterSlot].interactable = PotionInteractable();
+        //caster.trait
 
         // Turn off unavailable target buttons
         targetManager.ResetCertainTargets(new List<int> { targetSlot });
@@ -435,6 +438,11 @@ public class DelegationCore : MonoBehaviour
 
         return true;
     }
+    
+    //private bool TraitBoostInteractable()
+    //{
+
+    //}
 
     public void SelectPotion()
     {

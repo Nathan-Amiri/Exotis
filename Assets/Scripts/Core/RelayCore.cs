@@ -58,7 +58,7 @@ public struct RelayPacket : INetworkSerializable
         // *Hex
     public string hexType; // Possible values: slow, poison, weaken
     public bool potion;
-    public bool frenzy; // *Frenzy
+    public bool traitBoost;
 
     // Define struct values as serializable
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -71,6 +71,6 @@ public struct RelayPacket : INetworkSerializable
         serializer.SerializeValue(ref wildTimescale);
         serializer.SerializeValue(ref hexType);
         serializer.SerializeValue(ref potion);
-        serializer.SerializeValue(ref frenzy); // *Frenzy
+        serializer.SerializeValue(ref traitBoost);
     }
 }
